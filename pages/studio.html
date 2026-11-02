@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Tools — Galaxy Gems</title>
+  <meta name="theme-color" content="#3C3489">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    :root {
+      --space:        #0D0B1A;
+      --deep:         #12103A;
+      --tz:           #3C3489;
+      --tz-mid:       #534AB7;
+      --tz-bright:    #7F77DD;
+      --tz-light:     #EEEDFE;
+      --text:         #F0EFF8;
+      --text-dim:     #AFA9EC;
+      --text-muted:   #6B6499;
+      --border:       #2A2460;
+      --border-light: #3D367A;
+      --card:         #16124A;
+      --card-hover:   #1E1960;
+      --warn-bg:      #2A1F0A;
+      --warn-text:    #FAC775;
+      --radius:       12px;
+      --radius-sm:    8px;
+      --nav-h:        60px;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Inter', sans-serif;
+    }
+    body { background: var(--space); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+    button { font-family: var(--font-body); cursor: pointer; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--deep); }
+    ::-webkit-scrollbar-thumb { background: var(--tz); border-radius: 3px; }
+    .hidden { display: none !important; }
+
+    /* ── NAV ── */
+    #nav {
+      position: sticky; top: 0; z-index: 200;
+      height: var(--nav-h);
+      background: rgba(13,11,26,0.93);
+      backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+    }
+    .nav-logo { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: 0.06em; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link { padding: 7px 13px; border: none; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all 0.15s; }
+    .nav-link:hover, .nav-link.active { background: rgba(83,74,183,0.18); color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-btn { padding: 7px 16px; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); background: transparent; color: var(--text-dim); font-size: 13px; transition: all 0.15s; }
+    .nav-btn:hover { background: var(--card); color: var(--text); }
+    .nav-btn.primary { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+    .nav-btn.primary:hover { background: var(--tz-bright); }
+    .user-chip { display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; background: var(--card); border: 0.5px solid var(--border); border-radius: 99px; }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--tz-mid); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--tz-light); }
+    .user-name { font-size: 13px; color: var(--text); }
+    .nav-ham { display: none; padding: 8px 10px; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); background: transparent; color: var(--text-dim); font-size: 18px; line-height: 1; }
+    .nav-drawer { display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--deep); border-bottom: 0.5px solid var(--border); padding: 1rem 1.5rem; flex-direction: column; gap: 4px; z-index: 199; }
+    .nav-drawer.open { display: flex; }
+    @media (max-width: 768px) { .nav-links { display: none; } .nav-ham { display: block; } }
+
+    /* ── PAGE ── */
+    .page-header {
+      background: var(--deep);
+      border-bottom: 0.5px solid var(--border);
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+    }
+    .eyebrow { display: block; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--tz-bright); margin-bottom: 1rem; }
+    .page-header h1 { font-family: var(--font-display); font-size: clamp(36px,6vw,64px); font-weight: 400; color: var(--text); margin-bottom: 0.75rem; }
+    .page-header p { color: var(--text-dim); max-width: 500px; margin: 0 auto; font-size: 15px; line-height: 1.7; }
+
+    /* ── STUDIO BODY ── */
+    .studio-body { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+    /* ── GUEST LOCK ── */
+    .guest-lock {
+      background: var(--card);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 4rem 2rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .guest-lock-icon { font-size: 48px; margin-bottom: 1rem; }
+    .guest-lock h2 { font-family: var(--font-display); font-size: 28px; color: var(--text); font-weight: 400; margin-bottom: 0.75rem; }
+    .guest-lock p { color: var(--text-dim); font-size: 14px; max-width: 360px; margin: 0 auto 1.5rem; line-height: 1.7; }
+    .btn-primary { padding: 13px 28px; background: var(--tz-mid); color: var(--tz-light); border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover { background: var(--tz-bright); }
+
+    /* ── TOOL CARDS ── */
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 14px; margin-bottom: 1.5rem; }
+    .tool-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tool-card:hover { border-color: var(--tz-bright); background: var(--card-hover); }
+    .tool-card.open { border-color: var(--tz-mid); background: var(--card-hover); }
+    .tool-icon { font-size: 26px; margin-bottom: 0.75rem; display: block; }
+    .tool-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
+    .tool-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .tool-tag { display: inline-block; margin-top: 10px; font-size: 11px; padding: 3px 9px; border-radius: 99px; background: rgba(83,74,183,0.2); color: var(--tz-bright); }
+
+    /* ── PANELS ── */
+    .calc-panel {
+      background: var(--deep);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    .calc-panel.open { display: block; }
+    .panel-title { font-family: var(--font-display); font-size: 24px; color: var(--text); margin-bottom: 1.25rem; }
+    .field-label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; margin-top: 14px; }
+    .field-input { width: 100%; padding: 9px 12px; background: var(--card); border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body); font-size: 14px; outline: none; transition: border-color 0.15s; }
+    .field-input:focus { border-color: var(--tz-bright); }
+    select.field-input option { background: var(--deep); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
+
+    /* RESULTS */
+    .result-box { background: var(--card); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; }
+    .result-row { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+    .result-num { font-family: var(--font-display); font-size: 36px; color: var(--tz-bright); line-height: 1; }
+    .result-unit { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ANGLE ROWS */
+    .angle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 0.5px solid var(--border); font-size: 14px; }
+    .angle-row:last-child { border-bottom: none; }
+    .angle-name { color: var(--text-dim); }
+    .angle-val { font-weight: 500; color: var(--tz-bright); }
+
+    /* LAP STEPS */
+    .lap-step { display: flex; gap: 12px; padding: 11px 0; border-bottom: 0.5px solid var(--border); }
+    .lap-step:last-child { border-bottom: none; }
+    .lap-num { font-size: 11px; color: var(--text-muted); width: 18px; flex-shrink: 0; padding-top: 3px; }
+    .lap-name { font-size: 14px; font-weight: 500; color: var(--text); }
+    .lap-detail { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+    /* CALLOUTS */
+    .callout-warn { background: var(--warn-bg); border: 0.5px solid rgba(239,159,39,0.35); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--warn-text); margin-top: 1rem; display: flex; gap: 8px; }
+    .callout-tip  { background: rgba(83,74,183,0.18); border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--tz-light); margin-top: 1rem; }
+
+    /* ── AUTH MODAL ── */
+    .overlay { position: fixed; inset: 0; background: rgba(8,6,20,0.9); z-index: 500; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .overlay.open { display: flex; }
+    .modal-box { background: var(--deep); border: 0.5px solid var(--border-light); border-radius: var(--radius); padding: 2.25rem; width: 100%; max-width: 400px; }
+    .modal-close-btn { float: right; background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; margin: -0.5rem -0.5rem 0 0; line-height: 1; }
+    .modal-close-btn:hover { color: var(--text); }
+    .modal-logo-txt { font-family: var(--font-display); font-size: 26px; color: var(--text); text-align: center; margin-bottom: 0.4rem; }
+    .modal-logo-sub { font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 1.75rem; }
+    .auth-tabs { display: flex; gap: 4px; background: var(--card); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 1.25rem; }
+    .auth-tab { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-muted); font-size: 13px; cursor: pointer; border-radius: 7px; transition: all 0.15s; }
+    .auth-tab.active { background: var(--tz-mid); color: var(--tz-light); }
+    .auth-field-label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; margin-top: 12px; }
+    .auth-field-input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); color: var(--text); font-size: 14px; font-family: var(--font-body); outline: none; transition: border-color 0.15s; }
+    .auth-field-input:focus { border-color: var(--tz-bright); }
+    .auth-field-input::placeholder { color: var(--text-muted); }
+    .auth-submit { width: 100%; margin-top: 14px; padding: 12px; background: var(--tz-mid); color: var(--tz-light); border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .auth-submit:hover { background: var(--tz-bright); }
+    .auth-err { display: none; background: rgba(226,75,74,0.15); border: 0.5px solid rgba(226,75,74,0.4); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px; color: #F09595; margin-bottom: 10px; }
+    .auth-err.show { display: block; }
+
+    /* ── TOAST ── */
+    #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--tz-mid); color: var(--tz-light); padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } .studio-body { padding: 1rem; } }
+
+    .mode-toggle { padding:7px 10px; border:0.5px solid var(--border-light); border-radius:var(--radius-sm); background:transparent; color:var(--text-dim); font-size:16px; cursor:pointer; transition:all 0.15s; line-height:1; }
+    .mode-toggle:hover { background:var(--card); color:var(--text); }
+    body.light { --space:#F0EFF8; --deep:#E8E6F5; --tz-mid:#534AB7; --tz-bright:#3C3489; --tz-light:#3C3489; --text:#1A1640; --text-dim:#3C3489; --text-muted:#7F77DD; --border:#C8C4E8; --border-light:#AFA9EC; --card:#E0DEFA; --card-hover:#D0CCF5; --warn-bg:#FFF4E0; --warn-text:#8B5E00; }
+    body.light #nav { background:rgba(240,239,248,0.93); border-bottom-color:#C8C4E8; }
+    body.light .nav-drawer { background:#E8E6F5; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <div class="nav-logo" onclick="location.href='../index.html'">
+    <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+      <polygon points="14,2 26,10 22,26 6,26 2,10" fill="none" stroke="#7F77DD" stroke-width="1"/>
+      <polygon points="14,2 26,10 14,8" fill="rgba(127,119,221,0.35)"/>
+      <polygon points="14,8 26,10 22,26 6,26 2,10" fill="rgba(60,52,137,0.55)"/>
+    </svg>
+    Galaxy Gems
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+    <button class="nav-link" onclick="location.href='library.html'">Stone library</button>
+    <button class="nav-link active">Studio</button>
+    <button class="nav-link" onclick="location.href='community.html'">Community</button>
+    <button class="nav-link" onclick="location.href='learn.html'">Learn</button>
+    <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+  </div>
+  <div class="nav-right">
+    <div id="guestNav" style="display:flex;gap:8px;">
+      <button class="nav-btn" onclick="openAuth('login')">Sign in</button>
+      <button class="nav-btn primary" onclick="openAuth('signup')">Join free</button>
+    </div>
+    <div id="userNav" class="hidden" style="display:flex;align-items:center;gap:8px;">
+      <div class="user-chip">
+        <div class="user-avatar" id="avatarInitials">GG</div>
+        <span class="user-name" id="navUserName">Faceter</span>
+      </div>
+      <button class="nav-btn" onclick="logout()">Sign out</button>
+    </div>
+   <button class="mode-toggle" id="modeToggle" onclick="toggleMode()" title="Toggle light/dark mode">🌙</button>
+    <button class="mode-toggle" id="modeToggle" onclick="toggleMode()" title="Toggle light/dark mode">🌙</button>
+    <button class="nav-ham" onclick="document.getElementById('navDrawer').classList.toggle('open')">☰</button>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+  <button class="nav-link" onclick="location.href='library.html'">Stone library</button>
+  <button class="nav-link active">Studio</button>
+  <button class="nav-link" onclick="location.href='community.html'">Community</button>
+  <button class="nav-link" onclick="location.href='learn.html'">Learn</button>
+  <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+</div>
+
+<!-- ── HEADER ── -->
+<div class="page-header">
+  <span class="eyebrow">Studio tools</span>
+  <h1>Your virtual bench.</h1>
+  <p id="studioSubtitle">Sign in to unlock the full studio — carat calculator, facet angle reference, and lap sequence planner.</p>
+</div>
+
+<!-- ── BODY ── -->
+<div class="studio-body">
+
+  <!-- GUEST LOCK -->
+  <div class="guest-lock" id="guestLock">
+    <div class="guest-lock-icon">🔒</div>
+    <h2>Studio tools for members</h2>
+    <p>Join free to access the carat weight calculator, facet angle database, lap sequence planner, and your personal cutting journal.</p>
+    <button class="btn-primary" onclick="openAuth('signup')">Join Galaxy Gems free</button>
+  </div>
+
+  <!-- MEMBER STUDIO -->
+  <div id="memberStudio" class="hidden">
+
+    <!-- TOOL CARDS -->
+    <div class="tools-grid">
+      <div class="tool-card" id="card-weight" onclick="togglePanel('weight')">
+        <span class="tool-icon">⚖️</span>
+        <div class="tool-title">Carat weight</div>
+        <p class="tool-desc">Enter dimensions and stone type — get estimated carat weight, grams, and volume instantly.</p>
+        <span class="tool-tag">Click to open</span>
+      </div>
+      <div class="tool-card" id="card-angles" onclick="togglePanel('angles')">
+        <span class="tool-icon">📐</span>
+        <div class="tool-title">Facet angles</div>
+        <p class="tool-desc">Optimal crown and pavilion angles for your stones, with critical angle and cleavage warnings.</p>
+        <span class="tool-tag">Click to open</span>
+      </div>
+      <div class="tool-card" id="card-laps" onclick="togglePanel('laps')">
+        <span class="tool-icon">🔄</span>
+        <div class="tool-title">Lap sequence</div>
+        <p class="tool-desc">Step-by-step lap order from rough to mirror finish, tailored to each hardness group.</p>
+        <span class="tool-tag">Click to open</span>
+      </div>
+    </div>
+
+    <!-- ── CARAT WEIGHT CALCULATOR ── -->
+    <div class="calc-panel" id="panel-weight">
+      <div class="panel-title">⚖️ Carat weight calculator</div>
+
+      <label class="field-label">Stone type</label>
+      <select class="field-input" id="cStone" onchange="calcWeight()">
+        <option value="sapphire">Lab sapphire — SG 3.99</option>
+        <option value="ruby">Lab ruby — SG 3.99</option>
+        <option value="topaz">Natural topaz, blue — SG 3.53</option>
+        <option value="tanzanite">Natural tanzanite — SG 3.35</option>
+        <option value="diamond">Diamond — SG 3.52</option>
+        <option value="emerald">Emerald — SG 2.72</option>
+        <option value="amethyst">Amethyst / quartz — SG 2.65</option>
+        <option value="spinel">Spinel — SG 3.60</option>
+        <option value="garnet">Garnet — SG 3.80</option>
+        <option value="zircon">Zircon — SG 4.65</option>
+      </select>
+
+      <label class="field-label">Cut style</label>
+      <select class="field-input" id="cCut" onchange="calcWeight()">
+        <option value="0.0061">Round brilliant</option>
+        <option value="0.0062">Oval</option>
+        <option value="0.0080">Cushion / square</option>
+        <option value="0.0092">Emerald / octagon</option>
+        <option value="0.0058">Pear / teardrop</option>
+        <option value="0.0070">Marquise</option>
+        <option value="0.0075">Heart</option>
+        <option value="0.0065">Trillion</option>
+      </select>
+
+      <hr class="divider">
+
+      <div class="field-row">
+        <div>
+          <label class="field-label">Length (mm)</label>
+          <input class="field-input" type="number" id="cL" value="7" step="0.1" min="1" oninput="calcWeight()">
+        </div>
+        <div>
+          <label class="field-label">Width (mm)</label>
+          <input class="field-input" type="number" id="cW" value="7" step="0.1" min="1" oninput="calcWeight()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <label class="field-label">Depth (mm)</label>
+          <input class="field-input" type="number" id="cD" value="4.2" step="0.1" min="1" oninput="calcWeight()">
+        </div>
+        <div>
+          <label class="field-label">Depth % of width</label>
+          <input class="field-input" type="number" id="cPct" value="60" step="1" oninput="calcFromPct()">
+        </div>
+      </div>
+
+      <div class="result-box">
+        <div class="result-row">
+          <div><div class="result-num" id="rCt">—</div><div class="result-unit">carats</div></div>
+          <div><div class="result-num" id="rGm">—</div><div class="result-unit">grams</div></div>
+          <div><div class="result-num" id="rVol">—</div><div class="result-unit">mm³</div></div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">Formula: L × W × D × SG × shape factor. Always confirm on a calibrated scale before setting.</p>
+    </div>
+
+    <!-- ── FACET ANGLES ── -->
+    <div class="calc-panel" id="panel-angles">
+      <div class="panel-title">📐 Facet angle reference</div>
+      <label class="field-label">Select stone</label>
+      <select class="field-input" id="aStone" onchange="showAngles()">
+        <option value="corundum">Lab sapphire / ruby — corundum</option>
+        <option value="topaz">Natural topaz — blue</option>
+        <option value="tanzanite">Natural tanzanite</option>
+        <option value="diamond">Diamond</option>
+        <option value="quartz">Quartz / amethyst</option>
+        <option value="spinel">Spinel</option>
+        <option value="garnet">Garnet</option>
+        <option value="zircon">Zircon</option>
+      </select>
+      <div id="anglesOutput" style="margin-top:1.25rem;"></div>
+    </div>
+
+    <!-- ── LAP SEQUENCE ── -->
+    <div class="calc-panel" id="panel-laps">
+      <div class="panel-title">🔄 Lap sequence planner</div>
+      <label class="field-label">Select stone</label>
+      <select class="field-input" id="lStone" onchange="showLaps()">
+        <option value="corundum">Lab sapphire / ruby — Mohs 9</option>
+        <option value="topaz">Natural topaz, blue — Mohs 8</option>
+        <option value="tanzanite">Natural tanzanite — Mohs 6.5–7</option>
+        <option value="quartz">Quartz / amethyst — Mohs 7</option>
+        <option value="spinel">Spinel — Mohs 8</option>
+        <option value="garnet">Garnet — Mohs 7–7.5</option>
+      </select>
+      <div id="lapsOutput" style="margin-top:1.25rem;"></div>
+    </div>
+
+  </div><!-- /memberStudio -->
+</div><!-- /studio-body -->
+
+<!-- ── AUTH MODAL ── -->
+<div class="overlay" id="authOverlay" onclick="if(event.target.id==='authOverlay')closeAuthDirect()">
+  <div class="modal-box">
+    <button class="modal-close-btn" onclick="closeAuthDirect()">×</button>
+    <div class="modal-logo-txt">Galaxy Gems</div>
+    <div class="modal-logo-sub">Your personal faceting studio</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="loginTab" onclick="switchAuth('login')">Sign in</button>
+      <button class="auth-tab" id="signupTab" onclick="switchAuth('signup')">Join free</button>
+    </div>
+    <div class="auth-err" id="authErr"></div>
+    <div id="loginForm">
+      <label class="auth-field-label">Email</label>
+      <input class="auth-field-input" type="email" id="loginEmail" placeholder="you@example.com">
+      <label class="auth-field-label">Password</label>
+      <input class="auth-field-input" type="password" id="loginPass" placeholder="••••••••">
+      <button class="auth-submit" onclick="doLogin()">Sign in</button>
+      <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px;">Demo: any email · password is <strong style="color:var(--tz-bright);">gems</strong></p>
+    </div>
+    <div id="signupForm" class="hidden">
+      <label class="auth-field-label">Your name</label>
+      <input class="auth-field-input" type="text" id="signupName" placeholder="Zellis">
+      <label class="auth-field-label">Email</label>
+      <input class="auth-field-input" type="email" id="signupEmail" placeholder="you@example.com">
+      <label class="auth-field-label">Password</label>
+      <input class="auth-field-input" type="password" id="signupPass" placeholder="Choose a password">
+      <button class="auth-submit" onclick="doSignup()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ── DATA ── */
+const SG = {sapphire:3.99,ruby:3.99,topaz:3.53,tanzanite:3.35,diamond:3.52,emerald:2.72,amethyst:2.65,spinel:3.60,garnet:3.80,zircon:4.65};
+
+const ANGLES = {
+  corundum:{ri:'1.762',cr:'34.6°',warn:false,note:'No cleavage. Sintered laps required. Focus on consistent pre-polish.',rows:[['Crown main','42°–43°'],['Crown break','35°–38°'],['Pavilion main','43°–44°'],['Pavilion break','41°–42°'],['Table %','55%–60%'],['Depth %','60%–65%']]},
+  topaz:   {ri:'1.619',cr:'38.1°',warn:true, note:'Perfect basal cleavage. Orient cleavage parallel to table. Light pressure only.',rows:[['Crown main','40°–42°'],['Crown break','33°–36°'],['Pavilion main','40°–41°'],['Pavilion break','38°–40°'],['Table %','55%–60%'],['Depth %','60%–65%']]},
+  tanzanite:{ri:'1.692',cr:'36.3°',warn:true, note:'Perfect cleavage + trichroism. Orient C-axis perpendicular to table for blue-violet face-up.',rows:[['Crown main','41°–43°'],['Crown break','34°–37°'],['Pavilion main','41°–43°'],['Pavilion break','39°–41°'],['Table %','55%–58%'],['Depth %','62%–68%']]},
+  diamond: {ri:'2.417',cr:'24.4°',warn:false,note:'Hardest material. Diamond laps only. Standard brilliant cut optimized for 40.75° pavilion.',rows:[['Crown main','34°–35°'],['Crown break','25°–30°'],['Pavilion main','40.75°'],['Pavilion break','41°–42°'],['Table %','53%–57%'],['Depth %','59%–62%']]},
+  quartz:  {ri:'1.544',cr:'40.5°',warn:false,note:'No cleavage. Excellent beginner stone. Wide angle tolerance. Responds well to oxide polishes.',rows:[['Crown main','43°–45°'],['Crown break','36°–40°'],['Pavilion main','43°–45°'],['Pavilion break','40°–43°'],['Table %','56%–62%'],['Depth %','58%–64%']]},
+  spinel:  {ri:'1.718',cr:'35.2°',warn:false,note:'Isometric — no pleochroism, no orientation required. Easy cutting. No cleavage concerns.',rows:[['Crown main','42°–43°'],['Crown break','35°–38°'],['Pavilion main','42°–43°'],['Pavilion break','40°–42°'],['Table %','55%–60%'],['Depth %','60%–65%']]},
+  garnet:  {ri:'1.750',cr:'34.9°',warn:false,note:'Isometric — no orientation required. No cleavage. Great stone for learning precise facet meets.',rows:[['Crown main','42°–44°'],['Crown break','35°–38°'],['Pavilion main','42°–44°'],['Pavilion break','40°–42°'],['Table %','55%–60%'],['Depth %','60%–65%']]},
+  zircon:  {ri:'1.925',cr:'31.3°',warn:true, note:'High birefringence causes facet edge doubling. Orient optic axis carefully. Brittle — cut carefully.',rows:[['Crown main','38°–40°'],['Crown break','30°–34°'],['Pavilion main','39°–41°'],['Pavilion break','37°–40°'],['Table %','53%–58%'],['Depth %','58%–63%']]},
+};
+
+const LAPS = {
+  corundum:[['1','Sintered diamond — coarse','260–325 grit · rough shaping'],['2','Sintered diamond — medium','600 grit · refine geometry'],['3','Sintered diamond — fine','1200 grit · pre-pre-polish'],['4','Batt lap + 600 topper','Pre-polish · light pressure'],['5','1200 Lightning Lap','Fine pre-polish'],['6','Ultralap + 100k diamond dust','Final polish · very light pressure'],['7','Ultralap + 50k dust','Optional final buff to mirror']],
+  topaz:   [['1','Sintered diamond — medium','600 grit · careful shaping, light pressure'],['2','Sintered diamond — fine','1200 grit · avoid vibration'],['3','Batt lap + 360 topper','Pre-polish · very light'],['4','1200 Lightning Lap','Fine pre-polish'],['5','Ultralap + 50k diamond dust','Final polish · dedicated topaz lap only']],
+  tanzanite:[['1','Sintered diamond — medium','600 grit · no heavy passes, extreme care'],['2','Sintered diamond — fine','1200 grit · light passes only'],['3','Batt lap + 600 topper','Pre-polish · minimum pressure'],['4','1200 Lightning Lap','Fine pre-polish · check for cleavage steps'],['5','Ultralap + 50k diamond dust','Final polish · dedicated tanzanite lap']],
+  quartz:  [['1','Sintered diamond — medium','600 grit · shape freely'],['2','Sintered diamond — fine','1200 grit'],['3','Batt lap + 360 topper','Pre-polish'],['4','1200 Lightning Lap','Fine pre-polish'],['5','Ultralap + 50k dust','Final polish · cerium oxide works well']],
+  spinel:  [['1','Sintered diamond — medium','600 grit'],['2','Sintered diamond — fine','1200 grit'],['3','Batt lap + 600 topper','Pre-polish'],['4','1200 Lightning Lap','Fine pre-polish'],['5','Ultralap + 50k dust','Final polish']],
+  garnet:  [['1','Sintered diamond — medium','600 grit'],['2','Sintered diamond — fine','1200 grit'],['3','Batt lap + 600 topper','Pre-polish · alumina oxide works well'],['4','1200 Lightning Lap','Fine pre-polish'],['5','Ultralap + 50k dust','Final polish']],
+};
+
+/* ── CALCULATOR ── */
+function calcWeight(){
+  const sg = SG[document.getElementById('cStone').value] || 3.0;
+  const sf = parseFloat(document.getElementById('cCut').value);
+  const L  = parseFloat(document.getElementById('cL').value)  || 0;
+  const W  = parseFloat(document.getElementById('cW').value)  || 0;
+  const D  = parseFloat(document.getElementById('cD').value)  || 0;
+  if(!L||!W||!D) return;
+  const vol = L*W*D;
+  const wg  = vol*sg*sf;
+  const ct  = wg/0.2;
+  document.getElementById('rCt').textContent  = ct.toFixed(2);
+  document.getElementById('rGm').textContent  = wg.toFixed(3);
+  document.getElementById('rVol').textContent = vol.toFixed(1);
+  document.getElementById('cPct').value = ((D/W)*100).toFixed(0);
+}
+function calcFromPct(){
+  const W   = parseFloat(document.getElementById('cW').value) || 0;
+  const pct = parseFloat(document.getElementById('cPct').value) || 60;
+  document.getElementById('cD').value = (W*pct/100).toFixed(1);
+  calcWeight();
+}
+
+/* ── ANGLES ── */
+function showAngles(){
+  const d = ANGLES[document.getElementById('aStone').value];
+  let h = `<div style="display:flex;gap:24px;margin-bottom:14px;font-size:13px;flex-wrap:wrap;">
+    <span style="color:var(--text-muted);">RI: <strong style="color:var(--tz-bright);">${d.ri}</strong></span>
+    <span style="color:var(--text-muted);">Critical angle: <strong style="color:var(--tz-bright);">${d.cr}</strong></span>
+  </div>`;
+  d.rows.forEach(r => {
+    h += `<div class="angle-row"><span class="angle-name">${r[0]}</span><span class="angle-val">${r[1]}</span></div>`;
+  });
+  h += d.warn
+    ? `<div class="callout-warn"><span>⚠</span><span>${d.note}</span></div>`
+    : `<div class="callout-tip">💡 ${d.note}</div>`;
+  document.getElementById('anglesOutput').innerHTML = h;
+}
+
+/* ── LAPS ── */
+function showLaps(){
+  const key  = document.getElementById('lStone').value;
+  const rows = LAPS[key];
+  let h = rows.map(r => `
+    <div class="lap-step">
+      <span class="lap-num">${r[0]}</span>
+      <div>
+        <div class="lap-name">${r[1]}</div>
+        <div class="lap-detail">${r[2]}</div>
+      </div>
+    </div>`).join('');
+  if(key==='topaz'||key==='tanzanite'){
+    h += `<div class="callout-warn" style="margin-top:12px;"><span>⚠</span><span>Keep a dedicated polish lap per hardness group. Never cross-contaminate between corundum and softer stones.</span></div>`;
+  }
+  document.getElementById('lapsOutput').innerHTML = h;
+}
+
+/* ── TOGGLE PANELS ── */
+function togglePanel(id){
+  const panel = document.getElementById('panel-'+id);
+  const card  = document.getElementById('card-'+id);
+  const isOpen = panel.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('open'));
+  // Open if was closed
+  if(!isOpen){
+    panel.classList.add('open');
+    card.classList.add('open');
+    panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+    if(id==='angles') showAngles();
+    if(id==='laps')   showLaps();
+    if(id==='weight') calcWeight();
+  }
+}
+
+/* ── AUTH ── */
+let currentUser = JSON.parse(localStorage.getItem('gg_user')||'null');
+
+function openAuth(mode){
+  document.getElementById('authOverlay').classList.add('open');
+  switchAuth(mode||'login');
+}
+function closeAuthDirect(){
+  document.getElementById('authOverlay').classList.remove('open');
+  document.getElementById('authErr').classList.remove('show');
+}
+function switchAuth(mode){
+  document.getElementById('loginForm').classList.toggle('hidden', mode!=='login');
+  document.getElementById('signupForm').classList.toggle('hidden', mode!=='signup');
+  document.getElementById('loginTab').classList.toggle('active', mode==='login');
+  document.getElementById('signupTab').classList.toggle('active', mode==='signup');
+  document.getElementById('authErr').classList.remove('show');
+}
+function showErr(msg){ const e=document.getElementById('authErr'); e.textContent=msg; e.classList.add('show'); }
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass =document.getElementById('loginPass').value;
+  if(!email||!pass){ showErr('Please fill in all fields.'); return; }
+  if(pass!=='gems'){ showErr('Demo password is: gems'); return; }
+  const name=email.split('@')[0];
+  loginUser({name:name.charAt(0).toUpperCase()+name.slice(1), email});
+}
+function doSignup(){
+  const name =document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass =document.getElementById('signupPass').value;
+  if(!name||!email||!pass){ showErr('Please fill in all fields.'); return; }
+  loginUser({name, email});
+}
+function loginUser(user){
+  currentUser=user;
+  localStorage.setItem('gg_user', JSON.stringify(user));
+  closeAuthDirect();
+  applyAuth();
+  toast(`Welcome back, ${user.name}! ✦`);
+}
+function logout(){
+  currentUser=null;
+  localStorage.removeItem('gg_user');
+  applyAuth();
+  toast('Signed out. See you at the bench.');
+}
+function applyAuth(){
+  const in_ = !!currentUser;
+  document.getElementById('guestNav').classList.toggle('hidden', in_);
+  document.getElementById('userNav').classList.toggle('hidden', !in_);
+  document.getElementById('guestLock').classList.toggle('hidden', in_);
+  document.getElementById('memberStudio').classList.toggle('hidden', !in_);
+  if(in_){
+    document.getElementById('navUserName').textContent    = currentUser.name;
+    document.getElementById('avatarInitials').textContent = currentUser.name.slice(0,2).toUpperCase();
+    document.getElementById('studioSubtitle').textContent = `Welcome back, ${currentUser.name}. Your full studio is ready.`;
+  }
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function toggleMode(){
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('gg_mode', isLight ? 'light' : 'dark');
+  document.getElementById('modeToggle').textContent = isLight ? '🌑' : '🌙';
+}
+function applyMode(){
+  const saved = localStorage.getItem('gg_mode');
+  if(saved === 'light'){
+    document.body.classList.add('light');
+    const btn = document.getElementById('modeToggle');
+    if(btn) btn.textContent = '🌑';
+  }
+}
+
+/* ── INIT ── */
+applyMode();
+applyAuth();
+</script>
+</body>
+</html>

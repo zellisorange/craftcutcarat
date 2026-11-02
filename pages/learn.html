@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn — Galaxy Gems</title>
+  <meta name="theme-color" content="#3C3489">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    :root {
+      --space:        #0D0B1A;
+      --deep:         #12103A;
+      --tz:           #3C3489;
+      --tz-mid:       #534AB7;
+      --tz-bright:    #7F77DD;
+      --tz-light:     #EEEDFE;
+      --gold:         #EF9F27;
+      --gold-dim:     #FAC775;
+      --text:         #F0EFF8;
+      --text-dim:     #AFA9EC;
+      --text-muted:   #6B6499;
+      --border:       #2A2460;
+      --border-light: #3D367A;
+      --card:         #16124A;
+      --card-hover:   #1E1960;
+      --warn-bg:      #2A1F0A;
+      --warn-text:    #FAC775;
+      --radius:       12px;
+      --radius-sm:    8px;
+      --nav-h:        60px;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Inter', sans-serif;
+    }
+    body { background: var(--space); color: var(--text); font-family: var(--font-body); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+    .hidden { display: none !important; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      height: var(--nav-h);
+      background: rgba(13,11,26,0.93);
+      backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+    }
+    .nav-logo { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: 0.06em; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link { padding: 7px 13px; border: none; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all 0.15s; font-family: var(--font-body); }
+    .nav-link:hover, .nav-link.active { background: rgba(83,74,183,0.18); color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .mode-toggle { padding: 7px 10px; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); background: transparent; font-size: 16px; cursor: pointer; line-height: 1; }
+    .nav-ham { display: none; padding: 8px 10px; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); background: transparent; color: var(--text-dim); font-size: 18px; line-height: 1; cursor: pointer; }
+    .nav-drawer { display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--deep); border-bottom: 0.5px solid var(--border); padding: 1rem 1.5rem; flex-direction: column; gap: 4px; z-index: 199; }
+    .nav-drawer.open { display: flex; }
+    @media (max-width: 768px) { .nav-links { display: none; } .nav-ham { display: block; } }
+
+    /* ── HERO ── */
+    .learn-hero {
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      border-bottom: 0.5px solid var(--border);
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(83,74,183,0.15) 0%, transparent 70%);
+    }
+    .eyebrow { display: block; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--tz-bright); margin-bottom: 1rem; }
+    .learn-hero h1 { font-family: var(--font-display); font-size: clamp(42px,7vw,80px); font-weight: 400; color: var(--text); line-height: 1.0; margin-bottom: 1rem; }
+    .learn-hero h1 em { font-style: italic; color: var(--tz-bright); }
+    .learn-hero p { color: var(--text-dim); max-width: 520px; margin: 0 auto 2rem; font-size: 15px; line-height: 1.7; }
+
+    /* ── LESSON NAV TABS ── */
+    .lesson-tabs {
+      position: sticky; top: var(--nav-h); z-index: 100;
+      background: rgba(13,11,26,0.96); backdrop-filter: blur(12px);
+      border-bottom: 0.5px solid var(--border);
+      padding: 0 2rem;
+      display: flex; gap: 0; overflow-x: auto;
+    }
+    .lesson-tab {
+      padding: 14px 18px;
+      border: none; border-bottom: 2px solid transparent;
+      background: transparent; color: var(--text-muted);
+      font-size: 13px; cursor: pointer; white-space: nowrap;
+      transition: all 0.15s; font-family: var(--font-body);
+    }
+    .lesson-tab:hover { color: var(--text); }
+    .lesson-tab.active { color: var(--tz-bright); border-bottom-color: var(--tz-bright); }
+
+    /* ── MAIN LAYOUT ── */
+    .learn-body { max-width: 1100px; margin: 0 auto; padding: 0 2rem 5rem; }
+
+    /* ── LESSON PANELS ── */
+    .lesson-panel { display: none; padding-top: 3rem; }
+    .lesson-panel.active { display: block; }
+
+    /* ── SECTION TITLES ── */
+    .lesson-title { font-family: var(--font-display); font-size: clamp(32px,5vw,52px); font-weight: 400; color: var(--text); margin-bottom: 0.5rem; line-height: 1.1; }
+    .lesson-title em { font-style: italic; color: var(--tz-bright); }
+    .lesson-intro { font-size: 14px; color: var(--text-dim); max-width: 640px; line-height: 1.75; margin-bottom: 2.5rem; }
+
+    /* ── TOOL CARDS ── */
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 3rem; }
+    .tool-card { background: var(--card); padding: 1.75rem 1.5rem; transition: background 0.2s; }
+    .tool-card:hover { background: var(--card-hover); }
+    .tool-icon { font-size: 28px; margin-bottom: 1rem; display: block; }
+    .tool-name { font-family: var(--font-display); font-size: 22px; color: var(--text); margin-bottom: 0.4rem; }
+    .tool-desc { font-size: 13px; color: var(--text-dim); line-height: 1.65; }
+    .tool-tip { margin-top: 0.75rem; padding: 8px 12px; background: rgba(83,74,183,0.12); border-left: 2px solid var(--tz-bright); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12px; color: var(--tz-light); line-height: 1.55; }
+
+    /* ── STONE ROWS (cleavage, fake/real) ── */
+    .stone-lessons { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 3rem; }
+    .stone-lesson-row { background: var(--card); transition: background 0.2s; cursor: pointer; }
+    .stone-lesson-row:hover { background: var(--card-hover); }
+    .stone-lesson-header { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 1rem; padding: 1.1rem 1.5rem; }
+    .stone-gem-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .stone-lesson-name { font-family: var(--font-display); font-size: 20px; color: var(--text); }
+    .stone-lesson-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .stone-lesson-arrow { color: var(--text-muted); font-size: 16px; transition: transform 0.2s; }
+    .stone-lesson-row.open .stone-lesson-arrow { transform: rotate(90deg); }
+    .stone-lesson-body { display: none; padding: 0 1.5rem 1.5rem; border-top: 0.5px solid var(--border); }
+    .stone-lesson-row.open .stone-lesson-body { display: block; }
+
+    /* ── STEP LIST ── */
+    .step-list { display: flex; flex-direction: column; gap: 10px; margin-top: 1rem; }
+    .step { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: flex-start; }
+    .step-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(83,74,183,0.25); border: 0.5px solid var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--tz-bright); font-weight: 500; flex-shrink: 0; margin-top: 2px; }
+    .step-body { font-size: 13px; color: var(--text-dim); line-height: 1.65; padding-top: 6px; }
+    .step-body strong { color: var(--text); }
+
+    /* ── CALLOUT BOXES ── */
+    .callout { border-radius: var(--radius-sm); padding: 1rem 1.25rem; font-size: 13px; line-height: 1.65; margin-top: 1rem; }
+    .callout.warn { background: var(--warn-bg); border: 0.5px solid rgba(239,159,39,0.35); color: var(--warn-text); }
+    .callout.info { background: rgba(83,74,183,0.12); border: 0.5px solid var(--border-light); color: var(--tz-light); }
+    .callout.gold { background: rgba(239,159,39,0.08); border: 0.5px solid rgba(239,159,39,0.3); color: var(--gold-dim); }
+    .callout strong { color: inherit; font-weight: 600; }
+
+    /* ── COMPARISON TABLE ── */
+    .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; border-radius: var(--radius); overflow: hidden; border: 0.5px solid var(--border); }
+    .compare-table th { background: var(--card); padding: 10px 16px; text-align: left; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border-bottom: 0.5px solid var(--border); }
+    .compare-table td { padding: 10px 16px; font-size: 13px; color: var(--text-dim); border-bottom: 0.5px solid var(--border); vertical-align: top; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: var(--card); color: var(--text); }
+    .compare-table td:first-child { font-family: var(--font-display); font-size: 16px; color: var(--text); }
+    .tag-real { display: inline-block; padding: 2px 8px; border-radius: 99px; background: rgba(29,158,117,0.15); color: #5DCAA5; font-size: 11px; }
+    .tag-lab  { display: inline-block; padding: 2px 8px; border-radius: 99px; background: rgba(83,74,183,0.2); color: var(--tz-bright); font-size: 11px; }
+    .tag-fake { display: inline-block; padding: 2px 8px; border-radius: 99px; background: rgba(226,75,74,0.15); color: #F09595; font-size: 11px; }
+
+    /* ── DIVIDER ── */
+    hr.div { border: none; border-top: 0.5px solid var(--border); margin: 3rem 0; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 0.5px solid var(--border); padding: 2.5rem 2rem; text-align: center; }
+    .footer-logo { font-family: var(--font-display); font-size: 26px; color: var(--text-muted); letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+    .footer-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 1.25rem; }
+    .footer-links { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+    .footer-link { padding: 6px 12px; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--text-muted); font-size: 12px; cursor: pointer; transition: color 0.15s; font-family: var(--font-body); }
+    .footer-link:hover { color: var(--tz-bright); }
+
+    /* ── TOAST ── */
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--card); border: 0.5px solid var(--border-light); border-radius: var(--radius); padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 999; white-space: nowrap; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    body.light-mode {
+      --space: #F0EFF8; --deep: #E8E6F5; --tz-bright: #534AB7; --text: #1A1640;
+      --text-dim: #3D367A; --text-muted: #7F77DD; --border: #C9C5F0;
+      --border-light: #B0ABDF; --card: #EEEDFE; --card-hover: #E0DEFA;
+    }
+    body.light-mode nav { background: rgba(240,239,248,0.93); }
+    body.light-mode .lesson-tabs { background: rgba(240,239,248,0.96); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="location.href='../index.html'">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="rgba(127,119,221,0.35)" stroke-width="0.5" fill="none"/>
+      <polygon points="14,6 22,10 22,18 14,22 6,18 6,10" fill="rgba(83,74,183,0.3)"/>
+      <polygon points="14,8 26,10 22,26 6,26 2,10" fill="rgba(60,52,137,0.55)"/>
+    </svg>
+    Galaxy Gems
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+    <button class="nav-link" onclick="location.href='library.html'">Stone library</button>
+    <button class="nav-link" onclick="location.href='studio.html'">Studio</button>
+    <button class="nav-link" onclick="location.href='community.html'">Community</button>
+    <button class="nav-link active">Learn</button>
+    <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+    <button class="nav-link" onclick="location.href='beginner-book.html'">📖 Beginner Book</button>
+  </div>
+  <div class="nav-right">
+    <button class="mode-toggle" id="modeToggle" onclick="toggleMode()">🌙</button>
+    <button class="nav-ham" onclick="document.getElementById('navDrawer').classList.toggle('open')">☰</button>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+  <button class="nav-link" onclick="location.href='library.html'">Stone library</button>
+  <button class="nav-link" onclick="location.href='studio.html'">Studio</button>
+  <button class="nav-link" onclick="location.href='community.html'">Community</button>
+  <button class="nav-link active">Learn</button>
+  <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+  <button class="nav-link" onclick="location.href='beginner-book.html'">📖 Beginner Book</button>
+</div>
+
+<!-- HERO -->
+<div class="learn-hero">
+  <span class="eyebrow">Galaxy Gems · Learning Centre</span>
+  <h1>Know your stone.<br><em>Stoke the fire.</em></h1>
+  <p>Deep lessons on cleavage identification, gemological testing, spotting fakes, telling lab-grown from natural, and the tools every serious faceter needs to understand.</p>
+</div>
+
+<!-- LESSON TABS -->
+<div class="lesson-tabs">
+  <button class="lesson-tab active" onclick="showLesson('tools')">🔬 Testing tools</button>
+  <button class="lesson-tab" onclick="showLesson('cleavage')">⚠ Finding cleavage</button>
+  <button class="lesson-tab" onclick="showLesson('realvsfake')">💎 Real vs fake</button>
+  <button class="lesson-tab" onclick="showLesson('labvsnatural')">🔭 Lab vs natural</button>
+  <button class="lesson-tab" onclick="showLesson('dichroscope')">🎨 Dichroscope & pleochroism</button>
+  <button class="lesson-tab" onclick="showLesson('uv')">🔦 UV fluorescence</button>
+    <button class="lesson-tab" onclick="showLesson('inclusions')">🔍 Reading inclusions</button>
+  <button class="lesson-tab" onclick="showLesson('preform')">✂ Preform sizing</button>
+</div>
+
+<div class="learn-body">
+
+<!-- ═══════════════════════════════════
+     PANEL 1 — TESTING TOOLS
+═══════════════════════════════════ -->
+<div class="lesson-panel active" id="panel-tools">
+  <h2 class="lesson-title">The gemologist's <em>toolkit</em></h2>
+  <p class="lesson-intro">Before you touch a stone to a lap, you need to know what it is and how it behaves. These are the essential tools every serious faceter should own and understand. Each one reveals something different — together they give you the full picture.</p>
+
+  <div class="tool-grid">
+    <div class="tool-card">
+      <span class="tool-icon">🔬</span>
+      <div class="tool-name">10× Loupe</div>
+      <div class="tool-desc">The most fundamental tool in gemology. A quality 10× loupe reveals inclusions, cleavage planes, surface features, naturals, polishing marks, and fractures invisible to the naked eye. Use in good lighting — ideally a single bright directional source.</div>
+      <div class="tool-tip">💡 Hold the loupe close to your eye and bring the stone to it, not the other way around. Triplet loupes correct for distortion and color fringing.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🎨</span>
+      <div class="tool-name">Dichroscope</div>
+      <div class="tool-desc">Splits light passing through a stone into two rays. When you look through it at a pleochroic stone you see two different colors side by side — or two shades of the same color. This reveals whether a stone is singly or doubly refractive, and which axes show the best color for orientation.</div>
+      <div class="tool-tip">💡 Essential for tanzanite, sapphire, ruby, tourmaline, and iolite. Rotate the dichroscope while observing — the two squares change as you rotate.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🔦</span>
+      <div class="tool-name">UV Lamp (longwave & shortwave)</div>
+      <div class="tool-desc">Ultraviolet light causes many gems to fluoresce — glow in colors they don't show under white light. The reaction (or lack of it) is a powerful identification tool. Longwave (365nm) is safer and more commonly used. Shortwave (254nm) is more diagnostic but requires eye protection.</div>
+      <div class="tool-tip">💡 Always test in a darkened room. Both longwave and shortwave reactions together give the most information.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">💧</span>
+      <div class="tool-name">Cedarwood oil & glycerin</div>
+      <div class="tool-desc">Immersion liquids used with a loupe or microscope to eliminate surface reflections and see deep inside a stone. Cedarwood oil (RI ~1.51) is the professional standard for most stones. Glycerin (RI ~1.47) is excellent for corundum. Fill a small glass with the liquid and submerge the stone.</div>
+      <div class="tool-tip">💡 Cleavage planes, fractures, inclusions, and growth patterns become dramatically clearer under immersion. Essential for tanzanite orientation.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">💡</span>
+      <div class="tool-name">Raking light</div>
+      <div class="tool-desc">Not a tool you buy — a technique. Hold the stone close to a single light source (a penlight works perfectly) and tilt it so light rakes across the surface at a very low angle. This reveals surface features, cleavage steps, growth hillocks, and damage invisible under direct lighting.</div>
+      <div class="tool-tip">💡 Combine with a 10× loupe. This is how you find subtle cleavage planes on tanzanite and topaz before dopping.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">📏</span>
+      <div class="tool-name">Refractometer</div>
+      <div class="tool-desc">Measures the refractive index of a stone by observing how light bends at a critical angle. Place the stone face-down on the hemicylinder with contact liquid and read the shadow edge on the scale. One of the most definitive identification tools available.</div>
+      <div class="tool-tip">💡 Requires a flat polished surface to work. Monobromonaphthalene contact liquid is standard. Reads RI 1.35–1.81 on most models.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">⚖️</span>
+      <div class="tool-name">Hydrostatic scale</div>
+      <div class="tool-desc">Measures specific gravity (SG) — the density of a stone relative to water. Weigh the stone dry, then weigh it submerged. SG = dry weight ÷ (dry weight − wet weight). A powerful identifier because SG is constant for each mineral species regardless of color or origin.</div>
+      <div class="tool-tip">💡 Works on rough, cabochons, and faceted stones. Distinguishes between stones of similar appearance — garnet vs ruby, for example.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🧲</span>
+      <div class="tool-name">Strong neodymium magnet</div>
+      <div class="tool-desc">Some gems contain iron and are weakly attracted to a strong magnet. Almandine garnet, some sapphires, and certain synthetic stones react measurably. Not a standalone identifier but a useful supplemental test — especially for distinguishing iron-rich garnets from rubies.</div>
+      <div class="tool-tip">💡 Use a rare earth magnet suspended on a thread or in a straw for a sensitive test. A stone that deflects toward the magnet contains iron.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 2 — FINDING CLEAVAGE
+═══════════════════════════════════ -->
+<div class="lesson-panel" id="panel-cleavage">
+  <h2 class="lesson-title">Finding <em>cleavage</em></h2>
+  <p class="lesson-intro">Cleavage is the tendency of a crystal to break along flat planes defined by its atomic structure. Knowing where cleavage planes run before you dop a stone is not optional — it is the difference between a finished gem and a pile of rubble. Here's how to find it in every major stone type.</p>
+
+  <div class="callout warn" style="margin-bottom:2rem;">
+    <strong>⚠ Always identify cleavage planes before dopping.</strong> Once a stone is on a dop stick, changing orientation is risky and difficult. Invest 10 minutes with a loupe and immersion liquid before committing.
+  </div>
+
+  <div class="stone-lessons" id="cleavageList">
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(55,138,221,0.2);">💎</div>
+        <div><div class="stone-lesson-name">Tanzanite</div><div class="stone-lesson-sub">Perfect cleavage · one direction · highest risk in your collection</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Immersion viewing:</strong> Place the rough in a small dish of cedarwood oil. Under a 10× loupe in bright light, look for flat, mirror-like internal planes that catch the light differently from random fractures. Cleavage planes are flat and regular — fractures are curved and irregular (conchoidal).</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Raking light:</strong> Hold the rough close to a penlight and tilt slowly. Cleavage planes will flash as a single flat reflection as you rotate. Repeat from multiple angles to establish the plane orientation.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Surface steps:</strong> On the exterior of rough tanzanite, look for flat stepped surfaces — like tiny staircases. These are natural cleavage faces and tell you exactly which direction the planes run.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Orient cleavage parallel to the table.</strong> When you dop, position the stone so the cleavage plane runs horizontally — parallel to your lap. This means the lapping forces never act directly against the cleavage plane. Never orient with cleavage perpendicular to the table.</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Use light machine pressure throughout.</strong> Even correctly oriented tanzanite requires gentle touch. Use the lightest contact pressure your machine allows — especially during transfer.</div></div>
+        </div>
+        <div class="callout gold" style="margin-top:1rem;"><strong>🎨 Bonus:</strong> Tanzanite is trichroic — three colors along three axes. Under the dichroscope you will see blue-violet, red-purple, and yellow-brown. Orient the C-axis perpendicular to the table to show the prized blue-violet face-up.</div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(55,138,221,0.2);">💙</div>
+        <div><div class="stone-lesson-name">Blue topaz</div><div class="stone-lesson-sub">Perfect basal cleavage · one direction · must orient correctly</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Identify the basal plane:</strong> Topaz has perfect cleavage parallel to the base of its crystal. In rough, this often appears as a flat natural face — the stone may have already cleaved on this plane and you'll see a glassy flat surface.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Cedarwood oil immersion:</strong> Submerge in cedarwood oil under a loupe. The cleavage plane will appear as a perfectly flat internal mirror. You may see rainbow interference colors along it — a dead giveaway.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Orient cleavage parallel to table.</strong> Dop the stone so the cleavage plane is horizontal. The table facet and all subsequent facets will then be cut at an angle to the cleavage rather than parallel — reducing the risk of the plane opening during polishing.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Polish across, not along, the cleavage.</strong> When polishing facets that approach the cleavage direction, move the stone against the cleavage plane rather than along it. Polishing along the cleavage can cause the plane to open — pulling the surface rather than smoothing it.</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><strong>No thermal shock ever.</strong> Never use steam cleaning, ultrasonics, or rapid temperature changes on topaz. Thermal stress can cause spontaneous cleavage.</div></div>
+        </div>
+        <div class="callout warn" style="margin-top:1rem;"><strong>⚠ A sharp tap on any hard surface can cleave topaz instantly.</strong> Handle finished stones with extreme care and store separately in soft pouches.</div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(226,75,74,0.2);">❤️</div>
+        <div><div class="stone-lesson-name">Sapphire & Ruby (corundum)</div><div class="stone-lesson-sub">No true cleavage · parting planes to watch · safest of your stones</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>No true cleavage</strong> — corundum does not have a preferred cleavage plane. This makes it much safer than topaz or tanzanite. However it does have <strong>parting</strong> — a tendency to separate along twin planes in some crystals.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Check for twinning:</strong> Under immersion, look for straight internal planes that look similar to cleavage but are actually twin boundaries. These are called parting planes and can cause a stone to separate under mechanical stress.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Check for silk:</strong> Fine needle-like inclusions (rutile silk) are common in natural corundum. Under cedarwood oil immersion, they appear as fine crossing needles. These do not indicate cleavage risk but do indicate natural origin.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Orient for color:</strong> Sapphire and ruby are strongly dichroic. A dichroscope will show two different blue tones or two shades of red depending on your viewing axis. Orient the C-axis perpendicular to the table for the best color face-up in most cases.</div></div>
+        </div>
+        <div class="callout info" style="margin-top:1rem;"><strong>💡 Lab corundum</strong> (yours is lab-grown) typically has no silk, no parting planes, and no twin planes. It is essentially risk-free from a cleavage perspective — focus entirely on angle accuracy and lap sequence.</div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(83,74,183,0.2);">💜</div>
+        <div><div class="stone-lesson-name">Fluorite</div><div class="stone-lesson-sub">Perfect octahedral cleavage · four directions · advanced only</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Four perfect cleavage planes</strong> in octahedral directions. This means the stone wants to split in four different directions at once. Rough fluorite often shows all four as natural flat faces on the crystal.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Visual identification:</strong> The natural crystal form is an octahedron (two pyramids joined at the base). All eight faces of the octahedron are cleavage faces. You can often see iridescent films along cleavage surfaces — thin-film interference colors.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Step cuts recommended:</strong> Brilliant cuts create too many abrupt facet edges near cleavage planes. Step cuts (emerald, baguette) apply force more gradually and are far less likely to cause cleavage failure.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Extremely light pressure only.</strong> Never use the machine's weight arm on fluorite. Hand pressure only, and check the stone constantly for new stress lines.</div></div>
+        </div>
+        <div class="callout warn" style="margin-top:1rem;"><strong>⚠ Not recommended for beginners.</strong> Fluorite is a trophy cut for experienced faceters who understand cleavage management deeply.</div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(29,158,117,0.2);">💚</div>
+        <div><div class="stone-lesson-name">Emerald & aquamarine (beryl)</div><div class="stone-lesson-sub">Imperfect cleavage · inclusions are the bigger risk</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Imperfect cleavage:</strong> Beryl has cleavage but it is not as pronounced as topaz or tanzanite. The bigger risk in natural emerald is the jardin — the network of fractures, inclusions, and fissures that is characteristic of the species.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Inspect for fractures:</strong> Under cedarwood oil immersion, map any fractures reaching the surface before cutting. A surface-reaching fracture can open during polishing and destroy the stone.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>The emerald cut exists for a reason:</strong> The step-cut rectangular shape was invented specifically for emerald. It minimizes corner stress and reduces the number of facet junctions near fractures.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Aquamarine</strong> is a much cleaner stone — fewer inclusions, same imperfect cleavage. Orient the C-axis perpendicular to the table for the best blue face-up.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(244,192,209,0.3);">🌸</div>
+        <div><div class="stone-lesson-name">Kunzite & hiddenite (spodumene)</div><div class="stone-lesson-sub">Perfect cleavage · two directions · and color fades in UV</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Two perfect cleavage directions</strong> at ~87° to each other. This is harder to manage than a single plane — the two cleavages can interact under stress.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Identifying both planes:</strong> Under immersion, look for two sets of flat internal planes crossing each other at nearly right angles. One set typically runs along the crystal length, the other across it.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Step cuts only.</strong> Avoid brilliant cuts on spodumene. The corner junctions of brilliant facets create stress concentrations near the cleavage planes.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Color fades in sunlight.</strong> Kunzite's pink-violet color is photosensitive — prolonged UV exposure (including strong sunlight) causes fading. Never display in a sunny window.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 3 — REAL VS FAKE
+═══════════════════════════════════ -->
+<div class="lesson-panel" id="panel-realvsfake">
+  <h2 class="lesson-title">Real gem or <em>imitation?</em></h2>
+  <p class="lesson-intro">The gem trade has always had fakes, simulants, and imitations. Glass, synthetic cubic zirconia, and even plastic can look convincingly like expensive gems to the untrained eye. Here's what to look for — stone by stone and test by test.</p>
+
+  <div class="callout info" style="margin-bottom:2rem;">
+    <strong>Terminology matters:</strong> A <strong>fake</strong> is something that is not what it claims to be. A <strong>simulant</strong> is a different material that resembles the genuine stone. A <strong>synthetic</strong> is the same material grown in a lab — not a fake, but not natural. These are different things.
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Stone</th>
+        <th>Common fakes / simulants</th>
+        <th>How to tell</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Sapphire <span class="tag-real">natural</span></td>
+        <td>Blue glass, blue CZ, blue spinel, blue topaz, synthetic sapphire</td>
+        <td>Hardness scratch test (sapphire Mohs 9 — scratches glass easily). Under UV: natural sapphire fluoresces inert to weak red-orange (longwave). Strong blue-white fluorescence = synthetic. Dichroscope shows two distinct blues. RI 1.762 on refractometer.</td>
+      </tr>
+      <tr>
+        <td>Ruby <span class="tag-real">natural</span></td>
+        <td>Red glass, red garnet (almandine), red spinel, red tourmaline, synthetic ruby</td>
+        <td>UV test is critical: natural ruby shows strong red fluorescence under longwave UV — one of the strongest of any gem. Red glass shows no fluorescence. Red garnet is inert under UV and has different RI. Dichroscope shows strong pleochroism in ruby (red vs orange-red) — glass shows none.</td>
+      </tr>
+      <tr>
+        <td>Emerald <span class="tag-real">natural</span></td>
+        <td>Green glass, synthetic emerald, green tourmaline, green CZ, dyed quartz</td>
+        <td>Inclusions are the key — natural emerald always has a jardin (garden) of inclusions. A flawless "emerald" with no inclusions under 10× is almost certainly synthetic or glass. UV: natural Colombian emerald often fluoresces red. Synthetic Chatham emerald fluoresces stronger. Chelsea filter shows red for chromium emeralds.</td>
+      </tr>
+      <tr>
+        <td>Tanzanite <span class="tag-real">natural</span></td>
+        <td>Synthetic forsterite, blue glass, iolite, synthetic corundum (blue)</td>
+        <td>Dichroscope is definitive: tanzanite shows three distinct colors (trichroic) — blue-violet, red-purple, and yellow-brown. No simulant replicates this. RI 1.691–1.700. Strong pleochroism visible even to the naked eye by rotating the stone.</td>
+      </tr>
+      <tr>
+        <td>Diamond <span class="tag-real">natural</span></td>
+        <td>CZ, moissanite, white sapphire, white topaz, glass, synthetic diamond</td>
+        <td>Thermal conductivity test (diamond conducts heat rapidly — a diamond tester reads hot instantly). Moissanite is doubly refractive — facet edges appear doubled under 10× loupe. CZ has much higher SG (5.9 vs 3.52) — feels noticeably heavier. Natural diamond: mostly inert to longwave UV but may show blue fluorescence.</td>
+      </tr>
+      <tr>
+        <td>Amethyst <span class="tag-real">natural</span></td>
+        <td>Purple glass, synthetic amethyst, purple CZ, purple fluorite</td>
+        <td>Glass is singly refractive — no facet doubling under loupe. Amethyst is doubly refractive — facet edges slightly doubled. Natural amethyst often shows color zoning (uneven purple, sometimes with color phantoms). Glass is uniform. RI: amethyst 1.544–1.553; glass varies widely.</td>
+      </tr>
+      <tr>
+        <td>Topaz <span class="tag-real">natural</span></td>
+        <td>Blue glass, blue quartz, aquamarine, synthetic blue corundum</td>
+        <td>Blue topaz feels cold and dense (SG 3.53 vs quartz 2.65). Perfect basal cleavage visible under loupe — glass has no cleavage. Aquamarine is much lighter (SG 2.72) and has different RI. Topaz shows weak pleochroism under dichroscope.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="div">
+
+  <h3 style="font-family:var(--font-display);font-size:26px;color:var(--text);margin-bottom:1rem;">Quick field tests</h3>
+  <div class="tool-grid">
+    <div class="tool-card">
+      <span class="tool-icon">🌡️</span>
+      <div class="tool-name">Temperature test</div>
+      <div class="tool-desc">Real gemstones feel cold to the touch. Glass warms up quickly. Place the stone on your inner wrist — a natural stone will feel noticeably cooler than glass or plastic of the same size. Not definitive but a useful first indicator.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">💨</span>
+      <div class="tool-name">Breath fog test</div>
+      <div class="tool-desc">Breathe on the stone. Real gems conduct heat and cool the breath quickly — fog clears in 1–2 seconds. Glass holds heat and fogs for 3–4 seconds. Not scientific but surprisingly reliable as a quick first screen.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🔎</span>
+      <div class="tool-name">Bubble check</div>
+      <div class="tool-desc">Glass often contains small spherical bubbles visible under a 10× loupe. Natural and synthetic gems never contain gas bubbles. A single bubble under magnification confirms glass immediately.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">📐</span>
+      <div class="tool-name">Facet edge sharpness</div>
+      <div class="tool-desc">Real gems hold crisp facet edges. Glass softens at the edges and often shows slight rounding under magnification. CZ facets are extremely sharp — sharper than most natural stones. Moissanite facet edges appear doubled under 10×.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 4 — LAB VS NATURAL
+═══════════════════════════════════ -->
+<div class="lesson-panel" id="panel-labvsnatural">
+  <h2 class="lesson-title">Lab-grown vs <em>natural</em></h2>
+  <p class="lesson-intro">Lab-grown gems are chemically, physically, and optically identical to their natural counterparts. They are not fakes — they are the same mineral. But they form differently, and that difference leaves clues visible to the trained eye.</p>
+
+  <div class="callout info" style="margin-bottom:2rem;">
+    <strong>Your lab sapphire and lab ruby</strong> are genuine corundum — RI 1.762, Mohs 9, identical optical properties to mined material. The difference is geological history, not chemistry.
+  </div>
+
+  <div class="stone-lessons">
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(55,138,221,0.2);">🔵</div>
+        <div><div class="stone-lesson-name">Lab sapphire / ruby vs natural corundum</div><div class="stone-lesson-sub">Your stones — understanding what you're cutting</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Inclusions tell the story:</strong> Natural sapphire almost always contains inclusions — rutile silk (fine needle-like crystals), fingerprints (healed fractures), crystals of other minerals, or growth zoning. Lab sapphire is typically clean and inclusion-free under 10× magnification.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Growth patterns:</strong> Under high magnification, Verneuil (flame fusion) lab sapphire shows curved growth lines — like the rings of a tree but curved. Natural corundum shows angular, straight growth zones. This is one of the most reliable distinctions.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>UV fluorescence difference:</strong> Natural sapphire typically shows weak to no fluorescence under longwave UV. Flux-grown lab sapphire often shows stronger fluorescence. Some Verneuil lab material shows distinctive chalky blue under shortwave UV.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Gas bubbles in low-quality lab material:</strong> Cheap flame-fusion material can contain tiny curved bands of gas bubbles. Never present in natural material.</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Cutting advantage of lab material:</strong> Lab sapphire and ruby have no parting planes, no twinning, and typically no inclusions. This makes them easier to cut and polish than equivalent natural material — ideal for learning the craft.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(29,158,117,0.2);">💚</div>
+        <div><div class="stone-lesson-name">Lab emerald vs natural emerald</div><div class="stone-lesson-sub">The most dramatic difference in gemology</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Natural emerald is almost always included.</strong> A flawless emerald under 10× is immediately suspicious. The jardin (garden of inclusions) is so characteristic that gemologists consider an inclusion-free emerald a red flag, not a selling point.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Synthetic Chatham/Gilson emerald</strong> shows flux inclusions — wispy veil-like features, fingerprint patterns, and platinum platelets (from the flux crucible) visible under magnification. Different from natural inclusions.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Chelsea color filter:</strong> Both natural and synthetic chrome emeralds appear red under a Chelsea filter. However certain synthetic emeralds show a different red tone — useful supplemental test.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(239,159,39,0.2);">💍</div>
+        <div><div class="stone-lesson-name">Lab diamond vs natural diamond</div><div class="stone-lesson-sub">The billion-dollar question</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Impossible to distinguish by eye.</strong> Lab-grown diamonds (CVD and HPHT) are optically and chemically identical to mined diamonds. Standard diamond testers cannot distinguish them.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>UV fluorescence:</strong> CVD lab diamonds often show orange fluorescence under shortwave UV — very unusual in natural diamonds. HPHT diamonds may show distinctive sector zoning under UV.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Grading report is the only reliable answer</strong> for consumers. The GIA and IGI both identify lab-grown diamonds in their reports using advanced spectroscopy (FTIR and photoluminescence).</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Growth patterns under magnification:</strong> CVD diamonds can show a slight brown or gray graining. HPHT diamonds may show metallic flux inclusions (iron, nickel) — very different from natural diamond inclusions.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 5 — DICHROSCOPE
+═══════════════════════════════════ -->
+<div class="lesson-panel" id="panel-dichroscope">
+  <h2 class="lesson-title">Dichroscope &amp; <em>pleochroism</em></h2>
+  <p class="lesson-intro">A dichroscope splits light into two rays and shows you both colors a doubly-refractive stone transmits simultaneously. This is one of the most powerful tools for orientation — and for identification. Here's what you'll see in every major stone.</p>
+
+  <div class="callout info" style="margin-bottom:2rem;">
+    <strong>How to use it:</strong> Hold the dichroscope between a light source and your eye. Place the stone against the front aperture. Look through the eyepiece — you'll see two colored squares side by side. Rotate the dichroscope slowly while watching the squares. In pleochroic stones the colors in the two squares change as you rotate.
+  </div>
+
+  <div class="stone-lessons">
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(83,74,183,0.25);">🔮</div>
+        <div><div class="stone-lesson-name">Tanzanite — trichroic</div><div class="stone-lesson-sub">Three colors · three axes · most dramatic pleochroism of your stones</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>What you'll see:</strong> Along the a-axis: blue-violet and red-purple. Along the b-axis: blue-violet and yellow-brown. Along the c-axis: red-purple and yellow-brown. The dichroscope shows two of these at a time depending on your viewing direction.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>For best color face-up:</strong> Orient so the C-axis runs perpendicular to the table. This puts the desirable blue-violet color face-up. Looking through the stone along the C-axis in the dichroscope, you'll see the two less-desirable colors (red-purple and yellow-brown) — this is the axis to avoid having face-up.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Identification:</strong> No simulant replicates tanzanite's trichroism. If the dichroscope shows three distinct colors from three axes, it's tanzanite (or zoisite).</div></div>
+        </div>
+        <div class="callout gold" style="margin-top:1rem;"><strong>✦ The axis that shows blue-violet face-up</strong> — when you look down that axis with the dichroscope you'll see the other two colors (red-purple and yellow-brown). That's the C-axis. Dop with it pointing up.</div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(55,138,221,0.2);">🔵</div>
+        <div><div class="stone-lesson-name">Sapphire — dichroic</div><div class="stone-lesson-sub">Two colors · blue vs blue-green or blue vs yellow</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>What you'll see:</strong> Blue sapphire shows blue vs greenish-blue (or blue vs blue-violet depending on origin and chemistry). The two colors in the dichroscope are often subtle — both shades of blue, but distinctly different tones.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Identification value:</strong> Synthetic blue sapphire (Verneuil) also shows pleochroism identical to natural — so the dichroscope helps confirm sapphire identity but cannot distinguish lab from natural.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Orientation:</strong> Orient the C-axis perpendicular to the table for the richest blue face-up. The deeper blue color is typically seen when looking down the C-axis.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(226,75,74,0.2);">❤️</div>
+        <div><div class="stone-lesson-name">Ruby — dichroic</div><div class="stone-lesson-sub">Red vs orange-red · strong and easy to see</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>What you'll see:</strong> Ruby shows red vs orange-red in the dichroscope. This is one of the clearest and most dramatic pleochroic observations in gemology — the difference between the two squares is obvious even to beginners.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Identification power:</strong> Red garnet, red glass, and red spinel are all singly refractive — they show the same color in both squares (or nearly so). Ruby showing two distinct colors is a strong indication of genuine corundum.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Orientation:</strong> For richest red face-up, orient the C-axis perpendicular to the table. Looking along the C-axis, you'll see orange-red in both squares — avoid this as the face-up direction.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(55,138,221,0.15);">🩵</div>
+        <div><div class="stone-lesson-name">Blue topaz — weakly dichroic</div><div class="stone-lesson-sub">Subtle but present · useful for orientation</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>What you'll see:</strong> Blue vs colorless, or pale blue vs slightly deeper blue. The pleochroism in blue topaz is weak — the two squares look similar but not identical. You may need to look carefully.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Orientation use:</strong> Orient so the deeper blue is face-up. The dichroscope helps confirm the best axis before dopping.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Identification:</strong> Glass and CZ show nothing in the dichroscope — both squares identical. Any color difference at all confirms a doubly refractive stone.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stone-lesson-row" onclick="toggleRow(this)">
+      <div class="stone-lesson-header">
+        <div class="stone-gem-dot" style="background:rgba(83,74,183,0.2);">🫐</div>
+        <div><div class="stone-lesson-name">Iolite — extreme trichroism</div><div class="stone-lesson-sub">Blue · yellow · colorless · from three axes</div></div>
+        <div class="stone-lesson-arrow">›</div>
+      </div>
+      <div class="stone-lesson-body">
+        <div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><strong>What you'll see:</strong> Iolite has some of the most dramatic trichroism of any gem — one axis shows deep violet-blue, another shows yellow, and the third shows nearly colorless. The contrast between the blue and yellow views is stunning.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Vikings used this:</strong> Iolite's dramatic pleochroism — from clear to deep blue depending on viewing direction — allowed Viking navigators to locate the sun through clouds by rotating a thin slice until it showed its deepest blue (pointing toward the sun).</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Orient for blue face-up:</strong> The violet-blue axis perpendicular to the table. Wrong orientation produces a washed-out, pale or yellowish stone.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 6 — UV FLUORESCENCE
+═══════════════════════════════════ -->
+<div class="lesson-panel" id="panel-uv">
+  <h2 class="lesson-title">UV fluorescence <em>guide</em></h2>
+  <p class="lesson-intro">UV fluorescence is one of the most fun and useful tests in gemology. Different stones glow different colors — or don't glow at all — and the reaction is often specific enough to distinguish natural from lab-grown, and genuine from fake. Always test in a dark room for best results.</p>
+
+  <div class="callout warn" style="margin-bottom:2rem;">
+    <strong>⚠ Shortwave UV (254nm) is dangerous to eyes and skin.</strong> Always wear UV-blocking glasses and never look directly at the lamp. Longwave UV (365nm) is much safer for casual use.
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Stone</th>
+        <th>Longwave UV (365nm)</th>
+        <th>Shortwave UV (254nm)</th>
+        <th>Significance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Sapphire <span class="tag-real">natural</span></td>
+        <td>Inert to weak orange-red</td>
+        <td>Inert to weak</td>
+        <td>Kashmir sapphires: strong red. Most others inert. Strong blue-white = synthetic alert.</td>
+      </tr>
+      <tr>
+        <td>Ruby <span class="tag-real">natural</span></td>
+        <td>Strong red to red-orange ★</td>
+        <td>Strong red</td>
+        <td>One of the strongest fluorescences in gemology. Chrome causes the glow. Red glass: inert. Garnet: inert. The red glow is a strong ruby indicator.</td>
+      </tr>
+      <tr>
+        <td>Sapphire <span class="tag-lab">lab</span></td>
+        <td>Stronger fluorescence than natural</td>
+        <td>Chalky blue-white</td>
+        <td>Verneuil lab sapphire often shows blue-white under shortwave — very diagnostic. Flux-grown: weaker, more like natural.</td>
+      </tr>
+      <tr>
+        <td>Tanzanite <span class="tag-real">natural</span></td>
+        <td>Inert to weak blue</td>
+        <td>Weak greenish</td>
+        <td>Tanzanite is largely inert to UV — not a useful identification test. Rely on dichroscope instead.</td>
+      </tr>
+      <tr>
+        <td>Blue topaz <span class="tag-real">natural</span></td>
+        <td>Inert</td>
+        <td>Weak yellow to orange</td>
+        <td>Imperial topaz (orange) shows strong yellow under shortwave. Blue topaz: mostly inert longwave, weak shortwave response.</td>
+      </tr>
+      <tr>
+        <td>Diamond <span class="tag-real">natural</span></td>
+        <td>Blue (about 35% of naturals)</td>
+        <td>Blue (stronger)</td>
+        <td>Blue fluorescence is common. Some show yellow-green. CVD lab: often orange under shortwave — very diagnostic.</td>
+      </tr>
+      <tr>
+        <td>Emerald <span class="tag-real">natural</span></td>
+        <td>Weak to strong red (Colombian)</td>
+        <td>Inert to red</td>
+        <td>Colombian emerald: red. Brazilian: inert. Synthetic Chatham: stronger red. Useful for origin determination.</td>
+      </tr>
+      <tr>
+        <td>Amethyst</td>
+        <td>Inert</td>
+        <td>Weak blue or inert</td>
+        <td>Inert under both = consistent with quartz. Purple glass often also inert — UV not helpful for this stone.</td>
+      </tr>
+      <tr>
+        <td>Fluorite</td>
+        <td>Strong blue to purple ★</td>
+        <td>Stronger blue-violet</td>
+        <td>The word "fluorescence" comes from fluorite. Often intensely glowing — one of the best fluorescent gems. Not useful for ID but spectacular to observe.</td>
+      </tr>
+      <tr>
+        <td>Cubic zirconia <span class="tag-fake">simulant</span></td>
+        <td>Inert to yellow</td>
+        <td>Inert to weak</td>
+        <td>Different response from most stones it simulates — combined with other tests, helps identify CZ.</td>
+      </tr>
+      <tr>
+        <td>Glass <span class="tag-fake">fake</span></td>
+        <td>Inert (usually)</td>
+        <td>Inert (usually)</td>
+        <td>Most glass is inert under UV. However some decorative glass has added manganese or uranium and may fluoresce. Strong fluorescence in "sapphire" glass = simulant alert.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout gold">
+    <strong>★ Ruby's red glow is one of the most beautiful things in gemology.</strong> Hold a natural ruby under longwave UV in a dark room — the chromium causes it to glow with a fiery red that no simulant can match. This single test eliminates red glass, red garnet, and red spinel as possibilities in one second.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 7 — READING INCLUSIONS
+═══════════════════════════════════ -->
+<div class="lesson-panel" id="panel-inclusions">
+  <h2 class="lesson-title">Reading <em>inclusions</em></h2>
+  <p class="lesson-intro">Inclusions are not flaws — they are geological fingerprints. Every inclusion tells a story about how, where, and when a crystal formed. Learning to read inclusions tells you what you have, where it came from, and how to cut it safely.</p>
+
+  <div class="tool-grid" style="margin-bottom:3rem;">
+    <div class="tool-card">
+      <span class="tool-icon">🪡</span>
+      <div class="tool-name">Silk (rutile needles)</div>
+      <div class="tool-desc">Fine, hair-like needles of rutile (TiO₂) crossing in three directions. Classic inclusion in natural corundum — sapphire and ruby. Appear as fine crossing needles under cedarwood oil immersion at 10×.</div>
+      <div class="tool-tip">💡 Silk confirms natural corundum. Lab corundum has no silk. A stone with perfect silk is a natural sapphire or ruby — worth professional appraisal before cutting.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🌿</span>
+      <div class="tool-name">Jardin (garden)</div>
+      <div class="tool-desc">The characteristic internal landscape of natural emerald — fractures, fluid inclusions, crystals, and fissures creating a garden-like appearance. Named by French gem traders. A jardin confirms natural emerald.</div>
+      <div class="tool-tip">💡 Under cedarwood oil, the jardin becomes much clearer. Map fractures reaching the surface before cutting — these are where the stone is most vulnerable.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">💧</span>
+      <div class="tool-name">Fingerprints (healed fractures)</div>
+      <div class="tool-desc">Partially healed fractures that trapped fluid during healing. Under magnification they look like human fingerprints — curved lines of tiny fluid droplets. Common in corundum, topaz, and many other natural stones.</div>
+      <div class="tool-tip">💡 Fingerprints indicate the stone experienced stress and healed — a sign of natural formation. Rare in lab-grown material.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">⚡</span>
+      <div class="tool-name">Negative crystals</div>
+      <div class="tool-desc">Cavities in the exact shape of the host mineral's crystal form — the stone grew around a space. These look like tiny geometric shapes (hexagons in corundum, cubes in fluorite) filled with fluid or gas.</div>
+      <div class="tool-tip">💡 The shape of a negative crystal tells you the crystal system of the host mineral — a hexagonal negative crystal confirms a trigonal or hexagonal host.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🌀</span>
+      <div class="tool-name">Curved growth lines</div>
+      <div class="tool-desc">Curved internal banding visible under high magnification. This is the definitive signature of Verneuil (flame fusion) synthetic stones — natural crystals have straight angular growth zones, not curved ones.</div>
+      <div class="tool-tip">💡 Any curved striae under 30× magnification in a corundum stone = synthetic (Verneuil process). Straight angular zoning = natural.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🌈</span>
+      <div class="tool-name">Iridescent films</div>
+      <div class="tool-desc">Thin films of material along cleavage or fracture planes that show rainbow interference colors. Extremely diagnostic for cleavage identification — a cleavage plane with iridescence is a reliable indicator of a planar weakness.</div>
+      <div class="tool-tip">💡 If you see rainbow films inside a stone under the loupe — that is a cleavage plane. Mark its orientation before dopping.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">✨</span>
+      <div class="tool-name">Crystal inclusions</div>
+      <div class="tool-desc">Crystals of other minerals trapped during growth. Zircon crystals in sapphire (appear as halos), calcite in tanzanite, pyrite in lapis. Under cedarwood oil, crystal inclusions appear as solid 3D objects inside the stone.</div>
+      <div class="tool-tip">💡 The mineral species of an inclusion can confirm origin — zircon halos only form in certain geological environments, making them useful for provenance.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🫧</span>
+      <div class="tool-name">Gas bubbles</div>
+      <div class="tool-desc">Perfectly spherical bubbles inside the stone. Natural and synthetic gems never contain spherical gas bubbles — only glass does. A single spherical bubble under 10× magnification definitively identifies glass.</div>
+      <div class="tool-tip">💡 The most reliable single indicator of glass. No natural or synthetic gem mineral contains spherical gas bubbles.</div>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <h3 style="font-family:var(--font-display);font-size:26px;color:var(--text);margin-bottom:1rem;">Immersion technique — step by step</h3>
+  <div class="step-list">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Choose your liquid:</strong> Cedarwood oil for most stones (RI ~1.51). Glycerin for corundum (RI ~1.47). The liquid's RI should be close to but slightly different from the stone's RI — this suppresses surface reflections while keeping internal features visible.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Clean the stone:</strong> Remove all oil, fingerprints, and dust. Any surface contamination will create misleading reflections. Clean with acetone or isopropyl alcohol and dry thoroughly.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Fill a small glass or dish</strong> with enough liquid to fully submerge the stone. A small jam jar or shot glass works perfectly. The stone should not touch the bottom — suspend it or rest it on a small piece of cotton.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Single strong light source:</strong> Position a bright LED penlight or desk lamp to shine through the stone from the side. Avoid overhead diffuse lighting — it kills the contrast needed to see inclusions.</div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Examine with 10× loupe:</strong> Hold the loupe close to your eye and bring it close to the surface of the liquid. Focus through the liquid onto different depths within the stone. Slowly adjust your viewing angle.</div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Document what you see:</strong> Sketch any inclusions, note their position and orientation. This map guides your dopping decisions — keep inclusions away from table facets and high-stress zones.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 8 — PREFORM SIZING
+═══════════════════════════════════ -->
+<div class="lesson-panel" id="panel-preform">
+  <h2 class="lesson-title">Preform sizing <em>reference</em></h2>
+  <p class="lesson-intro">Before you dop, your preform must be larger than the target dimensions on every axis — no exceptions. Too tight and you run out of stone before your meetpoints close. The girdle must finish at a minimum 3mm circumference all the way around on every shape.</p>
+
+  <div class="callout warn" style="margin-bottom:2rem;">
+    <strong>⚠ Two rules that cannot be broken:</strong> Preform must be larger than the finished diagram on every axis. Girdle minimum = 3mm circumference all around — including the tips of pear and marquise cuts.
+  </div>
+
+  <!-- CORE RULES -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:2.5rem;">
+    <div class="tool-card">
+      <span class="tool-icon">📐</span>
+      <div class="tool-name">The buffer rule</div>
+      <div class="tool-desc">Add a minimum of 2.5mm to every axis of your finished target dimensions. This gives you room to cut meetpoints cleanly, correct minor orientation errors, and grind the girdle to final thickness without running out of stone.</div>
+      <div class="tool-tip">💡 If your target is 7mm round, your preform should be 9.5–10mm. Never go tighter on corundum — it is Mohs 9 and every grind removes real material.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">💍</span>
+      <div class="tool-name">The girdle rule</div>
+      <div class="tool-desc">The girdle is the last thing you shape and it must survive. 3mm circumference minimum all the way around — including the sharpest tips on pear and marquise cuts. If you preform too small the girdle thins unevenly or disappears entirely at the tips.</div>
+      <div class="tool-tip">💡 Consistent girdle thickness means calibrated stones. Calibrated stones command premium pricing and fit standard settings.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">🔴</span>
+      <div class="tool-name">Corundum specifics</div>
+      <div class="tool-desc">Preform on silicon carbide wheel — coarse (220 grit) then fine (600 grit). Orient the rough for best color before preforming, because you cannot undo this decision. Polish on alumina or 50,000 grit diamond lap. Critical angle = 34.9° for maximum brilliance.</div>
+      <div class="tool-tip">💡 Lab corundum has no parting planes, no twinning, no silk. It is the safest material to learn preforming on — focus entirely on size discipline and color orientation.</div>
+    </div>
+    <div class="tool-card">
+      <span class="tool-icon">📚</span>
+      <div class="tool-name">Learning order</div>
+      <div class="tool-desc">Master shapes in this order: Round Brilliant → Oval → Cushion → Emerald cut → Pear → Heart → Marquise. The round brilliant teaches everything — symmetry, meetpoints, polish, angle discipline. Every other shape builds on it.</div>
+      <div class="tool-tip">💡 Do not attempt a fancy shape until your round brilliant meetpoints close consistently. A sloppy round brilliant means a destroyed pear.</div>
+    </div>
+  </div>
+
+  <!-- SIZING TABLES -->
+  <h3 style="font-family:var(--font-display);font-size:26px;color:var(--text);margin-bottom:0.5rem;">Round &amp; oval — learn these first</h3>
+  <p style="font-size:13px;color:var(--text-dim);margin-bottom:1.25rem;">These two shapes share the same mechanics. Master rounds first, then ovals follow naturally.</p>
+
+  <table class="compare-table" style="margin-bottom:2.5rem;">
+    <thead>
+      <tr>
+        <th>Shape</th>
+        <th>Target (mm)</th>
+        <th>Preform (mm)</th>
+        <th>Buffer</th>
+        <th>Min girdle</th>
+        <th>Difficulty</th>
+        <th>Demand</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Round Brilliant 5mm</td>
+        <td>5.0 dia</td>
+        <td><strong>7.5 – 8.0</strong></td>
+        <td>+2.5–3mm</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Medium</span></td>
+        <td><span class="tag-real">Highest</span></td>
+      </tr>
+      <tr>
+        <td>Round Brilliant 7mm</td>
+        <td>7.0 dia</td>
+        <td><strong>9.5 – 10.0</strong></td>
+        <td>+2.5–3mm</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Medium</span></td>
+        <td><span class="tag-real">Highest</span></td>
+      </tr>
+      <tr>
+        <td>Round Brilliant 10mm</td>
+        <td>10.0 dia</td>
+        <td><strong>12.5 – 13.0</strong></td>
+        <td>+2.5–3mm</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Medium</span></td>
+        <td><span class="tag-real">Highest</span></td>
+      </tr>
+      <tr>
+        <td>Oval 6×8mm</td>
+        <td>6 × 8</td>
+        <td><strong>8.5 × 10.5</strong></td>
+        <td>+2.5mm each axis</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Easy–Med</span></td>
+        <td><span class="tag-real">Very High</span></td>
+      </tr>
+      <tr>
+        <td>Oval 8×10mm</td>
+        <td>8 × 10</td>
+        <td><strong>10.5 × 12.5</strong></td>
+        <td>+2.5mm each axis</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Easy–Med</span></td>
+        <td><span class="tag-real">Very High</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-family:var(--font-display);font-size:26px;color:var(--text);margin-bottom:0.5rem;">Fancy shapes — build on round skills</h3>
+  <p style="font-size:13px;color:var(--text-dim);margin-bottom:1.25rem;">Add 3mm buffer on every axis for fancy shapes. The tips of pear, heart, and marquise are where beginners lose the girdle first.</p>
+
+  <table class="compare-table" style="margin-bottom:2.5rem;">
+    <thead>
+      <tr>
+        <th>Shape</th>
+        <th>Target (mm)</th>
+        <th>Preform (mm)</th>
+        <th>Buffer</th>
+        <th>Min girdle</th>
+        <th>Difficulty</th>
+        <th>Demand</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Cushion 7×7mm</td>
+        <td>7 × 7</td>
+        <td><strong>9.5 × 9.5</strong></td>
+        <td>+2.5mm each</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Medium</span></td>
+        <td><span class="tag-real">High</span></td>
+      </tr>
+      <tr>
+        <td>Cushion 8×8mm</td>
+        <td>8 × 8</td>
+        <td><strong>10.5 × 10.5</strong></td>
+        <td>+2.5mm each</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Medium</span></td>
+        <td><span class="tag-real">High</span></td>
+      </tr>
+      <tr>
+        <td>Pear 6×9mm</td>
+        <td>6 × 9</td>
+        <td><strong>9.0 × 12.0</strong></td>
+        <td>+3mm each</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Med–Hard</span></td>
+        <td><span class="tag-real">High</span></td>
+      </tr>
+      <tr>
+        <td>Heart 7×7mm</td>
+        <td>7 × 7</td>
+        <td><strong>10.0 × 10.0</strong></td>
+        <td>+3mm each</td>
+        <td>3mm circ</td>
+        <td><span class="tag-fake">Hard</span></td>
+        <td><span class="tag-real">High</span></td>
+      </tr>
+      <tr>
+        <td>Emerald cut 7×9mm</td>
+        <td>7 × 9</td>
+        <td><strong>9.5 × 11.5</strong></td>
+        <td>+2.5mm each</td>
+        <td>3mm circ</td>
+        <td><span class="tag-lab">Medium</span></td>
+        <td><span class="tag-real">High</span></td>
+      </tr>
+      <tr>
+        <td>Marquise 6×12mm</td>
+        <td>6 × 12</td>
+        <td><strong>9.0 × 15.0</strong></td>
+        <td>+3mm each</td>
+        <td>3mm circ</td>
+        <td><span class="tag-fake">Hard</span></td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Trillion 7×7mm</td>
+        <td>7 × 7</td>
+        <td><strong>10.0 × 10.0</strong></td>
+        <td>+3mm each</td>
+        <td>3mm circ</td>
+        <td><span class="tag-fake">Hard</span></td>
+        <td>Medium</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <strong>💡 Why calibrated stones matter for your business:</strong> Calibrated stones — cut to standard dimensions with consistent girdle thickness — fit standard settings from jewelers and Etsy sellers worldwide. A 7mm round brilliant that is actually 7.0mm ± 0.1mm commands significantly higher prices than one that is "approximately 7mm." Your Ultratek VL will get you there. Discipline in preforming is where it starts.
+  </div>
+</div>
+
+</div><!-- /learn-body -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Galaxy Gems</div>
+  <div class="footer-sub">Your personal gem faceting studio &nbsp;·&nbsp; Built with ♦ for lapidary artists</div>
+  <div class="footer-links">
+    <button class="footer-link" onclick="location.href='library.html'">Stone library</button>
+    <button class="footer-link" onclick="location.href='studio.html'">Studio tools</button>
+    <button class="footer-link" onclick="location.href='community.html'">Community</button>
+    <button class="footer-link" onclick="location.href='journal.html'">Journal</button>
+    <button class="footer-link" onclick="location.href='beginner-book.html'">Beginner Book</button>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+  /* ── TABS ── */
+  function showLesson(id) {
+    document.querySelectorAll('.lesson-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.lesson-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    event.target.classList.add('active');
+    window.scrollTo({ top: document.querySelector('.lesson-tabs').offsetTop - 64, behavior: 'smooth' });
+  }
+
+  /* ── ACCORDION ── */
+  function toggleRow(row) {
+    const isOpen = row.classList.contains('open');
+    document.querySelectorAll('.stone-lesson-row.open').forEach(r => r.classList.remove('open'));
+    if (!isOpen) row.classList.add('open');
+  }
+
+  /* ── MODE ── */
+  function toggleMode() {
+    document.body.classList.toggle('light-mode');
+    document.getElementById('modeToggle').textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    localStorage.setItem('ggMode', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  }
+  if (localStorage.getItem('ggMode') === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('modeToggle').textContent = '☀️';
+  }
+
+  /* ── TOAST ── */
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
+</script>
+</body>
+</html>

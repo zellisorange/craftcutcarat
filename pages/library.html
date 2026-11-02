@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stone Library — Galaxy Gems</title>
+  <meta name="theme-color" content="#3C3489">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    :root {
+      --space:        #0D0B1A;
+      --deep:         #12103A;
+      --tz:           #3C3489;
+      --tz-mid:       #534AB7;
+      --tz-bright:    #7F77DD;
+      --tz-light:     #EEEDFE;
+      --text:         #F0EFF8;
+      --text-dim:     #AFA9EC;
+      --text-muted:   #6B6499;
+      --border:       #2A2460;
+      --border-light: #3D367A;
+      --card:         #16124A;
+      --card-hover:   #1E1960;
+      --warn-bg:      #2A1F0A;
+      --warn-text:    #FAC775;
+      --radius:       12px;
+      --radius-sm:    8px;
+      --nav-h:        60px;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Inter', sans-serif;
+    }
+    body { background: var(--space); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font-body); cursor: pointer; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--deep); }
+    ::-webkit-scrollbar-thumb { background: var(--tz); border-radius: 3px; }
+    .hidden { display: none !important; }
+
+    /* ── NAV ── */
+    #nav {
+      position: sticky; top: 0; z-index: 200;
+      height: var(--nav-h);
+      background: rgba(13,11,26,0.93);
+      backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+    }
+    .nav-logo {
+      font-family: var(--font-display); font-size: 22px; font-weight: 500;
+      color: var(--text); letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 10px; cursor: pointer;
+    }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link {
+      padding: 7px 13px; border: none; border-radius: var(--radius-sm);
+      background: transparent; color: var(--text-muted); font-size: 13px; cursor: pointer; transition: all 0.15s;
+    }
+    .nav-link:hover, .nav-link.active { background: rgba(83,74,183,0.18); color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-btn { padding: 7px 16px; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); background: transparent; color: var(--text-dim); font-size: 13px; transition: all 0.15s; }
+    .nav-btn:hover { background: var(--card); color: var(--text); }
+    .nav-btn.primary { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+    .nav-btn.primary:hover { background: var(--tz-bright); }
+    .user-chip { display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; background: var(--card); border: 0.5px solid var(--border); border-radius: 99px; }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--tz-mid); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--tz-light); }
+    .user-name { font-size: 13px; color: var(--text); }
+    .nav-ham { display: none; padding: 8px 10px; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); background: transparent; color: var(--text-dim); font-size: 18px; line-height: 1; }
+    .nav-drawer { display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; background: var(--deep); border-bottom: 0.5px solid var(--border); padding: 1rem 1.5rem; flex-direction: column; gap: 4px; z-index: 199; }
+    .nav-drawer.open { display: flex; }
+    @media (max-width: 768px) { .nav-links { display: none; } .nav-ham { display: block; } }
+
+    /* ── LIBRARY HEADER ── */
+    .lib-header { background: var(--deep); border-bottom: 0.5px solid var(--border); padding: 3rem 2rem 2.5rem; text-align: center; }
+    .eyebrow { display: block; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--tz-bright); margin-bottom: 1rem; }
+    .lib-header h1 { font-family: var(--font-display); font-size: clamp(36px,6vw,64px); font-weight: 400; color: var(--text); margin-bottom: 0.75rem; }
+    .lib-header p { color: var(--text-dim); max-width: 500px; margin: 0 auto; font-size: 15px; line-height: 1.7; }
+
+    /* ── CONTROLS ── */
+    .lib-controls {
+      position: sticky; top: var(--nav-h); z-index: 100;
+      background: rgba(13,11,26,0.96); backdrop-filter: blur(12px);
+      border-bottom: 0.5px solid var(--border);
+      padding: 1rem 2rem; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .lib-search {
+      flex: 1; min-width: 200px; padding: 9px 14px;
+      background: var(--card); border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm); color: var(--text); font-size: 14px; outline: none;
+    }
+    .lib-search:focus { border-color: var(--tz-bright); }
+    .lib-search::placeholder { color: var(--text-muted); }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filt {
+      padding: 7px 13px; border: 0.5px solid var(--border-light);
+      border-radius: 99px; background: transparent; color: var(--text-muted);
+      font-size: 12px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .filt:hover { border-color: var(--tz-bright); color: var(--text); }
+    .filt.on { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+    .view-btns { display: flex; gap: 3px; margin-left: auto; }
+    .vbtn { padding: 7px 11px; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font-size: 15px; cursor: pointer; transition: all 0.15s; }
+    .vbtn.on { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+    .stone-count { font-size: 12px; color: var(--text-muted); white-space: nowrap; align-self: center; }
+
+    /* ── GRID ── */
+    .lib-body { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+    .stone-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px,1fr)); gap: 12px; }
+    .stone-card { background: var(--card); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.2s; }
+    .stone-card:hover { border-color: var(--tz-bright); transform: translateY(-4px); }
+    .stone-color-bar { height: 82px; display: flex; align-items: center; justify-content: center; }
+    .stone-card-body { padding: 10px 12px 12px; }
+    .stone-name { font-family: var(--font-display); font-size: 15px; color: var(--text); margin-bottom: 2px; }
+    .stone-species { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+    .stone-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+    .pill { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+
+    /* ── TABLE ── */
+    .stone-table-wrap { overflow-x: auto; }
+    .stone-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .stone-table th { text-align: left; padding: 10px 14px; border-bottom: 0.5px solid var(--border-light); color: var(--text-muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; user-select: none; white-space: nowrap; }
+    .stone-table th:hover { color: var(--tz-bright); }
+    .stone-table td { padding: 10px 14px; border-bottom: 0.5px solid var(--border); color: var(--text-dim); vertical-align: middle; }
+    .stone-table tr { cursor: pointer; transition: background 0.1s; }
+    .stone-table tr:hover td { background: var(--card-hover); color: var(--text); }
+    .stone-table td:first-child { font-family: var(--font-display); font-size: 15px; color: var(--text); }
+    .col-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle; }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(8,6,20,0.88); z-index: 600; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--deep); border: 0.5px solid var(--border-light); border-radius: var(--radius); max-width: 580px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2rem; }
+    .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    .modal-title { font-family: var(--font-display); font-size: 30px; color: var(--text); line-height: 1; }
+    .modal-species { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+    .modal-close { background: transparent; border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); color: var(--text-muted); width: 34px; height: 34px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .modal-close:hover { color: var(--text); background: var(--card); }
+    .modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 1.25rem; }
+    .modal-stat { background: var(--card); padding: 12px 14px; }
+    .modal-stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+    .modal-stat-value { font-size: 16px; font-weight: 500; color: var(--text); }
+    .modal-desc { font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 1.25rem; }
+    .modal-warn { background: var(--warn-bg); border: 0.5px solid rgba(239,159,39,0.35); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--warn-text); margin-bottom: 10px; display: flex; gap: 8px; }
+    .modal-tip { background: rgba(83,74,183,0.18); border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--tz-light); margin-bottom: 10px; }
+    .modal-stock { background: rgba(55,138,221,0.1); border: 0.5px solid rgba(55,138,221,0.3); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: #85B7EB; margin-bottom: 10px; }
+
+    /* ── AUTH MODAL ── */
+    .overlay { position: fixed; inset: 0; background: rgba(8,6,20,0.9); z-index: 500; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+    .overlay.open { display: flex; }
+    .auth-box { background: var(--deep); border: 0.5px solid var(--border-light); border-radius: var(--radius); padding: 2.25rem; width: 100%; max-width: 400px; }
+    .auth-tabs { display: flex; gap: 4px; background: var(--card); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 1.25rem; }
+    .auth-tab { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-muted); font-size: 13px; cursor: pointer; border-radius: 7px; transition: all 0.15s; }
+    .auth-tab.active { background: var(--tz-mid); color: var(--tz-light); }
+    .field-label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; margin-top: 12px; }
+    .field-input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 0.5px solid var(--border-light); border-radius: var(--radius-sm); color: var(--text); font-size: 14px; font-family: var(--font-body); outline: none; transition: border-color 0.15s; }
+    .field-input:focus { border-color: var(--tz-bright); }
+    .field-input::placeholder { color: var(--text-muted); }
+    .auth-submit { width: 100%; margin-top: 14px; padding: 12px; background: var(--tz-mid); color: var(--tz-light); border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .auth-submit:hover { background: var(--tz-bright); }
+    .auth-err { display: none; background: rgba(226,75,74,0.15); border: 0.5px solid rgba(226,75,74,0.4); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px; color: #F09595; margin-bottom: 10px; }
+    .auth-err.show { display: block; }
+
+    /* ── TOAST ── */
+    #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--tz-mid); color: var(--tz-light); padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) { .lib-body { padding: 1rem; } .stone-grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 8px; } }
+
+    .mode-toggle { padding:7px 10px; border:0.5px solid var(--border-light); border-radius:var(--radius-sm); background:transparent; color:var(--text-dim); font-size:16px; cursor:pointer; transition:all 0.15s; line-height:1; }
+    .mode-toggle:hover { background:var(--card); color:var(--text); }
+    body.light { --space:#F0EFF8; --deep:#E8E6F5; --tz-mid:#534AB7; --tz-bright:#3C3489; --tz-light:#3C3489; --text:#1A1640; --text-dim:#3C3489; --text-muted:#7F77DD; --border:#C8C4E8; --border-light:#AFA9EC; --card:#E0DEFA; --card-hover:#D0CCF5; --warn-bg:#FFF4E0; --warn-text:#8B5E00; }
+    body.light #nav { background:rgba(240,239,248,0.93); border-bottom-color:#C8C4E8; }
+    body.light .nav-drawer { background:#E8E6F5; }
+    body.light .lib-controls { background:rgba(240,239,248,0.96); }
+  </style>
+</head>
+<body>
+
+<!-- ── BACKGROUND ── -->
+<div id="bgCanvas" aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;"></div>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <div class="nav-logo" onclick="location.href='../index.html'">
+    <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+      <polygon points="14,2 26,10 22,26 6,26 2,10" fill="none" stroke="#7F77DD" stroke-width="1"/>
+      <polygon points="14,2 26,10 14,8" fill="rgba(127,119,221,0.35)"/>
+      <polygon points="14,8 26,10 22,26 6,26 2,10" fill="rgba(60,52,137,0.55)"/>
+    </svg>
+    Galaxy Gems
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+    <button class="nav-link active">Stone library</button>
+    <button class="nav-link" onclick="location.href='studio.html'">Studio</button>
+    <button class="nav-link" onclick="location.href='community.html'">Community</button>
+    <button class="nav-link" onclick="location.href='learn.html'">Learn</button>
+    <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+  </div>
+  <div class="nav-right">
+    <div id="guestNav" style="display:flex;gap:8px;">
+      <button class="nav-btn" onclick="openAuth('login')">Sign in</button>
+      <button class="nav-btn primary" onclick="openAuth('signup')">Join free</button>
+    </div>
+    <div id="userNav" class="hidden" style="display:flex;align-items:center;gap:8px;">
+      <div class="user-chip">
+        <div class="user-avatar" id="avatarInitials">GG</div>
+        <span class="user-name" id="navUserName">Faceter</span>
+      </div>
+      <button class="nav-btn" onclick="logout()">Sign out</button>
+    </div>
+    <button class="mode-toggle" id="modeToggle" onclick="toggleMode()" title="Toggle light/dark mode">🌙</button>
+    <button class="nav-ham" onclick="document.getElementById('navDrawer').classList.toggle('open')">☰</button>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+  <button class="nav-link active">Stone library</button>
+  <button class="nav-link" onclick="location.href='studio.html'">Studio</button>
+  <button class="nav-link" onclick="location.href='community.html'">Community</button>
+  <button class="nav-link" onclick="location.href='learn.html'">Learn</button>
+  <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+</div>
+
+<!-- ── HEADER ── -->
+<div class="lib-header">
+  <span class="eyebrow">Stone library</span>
+  <h1>Every gem. Every spec.</h1>
+  <p>Search and explore <strong id="totalCount" style="color:var(--tz-bright);">60+</strong> gem species — full RI, SG, cleavage, pleochroism, cutting angles and tips. Click any stone to go deep.</p>
+</div>
+
+<!-- ── CONTROLS ── -->
+<div class="lib-controls">
+    <input class="lib-search" id="searchInput" type="search" name="stone-search" placeholder="🔍  Search by name, color, or species..." oninput="render()" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="filters">
+    <button class="filt on"  onclick="setFilter('all',this)">All</button>
+    <button class="filt"     onclick="setFilter('9',this)">Mohs 9+</button>
+    <button class="filt"     onclick="setFilter('8',this)">Mohs 8</button>
+    <button class="filt"     onclick="setFilter('7',this)">Mohs 7</button>
+    <button class="filt"     onclick="setFilter('low',this)">Below 7</button>
+    <button class="filt"     onclick="setFilter('cleavage',this)">⚠ Cleavage</button>
+    <button class="filt"     onclick="setFilter('stock',this)">★ Your stock</button>
+  </div>
+  <span class="stone-count" id="stoneCount"></span>
+  <div class="view-btns">
+    <button class="vbtn on" id="btnGrid" onclick="setView('grid')" title="Grid">▦</button>
+    <button class="vbtn"    id="btnList" onclick="setView('list')" title="Table">≡</button>
+  </div>
+</div>
+
+<!-- ── BODY ── -->
+<div class="lib-body">
+  <div id="gridView"><div class="stone-grid" id="stoneGrid"></div></div>
+  <div id="listView" class="hidden stone-table-wrap">
+    <table class="stone-table">
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Stone ↕</th>
+          <th onclick="sortBy('species')">Species ↕</th>
+          <th onclick="sortBy('hardness')">Mohs ↕</th>
+          <th onclick="sortBy('ri')">RI ↕</th>
+          <th onclick="sortBy('sg')">SG ↕</th>
+          <th>Cleavage</th>
+          <th>Colors</th>
+        </tr>
+      </thead>
+      <tbody id="stoneTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── STONE MODAL ── -->
+<div class="modal-overlay" id="stoneModal" onclick="if(event.target.id==='stoneModal')closeStone()">
+  <div class="modal-box" id="modalInner"></div>
+</div>
+
+<!-- ── AUTH MODAL ── -->
+<div class="overlay" id="authOverlay" onclick="if(event.target.id==='authOverlay')closeAuthDirect()">
+  <div class="auth-box">
+    <button style="float:right;background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;" onclick="closeAuthDirect()">×</button>
+    <div style="font-family:var(--font-display);font-size:26px;color:var(--text);text-align:center;margin-bottom:0.4rem;">Galaxy Gems</div>
+    <div style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:1.5rem;">Your personal faceting studio</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="loginTab" onclick="switchAuth('login')">Sign in</button>
+      <button class="auth-tab" id="signupTab" onclick="switchAuth('signup')">Join free</button>
+    </div>
+    <div class="auth-err" id="authErr"></div>
+    <div id="loginForm">
+  <label class="field-label">Email</label>
+      <input class="field-input" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="new-password">
+      <label class="field-label">Password</label>
+      <input class="field-input" type="password" id="loginPass" placeholder="••••••••" autocomplete="new-password">
+      <button class="auth-submit" onclick="doLogin()">Sign in</button>
+      <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px;">Demo: any email · password is <strong style="color:var(--tz-bright);">gems</strong></p>
+    </div>
+    <div id="signupForm" class="hidden">
+     <label class="field-label">Your name</label>
+      <input class="field-input" type="text" id="signupName" placeholder="n.a" autocomplete="off">
+      <label class="field-label">Email</label>
+      <input class="field-input" type="email" id="signupEmail" placeholder="you@example.com" autocomplete="new-password">
+      <label class="field-label">Password</label>
+      <input class="field-input" type="password" id="signupPass" placeholder="Choose a password" autocomplete="new-password">
+      <button class="auth-submit" onclick="doSignup()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════
+   FULL GEM DATABASE — 60+ species
+══════════════════════════════════════ */
+const GEMS = [
+  {name:"Diamond",species:"Carbon",hardness:10,ri:"2.417",sg:3.52,cleavage:"Perfect octahedral",hex:"#B5D4F4",colors:"Colorless, yellow, blue, pink, red",pleochroism:"None",yourstock:false,group:"Oxide",desc:"The hardest natural substance on Earth. Exceptional brilliance from high RI. Requires diamond laps even for cutting.",warn:null,tip:"Cut at 40.75° pavilion for ideal light return in round brilliant."},
+  {name:"Corundum — sapphire",species:"Corundum (Al₂O₃)",hardness:9,ri:"1.762",sg:3.99,cleavage:"None",hex:"#378ADD",colors:"Blue, padparadscha, yellow, green, pink",pleochroism:"Strong",yourstock:true,group:"Oxide",desc:"Lab-grown sapphire in your inventory. Mohs 9, no cleavage. Requires sintered diamond laps. Strong pleochroism: orient C-axis for desired color.",warn:null,tip:"Sintered laps only. No cleavage risk. Ideal for learning consistent pre-polish technique."},
+  {name:"Corundum — ruby",species:"Corundum (Al₂O₃)",hardness:9,ri:"1.762",sg:3.99,cleavage:"None",hex:"#E24B4A",colors:"Red, pink-red, purplish red",pleochroism:"Strong",yourstock:true,group:"Oxide",desc:"Lab-grown ruby. Identical physical properties to sapphire. Color from chromium. Sintered laps required.",warn:null,tip:"Same cutting technique as sapphire. Lab material is typically clean and inclusion-free."},
+  {name:"Chrysoberyl — alexandrite",species:"Chrysoberyl (BeAl₂O₄)",hardness:8.5,ri:"1.746",sg:3.73,cleavage:"Distinct",hex:"#1D9E75",colors:"Green in daylight, red under incandescent",pleochroism:"Very strong",yourstock:false,group:"Oxide",desc:"Famous for dramatic color change. Extremely rare and valuable. Distinct cleavage in one direction.",warn:"Strong pleochroism: orient C-axis carefully to maximize color change effect.",tip:"Color change axis must be perpendicular to table."},
+  {name:"Topaz — blue",species:"Topaz (Al₂SiO₄(F,OH)₂)",hardness:8,ri:"1.619",sg:3.53,cleavage:"Perfect basal",hex:"#378ADD",colors:"Blue, colorless, yellow, pink",pleochroism:"Weak",yourstock:true,group:"Silicate",desc:"Natural blue topaz in your inventory. Perfect basal cleavage is the main cutting challenge. Light machine pressure critical throughout.",warn:"Perfect basal cleavage! Orient stone so cleavage runs parallel to table. Never thermal shock.",tip:"Cedarwood oil under loupe reveals cleavage planes. Dop orientation is everything."},
+  {name:"Topaz — imperial",species:"Topaz (Al₂SiO₄(F,OH)₂)",hardness:8,ri:"1.619",sg:3.53,cleavage:"Perfect basal",hex:"#EF9F27",colors:"Orange-yellow, peachy orange",pleochroism:"Weak",yourstock:false,group:"Silicate",desc:"The most prized color of natural topaz. Same cutting properties as blue topaz. Perfect basal cleavage demands careful orientation.",warn:"Perfect basal cleavage — same precautions as blue topaz.",tip:"Heat can cause color fade. Keep stone cool during cutting."},
+  {name:"Spinel",species:"Spinel (MgAl₂O₄)",hardness:8,ri:"1.718",sg:3.60,cleavage:"None",hex:"#D4537E",colors:"Red, pink, blue, purple, orange, colorless",pleochroism:"None",yourstock:false,group:"Oxide",desc:"Isometric crystal — no double refraction, no pleochroism. Excellent brilliance, no cleavage concerns. Historically confused with ruby.",warn:null,tip:"Easy to cut — isometric means no orientation needed."},
+  {name:"Taaffeite",species:"Magnesium beryllium aluminum oxide",hardness:8,ri:"1.719",sg:3.61,cleavage:"None",hex:"#F4C0D1",colors:"Lavender, mauve, red, colorless",pleochroism:"Weak",yourstock:false,group:"Oxide",desc:"One of the rarest gems in the world. No cleavage concerns.",warn:null,tip:"No cleavage — straightforward to cut. The challenge is obtaining the material."},
+  {name:"Painite",species:"Calcium zirconium borosilicate",hardness:8,ri:"1.787",sg:4.01,cleavage:"None",hex:"#D85A30",colors:"Orange-red, brownish red",pleochroism:"Strong",yourstock:false,group:"Borate",desc:"Once the rarest mineral on Earth. Now slightly more available from Myanmar. Strong pleochroism.",warn:null,tip:"Strong pleochroism requires careful orientation. One of the ultimate trophy cuts."},
+  {name:"Pezzottaite",species:"Cesium beryllium silicate",hardness:8,ri:"1.601",sg:3.10,cleavage:"Distinct",hex:"#F4C0D1",colors:"Raspberry pink, red-pink",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Discovered in 2003 in Madagascar. Vivid raspberry red-pink. Very limited material.",warn:"Distinct cleavage + rare material = maximum care.",tip:"Orient C-axis for richest pink face-up."},
+  {name:"Aquamarine",species:"Beryl (Be₃Al₂Si₆O₁₈)",hardness:7.5,ri:"1.577",sg:2.72,cleavage:"Imperfect",hex:"#85B7EB",colors:"Blue, blue-green, sea blue",pleochroism:"Weak",yourstock:false,group:"Silicate",desc:"The blue-green beryl, colored by iron. Excellent clarity typical. Imperfect cleavage — minor risk.",warn:null,tip:"Orient C-axis perpendicular to table for best blue face-up color."},
+  {name:"Emerald",species:"Beryl (Be₃Al₂Si₆O₁₈)",hardness:7.5,ri:"1.585",sg:2.72,cleavage:"Imperfect",hex:"#1D9E75",colors:"Green, bluish green",pleochroism:"Moderate",yourstock:false,group:"Silicate",desc:"Chromium-colored beryl. Famous for its jardin of inclusions. The emerald cut was invented for this stone.",warn:"Natural emeralds are almost always heavily included. Inclusions increase cleavage risk. Cut conservatively.",tip:"The emerald step cut minimizes stress on included material."},
+  {name:"Red beryl — bixbite",species:"Beryl (Be₃Al₂Si₆O₁₈)",hardness:7.5,ri:"1.570",sg:2.66,cleavage:"Imperfect",hex:"#E24B4A",colors:"Red, raspberry red",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Red beryl from Utah — rarer than emerald, more valuable than ruby by weight.",warn:"Extreme rarity demands maximum care.",tip:"Almost exclusively under 1 carat finished. Maximum precision required."},
+  {name:"Garnet — pyrope",species:"Garnet (Mg₃Al₂Si₃O₁₂)",hardness:7.5,ri:"1.746",sg:3.82,cleavage:"None",hex:"#E24B4A",colors:"Deep red, blood red",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Deep red garnet. Isometric, no pleochroism, no cleavage. Good beginner stone.",warn:null,tip:"No orientation required optically. Easy to cut."},
+  {name:"Garnet — demantoid",species:"Garnet (Ca₃Fe₂Si₃O₁₂)",hardness:6.5,ri:"1.888",sg:3.85,cleavage:"None",hex:"#639922",colors:"Vivid green, yellow-green",pleochroism:"None",yourstock:false,group:"Silicate",desc:"The most valuable garnet — vivid green from chromium, dispersion exceeds diamond.",warn:null,tip:"High dispersion (0.057) produces spectacular fire. Brilliant cuts show this best."},
+  {name:"Garnet — tsavorite",species:"Garnet (Ca₃Al₂Si₃O₁₂)",hardness:7,ri:"1.734",sg:3.61,cleavage:"None",hex:"#1D9E75",colors:"Vivid green",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Chrome-vanadium grossular garnet — vivid green rival to emerald but far more durable.",warn:null,tip:"More durable than emerald. Brilliant cuts maximize the color."},
+  {name:"Garnet — spessartite",species:"Garnet (Mn₃Al₂Si₃O₁₂)",hardness:7.5,ri:"1.810",sg:4.19,cleavage:"None",hex:"#D85A30",colors:"Orange, mandarin orange, red-orange",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Manganese garnet in vivid orange. High SG (4.19) — heavier than expected.",warn:null,tip:"High SG means smaller stones weigh more than expected."},
+  {name:"Rhodolite garnet",species:"Garnet (Mg,Fe)₃Al₂Si₃O₁₂",hardness:7.5,ri:"1.760",sg:3.84,cleavage:"None",hex:"#D4537E",colors:"Raspberry pink, purple-red",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Raspberry-red to violet-red garnet. Excellent clarity. No cleavage, no pleochroism.",warn:null,tip:"Focus on achieving perfect facet meets — ideal precision practice stone."},
+  {name:"Malaia garnet",species:"Garnet (mixed pyrope-spessartite)",hardness:7.5,ri:"1.760",sg:3.78,cleavage:"None",hex:"#EF9F27",colors:"Peach, orange-pink, pinkish orange",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Pyrope-spessartite intermediate with desirable peachy-orange hues from East Africa.",warn:null,tip:"Easy to cut — no orientation required."},
+  {name:"Color-change garnet",species:"Garnet (mixed spessartite-pyrope)",hardness:7.5,ri:"1.760",sg:3.80,cleavage:"None",hex:"#7F77DD",colors:"Green in daylight / red-purple indoors",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Rare garnets that change color under different lighting.",warn:null,tip:"No orientation required. Brilliant cuts best."},
+  {name:"Garnet — uvarovite",species:"Garnet (Ca₃Cr₂Si₃O₁₂)",hardness:7.5,ri:"1.870",sg:3.90,cleavage:"None",hex:"#1D9E75",colors:"Vivid emerald green",pleochroism:"None",yourstock:false,group:"Silicate",desc:"The only garnet always vivid green — from chromium. Almost exclusively tiny druse crystals.",warn:null,tip:"Usually left as specimen due to tiny crystal size."},
+  {name:"Zircon",species:"Zirconium silicate (ZrSiO₄)",hardness:7.5,ri:"1.925",sg:4.65,cleavage:"Imperfect",hex:"#85B7EB",colors:"Blue, colorless, yellow, orange, red",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Natural zircon. Oldest mineral on Earth. High RI gives extraordinary brilliance. High birefringence causes facet doubling.",warn:"High birefringence causes facet edge doubling. Brittle. Cut carefully.",tip:"The zircon brilliant cut has extra facets to reduce the doubling effect."},
+  {name:"Phenakite",species:"Beryllium silicate (Be₂SiO₄)",hardness:7.5,ri:"1.654",sg:2.96,cleavage:"Distinct",hex:"#EEEDFE",colors:"Colorless, pale pink, yellow",pleochroism:"None",yourstock:false,group:"Silicate",desc:"High hardness, high RI for a colorless stone. Rare. Good brilliance.",warn:null,tip:"Rare and valuable — practice on quartz first."},
+  {name:"Andalusite",species:"Aluminum silicate (Al₂SiO₅)",hardness:7.5,ri:"1.638",sg:3.17,cleavage:"Distinct",hex:"#BA7517",colors:"Yellow-green and red-brown (trichroic)",pleochroism:"Strong trichroism",yourstock:false,group:"Silicate",desc:"Remarkable stone that shows green and red simultaneously.",warn:null,tip:"Orient 45° to both pleochroic axes to show the classic green-red color mix simultaneously."},
+  {name:"Grandidierite",species:"Magnesium iron aluminum borosilicate",hardness:7.5,ri:"1.583",sg:2.98,cleavage:"Distinct",hex:"#5DCAA5",colors:"Blue-green, neon teal",pleochroism:"Trichroic",yourstock:false,group:"Silicate",desc:"Rare teal-blue borosilicate from Madagascar. Transparent facetable material is extremely rare.",warn:null,tip:"Orient for teal-blue face-up color — similar approach to tanzanite."},
+  {name:"Sapphirine",species:"Magnesium aluminum silicate",hardness:7.5,ri:"1.710",sg:3.49,cleavage:"Distinct",hex:"#378ADD",colors:"Blue, blue-green, gray-blue",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Vivid blue mineral, extremely rare as gem quality. A top trophy cut for advanced collectors.",warn:null,tip:"Strong pleochroism — orient for best blue face-up."},
+  {name:"Hambergite",species:"Beryllium borate (Be₂BO₃OH)",hardness:7.5,ri:"1.560",sg:2.35,cleavage:"Perfect",hex:"#EEEDFE",colors:"Colorless, pale yellow",pleochroism:"None",yourstock:false,group:"Borate",desc:"Very high birefringence causes extreme facet doubling. Perfect cleavage. Rare.",warn:"Perfect cleavage + extreme birefringence. Optic axis orientation critical.",tip:"Cut with table parallel to optic axis to minimize the doubling."},
+  {name:"Tanzanite",species:"Zoisite (Ca₂Al₃(SiO₄)₃(OH))",hardness:6.5,ri:"1.692",sg:3.35,cleavage:"Perfect in one direction",hex:"#534AB7",colors:"Blue-violet, purple, burgundy",pleochroism:"Trichroic — strong",yourstock:true,group:"Silicate",desc:"Found only at the foot of Mt. Kilimanjaro. One of the most trichroic gems — shows blue-violet, red-purple, and yellow-brown from three axes.",warn:"Perfect cleavage + strong trichroism. Orient C-axis perpendicular to table for blue-violet face-up. Extreme care required.",tip:"Raking light + cedarwood oil + loupe to identify cleavage and C-axis before dopping."},
+  {name:"Amethyst",species:"Quartz (SiO₂)",hardness:7,ri:"1.544",sg:2.65,cleavage:"None",hex:"#7F77DD",colors:"Purple, violet, pale lavender",pleochroism:"Weak",yourstock:false,group:"Silicate",desc:"Purple quartz, colored by iron and irradiation. No cleavage — easy to cut.",warn:null,tip:"Good beginner stone. Watch for color zoning before dopping."},
+  {name:"Citrine",species:"Quartz (SiO₂)",hardness:7,ri:"1.544",sg:2.65,cleavage:"None",hex:"#FAC775",colors:"Yellow, orange, golden, brownish",pleochroism:"Weak",yourstock:false,group:"Silicate",desc:"Yellow quartz, often heat-treated amethyst. No cleavage, easy to cut.",warn:null,tip:"Ideal beginner stone. Teaches clean pre-polish technique."},
+  {name:"Smoky quartz",species:"Quartz (SiO₂)",hardness:7,ri:"1.544",sg:2.65,cleavage:"None",hex:"#888780",colors:"Brown, gray, black (morion)",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Quartz colored by natural radiation. No cleavage — excellent practice for fantasy cut designs.",warn:null,tip:"Large stones available affordably — perfect for learning complex fantasy cuts."},
+  {name:"Rose quartz",species:"Quartz (SiO₂)",hardness:7,ri:"1.544",sg:2.65,cleavage:"None",hex:"#ED93B1",colors:"Pink, pale pink",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Massive form of quartz. Typically cloudy to translucent — rarely faceted.",warn:null,tip:"Translucent material suits cabbing or checkerboard cuts that scatter light."},
+  {name:"Tourmaline — indicolite",species:"Tourmaline (complex borosilicate)",hardness:7,ri:"1.624",sg:3.06,cleavage:"None",hex:"#378ADD",colors:"Blue, greenish blue, teal",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Blue variety of tourmaline. Strong pleochroism — different axes show different blue intensities.",warn:null,tip:"Orient C-axis parallel to table for best blue face-up."},
+  {name:"Tourmaline — rubellite",species:"Tourmaline (complex borosilicate)",hardness:7,ri:"1.624",sg:3.06,cleavage:"None",hex:"#ED93B1",colors:"Red, pink-red, hot pink",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Red-pink tourmaline. Strong pleochroism makes orientation critical for richest red.",warn:null,tip:"Look through rough from multiple directions to find richest red before dopping."},
+  {name:"Tourmaline — verdelite",species:"Tourmaline (complex borosilicate)",hardness:7,ri:"1.624",sg:3.06,cleavage:"None",hex:"#639922",colors:"Green, yellowish green, olive",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Green tourmaline. Frequently bicolor or parti-colored along C-axis.",warn:null,tip:"Parti-colored material can be cut to show color division — a feature, not a flaw."},
+  {name:"Tourmaline — watermelon",species:"Tourmaline (complex borosilicate)",hardness:7,ri:"1.624",sg:3.06,cleavage:"None",hex:"#F4C0D1",colors:"Pink core, green rim",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Bicolor tourmaline with pink core and green rim. Usually sliced as cross-sections.",warn:null,tip:"Slice perpendicular to C-axis for the classic watermelon cross-section display."},
+  {name:"Iolite",species:"Cordierite (Mg₂Al₃(AlSi₅)O₁₈)",hardness:7,ri:"1.542",sg:2.61,cleavage:"Distinct",hex:"#534AB7",colors:"Violet-blue, clear, yellow (trichroic)",pleochroism:"Extreme trichroism",yourstock:false,group:"Silicate",desc:"The water sapphire — extreme trichroism. Historically used by Vikings as a navigation tool.",warn:"Extreme trichroism demands very careful orientation — wrong axis gives a pale stone.",tip:"Axis perpendicular to table shows deep violet-blue."},
+  {name:"Kunzite",species:"Spodumene (LiAlSi₂O₆)",hardness:7,ri:"1.655",sg:3.18,cleavage:"Perfect in two directions",hex:"#F4C0D1",colors:"Pink-violet, lavender, pale pink",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Pink-violet spodumene. Perfect cleavage in two directions and strong pleochroism. Color fades in strong sunlight.",warn:"Perfect cleavage in two directions + strong pleochroism = significant cutting challenge.",tip:"Avoid bright sunlight display — UV causes color fade. Step cuts recommended."},
+  {name:"Hiddenite",species:"Spodumene (LiAlSi₂O₆)",hardness:7,ri:"1.660",sg:3.18,cleavage:"Perfect in two directions",hex:"#97C459",colors:"Green, yellow-green (chromium)",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Green chromium spodumene — extremely rare. Same cleavage challenges as kunzite.",warn:"Perfect cleavage in two directions. Extremely rare.",tip:"Same cutting approach as kunzite."},
+  {name:"Danburite",species:"Calcium boron silicate",hardness:7,ri:"1.630",sg:3.00,cleavage:"Poor",hex:"#FAC775",colors:"Colorless, pale yellow, pale pink",pleochroism:"None",yourstock:false,group:"Silicate",desc:"High luster and excellent clarity. Often used as a diamond substitute for its brilliance.",warn:null,tip:"Good beginner brilliant-cut stone. High luster responds well to final polish."},
+  {name:"Garnet — hessonite",species:"Garnet — grossular (Ca₃Al₂Si₃O₁₂)",hardness:7.25,ri:"1.734",sg:3.64,cleavage:"None",hex:"#D85A30",colors:"Orange-brown, cinnamon, honey",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Cinnamon-colored grossular garnet. Inclusions of diopside crystals produce a distinctive treacly texture.",warn:null,tip:"The interior treacly texture is a characteristic feature — brilliant cuts showcase this."},
+  {name:"Peridot",species:"Olivine (Mg,Fe)₂SiO₄",hardness:6.5,ri:"1.654",sg:3.34,cleavage:"Poor",hex:"#97C459",colors:"Olive green, yellow-green, bottle green",pleochroism:"Weak",yourstock:false,group:"Silicate",desc:"One of the few gems that comes in only one color — shades of green-yellow from iron.",warn:"Conchoidal fracture more common than cleavage. Sensitive to acid.",tip:"Cut relatively cool and moist."},
+  {name:"Zultanite — diaspore",species:"Aluminum oxide hydroxide",hardness:6.5,ri:"1.702",sg:3.40,cleavage:"Perfect",hex:"#534AB7",colors:"Olive/khaki in daylight, pink-champagne indoors",pleochroism:"Extreme color change",yourstock:false,group:"Oxide",desc:"Color-change diaspore. Shows khaki-green in daylight, pink-rose under incandescent. Mined only in Turkey.",warn:"Perfect cleavage demands careful handling.",tip:"Orient for best color-change observation."},
+  {name:"Kyanite",species:"Aluminum silicate (Al₂SiO₅)",hardness:"6.5/4.5",ri:"1.715",sg:3.68,cleavage:"Perfect in two directions",hex:"#378ADD",colors:"Blue, blue-green, green, gray, orange",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Famous for variable hardness — Mohs 6.5 along length, 4.5 across. Two perfect cleavages.",warn:"Variable hardness means different lap speeds cut differently depending on direction.",tip:"C-axis orientation is critical for best blue color."},
+  {name:"Kornerupine",species:"Magnesium aluminum borosilicate",hardness:6.5,ri:"1.667",sg:3.32,cleavage:"Distinct",hex:"#639922",colors:"Green, yellow-green, brown, rare blue",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Rare collector stone with strong pleochroism. Green material most valued; blue is extremely rare.",warn:null,tip:"Strong pleochroism — orient C-axis for best color."},
+  {name:"Sinhalite",species:"Magnesium aluminum borate",hardness:6.5,ri:"1.668",sg:3.48,cleavage:"Imperfect",hex:"#BA7517",colors:"Yellow-brown, brown, pale green",pleochroism:"Moderate",yourstock:false,group:"Borate",desc:"Rare borate mineral, historically confused with peridot and brown tourmaline.",warn:null,tip:"Orient for best color — pale green material more desirable than brown."},
+  {name:"Axinite",species:"Calcium aluminum borosilicate",hardness:6.5,ri:"1.678",sg:3.30,cleavage:"Distinct",hex:"#D85A30",colors:"Clove brown, violet, yellow, blue",pleochroism:"Strong",yourstock:false,group:"Borate",desc:"Named for its axe-shaped crystals. Strong pleochroism — different axes show dramatically different colors.",warn:null,tip:"Pleochroism can show brown vs violet — orient for desired color."},
+  {name:"Jeremejevite",species:"Aluminum borate fluoride",hardness:6.5,ri:"1.647",sg:3.28,cleavage:"Imperfect",hex:"#B5D4F4",colors:"Pale blue, colorless, pale yellow",pleochroism:"Moderate",yourstock:false,group:"Borate",desc:"One of the rarest facetable gems. Found in only a few localities globally — Namibia being primary.",warn:null,tip:"Extreme rarity — practice extensively on similar RI stones before attempting."},
+  {name:"Vesuvianite",species:"Calcium aluminum silicate",hardness:6.5,ri:"1.713",sg:3.40,cleavage:"Poor",hex:"#639922",colors:"Yellow-green, green, brown, blue",pleochroism:"Weak",yourstock:false,group:"Silicate",desc:"Interesting tetragonal silicate with a wide color range. Transparent material is uncommon.",warn:null,tip:"Good RI gives decent brilliance. Transparent material is the collector prize."},
+  {name:"Tanzanite",species:"Zoisite",hardness:6.5,ri:"1.692",sg:3.35,cleavage:"Perfect in one direction",hex:"#534AB7",colors:"Blue-violet, purple, burgundy",pleochroism:"Trichroic",yourstock:true,group:"Silicate",desc:"Your tanzanite stock. Perfect cleavage + strong trichroism. Most demanding stone in your collection.",warn:"Perfect cleavage + strong trichroism. Extreme care at all stages.",tip:"Study the C-axis orientation carefully before dopping. Cannot be undone."},
+  {name:"Scapolite",species:"Sodium-calcium aluminosilicate",hardness:6,ri:"1.550",sg:2.65,cleavage:"Distinct",hex:"#FAC775",colors:"Yellow, purple, pink, colorless",pleochroism:"Moderate",yourstock:false,group:"Silicate",desc:"Underappreciated faceting stone. Interesting color range including rare lavender-purple.",warn:"Distinct cleavage — orient cleavage parallel to table.",tip:"Purple scapolite is particularly attractive."},
+  {name:"Moonstone",species:"Feldspar (KAlSi₃O₈)",hardness:6,ri:"1.518",sg:2.58,cleavage:"Perfect in two directions",hex:"#CECBF6",colors:"White-blue adularescence, rainbow, peach",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Feldspar with adularescence — a floating blue sheen from alternating mineral layers. Usually cabbed.",warn:"Two perfect cleavages — high risk. Typically not faceted.",tip:"Cabochon orientation critical for maximizing the adularescence glow."},
+  {name:"Labradorite",species:"Feldspar (Na,Ca)(Al,Si)₄O₈",hardness:6,ri:"1.559",sg:2.70,cleavage:"Perfect in two directions",hex:"#185FA5",colors:"Gray with blue-green-gold labradorescence",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Feldspar with spectacular labradorescence from internal twinning planes. Two perfect cleavages.",warn:"Two perfect cleavages at ~86°. High fracture risk. Usually cabbed.",tip:"Orient for maximum labradorescence."},
+  {name:"Benitoite",species:"Barium titanium silicate",hardness:6,ri:"1.757",sg:3.65,cleavage:"Imperfect",hex:"#185FA5",colors:"Deep blue, colorless",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"California's state gem. Found only in San Benito County, CA. Spectacular blue with high dispersion.",warn:null,tip:"Strong pleochroism: orient C-axis perpendicular to table for best blue."},
+  {name:"Clinohumite",species:"Magnesium silicate with fluorine",hardness:6,ri:"1.631",sg:3.21,cleavage:"Poor",hex:"#EF9F27",colors:"Yellow, orange-yellow",pleochroism:"Weak",yourstock:false,group:"Silicate",desc:"Rare Tajikistani orange gem. Very limited facetable material. Poor cleavage.",warn:null,tip:"The vibrant orange is best shown in brilliant cuts."},
+  {name:"Prehnite",species:"Calcium aluminum silicate",hardness:6,ri:"1.616",sg:2.90,cleavage:"Distinct",hex:"#97C459",colors:"Pale green, apple green, yellow-green",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Typically translucent apple green. Clear material can be faceted but is uncommon.",warn:null,tip:"Clear facetable material is a collector's prize."},
+  {name:"Sphene — titanite",species:"Calcium titanium silicate",hardness:5.5,ri:"1.900",sg:3.53,cleavage:"Distinct",hex:"#BA7517",colors:"Yellow, green, brown, orange",pleochroism:"Strong",yourstock:false,group:"Silicate",desc:"Exceptional fire — dispersion of 0.051 exceeds diamond. Strong pleochroism. Relatively soft (5.5).",warn:"Distinct cleavage + Mohs 5.5. Handle carefully.",tip:"Brilliant cuts maximize the extraordinary fire."},
+  {name:"Opal — precious",species:"Hydrated amorphous silica",hardness:5.5,ri:"1.450",sg:2.10,cleavage:"None",hex:"#7F77DD",colors:"All colors — play of color",pleochroism:"None",yourstock:false,group:"Oxide",desc:"Amorphous hydrated silica with spectacular play of color. Contains 3–20% water.",warn:"Water loss causes cracking. Never ultrasonics, steam, or harsh chemicals.",tip:"Doublets and triplets protect soft, thin material."},
+  {name:"Willemite",species:"Zinc silicate (Zn₂SiO₄)",hardness:5.5,ri:"1.691",sg:4.05,cleavage:"Poor",hex:"#97C459",colors:"Green (fluorescent), colorless, yellow",pleochroism:"Moderate",yourstock:false,group:"Silicate",desc:"Famous for brilliant fluorescent green under UV. High SG. Rare gem-quality material.",warn:null,tip:"Display under UV alongside white light to show the dramatic fluorescence."},
+  {name:"Enstatite",species:"Magnesium silicate (MgSiO₃)",hardness:5.5,ri:"1.665",sg:3.27,cleavage:"Distinct in two directions",hex:"#D85A30",colors:"Green, brown, gray, star (catseye)",pleochroism:"Moderate",yourstock:false,group:"Silicate",desc:"Chrome enstatite is a vivid green gemstone. Star and cat's eye effects in some specimens.",warn:"Distinct cleavage in two directions.",tip:"Chrome enstatite (vivid green) is the most desirable variety."},
+  {name:"Diopside — chrome",species:"Calcium magnesium pyroxene",hardness:5.5,ri:"1.676",sg:3.29,cleavage:"Distinct in two directions",hex:"#1D9E75",colors:"Vivid green",pleochroism:"Moderate",yourstock:false,group:"Silicate",desc:"Chromium diopside — vivid Siberian green. Affordable alternative to tsavorite and emerald.",warn:"Distinct cleavage in two directions — orient carefully.",tip:"Vivid green color best in sizes above 2 carats."},
+  {name:"Apatite",species:"Calcium phosphate",hardness:5,ri:"1.634",sg:3.20,cleavage:"Poor",hex:"#85B7EB",colors:"Blue, green, yellow, pink, violet",pleochroism:"Moderate",yourstock:false,group:"Phosphate",desc:"Facetable in transparent form — good RI, interesting colors. Brittle with conchoidal fracture.",warn:null,tip:"Brittle — avoid ultrasonic cleaners. Blue-green material most prized."},
+  {name:"Turquoise",species:"Copper aluminum phosphate",hardness:5,ri:"1.610",sg:2.75,cleavage:"None",hex:"#5DCAA5",colors:"Sky blue, blue-green, green (with matrix)",pleochroism:"None",yourstock:false,group:"Phosphate",desc:"Opaque copper-colored phosphate. Porous — cabochon and carvings only.",warn:"Extremely porous — absorbs everything. Avoid water, oils, cosmetics.",tip:"Cabochon only. Stabilized turquoise is harder for setting."},
+  {name:"Hemimorphite",species:"Zinc silicate hydroxide",hardness:5,ri:"1.614",sg:3.40,cleavage:"Perfect",hex:"#5DCAA5",colors:"Blue, blue-green, white, colorless",pleochroism:"None",yourstock:false,group:"Silicate",desc:"Blue zinc mineral — facetable transparent material is rare and collected.",warn:"Perfect cleavage — very careful handling required.",tip:"Extreme rarity of clear material makes this a trophy cut."},
+  {name:"Fluorite",species:"Calcium fluoride (CaF₂)",hardness:4,ri:"1.434",sg:3.18,cleavage:"Perfect octahedral (4 directions)",hex:"#7F77DD",colors:"Purple, green, blue, yellow, colorless, rainbow",pleochroism:"None",yourstock:false,group:"Halide",desc:"Perfect cleavage in four octahedral directions. Glows under UV. Fluorescence was named after it.",warn:"Perfect cleavage in FOUR directions. Not recommended for beginners.",tip:"Very light pressure only. Step cuts minimize stress."},
+  {name:"Smithsonite",species:"Zinc carbonate (ZnCO₃)",hardness:4.5,ri:"1.621",sg:4.30,cleavage:"Perfect rhombohedral",hex:"#5DCAA5",colors:"Pink, lavender, blue, green, yellow",pleochroism:"None",yourstock:false,group:"Carbonate",desc:"Heavy (SG 4.30) soft carbonate. Pastel colors are attractive. Perfect cleavage and low hardness.",warn:"Perfect cleavage + Mohs 4.5. Very careful handling required.",tip:"High SG means the finished stone will feel heavier than expected."},
+  {name:"Malachite",species:"Copper carbonate (Cu₂CO₃(OH)₂)",hardness:3.5,ri:"1.655",sg:3.90,cleavage:"Perfect",hex:"#1D9E75",colors:"Banded green, light-dark patterns",pleochroism:"None",yourstock:false,group:"Carbonate",desc:"Opaque copper carbonate with stunning concentric green banding. Not a faceting stone.",warn:"Perfect cleavage, Mohs 3.5, dissolves in acid. Not a faceting stone.",tip:"Cabochon and carving only."},
+  {name:"Rhodochrosite",species:"Manganese carbonate (MnCO₃)",hardness:3.5,ri:"1.816",sg:3.70,cleavage:"Perfect rhombohedral",hex:"#F4C0D1",colors:"Pink, red-pink with white banding",pleochroism:"None",yourstock:false,group:"Carbonate",desc:"Manganese carbonate with distinctive pink-white banding. Perfect cleavage in three directions.",warn:"Perfect cleavage in 3 directions + Mohs 3.5 = extreme care. Rarely faceted.",tip:"Stalactitic form is sliced and polished rather than cut."}
+];
+
+/* ══ REMOVE DUPLICATE TANZANITE ══ */
+const seen = new Set();
+const GEMS_CLEAN = GEMS.filter(s => { const k = s.name+s.species; if(seen.has(k)) return false; seen.add(k); return true; });
+
+/* ══ STATE ══ */
+let activeFilter = 'all';
+let activeView   = 'grid';
+let sortKey      = 'name';
+let sortAsc      = true;
+
+document.getElementById('totalCount').textContent = GEMS_CLEAN.length + '+';
+
+/* ══ HELPERS ══ */
+function hColor(h) {
+  const v = parseFloat(h);
+  if(v >= 9) return '#378ADD';
+  if(v >= 8) return '#7F77DD';
+  if(v >= 7) return '#1D9E75';
+  if(v >= 6) return '#EF9F27';
+  return '#E24B4A';
+}
+
+/* ══ FILTER ══ */
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  return GEMS_CLEAN.filter(s => {
+    const matchQ = !q || s.name.toLowerCase().includes(q) || s.species.toLowerCase().includes(q) || s.colors.toLowerCase().includes(q) || (s.group||'').toLowerCase().includes(q);
+    let matchF = true;
+    const h = parseFloat(s.hardness);
+    if(activeFilter==='9')        matchF = h >= 9;
+    else if(activeFilter==='8')   matchF = h >= 8 && h < 9;
+    else if(activeFilter==='7')   matchF = h >= 7 && h < 8;
+    else if(activeFilter==='low') matchF = h < 7;
+    else if(activeFilter==='cleavage') matchF = !s.cleavage.toLowerCase().includes('none');
+    else if(activeFilter==='stock')    matchF = s.yourstock;
+    return matchQ && matchF;
+  });
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+function setView(v) {
+  activeView = v;
+  document.getElementById('gridView').classList.toggle('hidden', v !== 'grid');
+  document.getElementById('listView').classList.toggle('hidden', v !== 'list');
+  document.getElementById('btnGrid').classList.toggle('on', v === 'grid');
+  document.getElementById('btnList').classList.toggle('on', v === 'list');
+  render();
+}
+
+function sortBy(key) {
+  if(sortKey === key) sortAsc = !sortAsc;
+  else { sortKey = key; sortAsc = true; }
+  render();
+}
+
+/* ══ RENDER ══ */
+function render() {
+  let stones = getFiltered();
+  document.getElementById('stoneCount').textContent = stones.length + ' stone' + (stones.length !== 1 ? 's' : '');
+  if(activeView === 'grid') renderGrid(stones);
+  else renderTable([...stones].sort((a,b) => {
+    let av = a[sortKey]??'', bv = b[sortKey]??'';
+    if(typeof av==='string'){av=av.toLowerCase();bv=bv.toLowerCase();}
+    return av<bv ? (sortAsc?-1:1) : av>bv ? (sortAsc?1:-1) : 0;
+  }));
+}
+
+function renderGrid(stones) {
+  const el = document.getElementById('stoneGrid');
+  if(!stones.length){ el.innerHTML=`<div style="padding:3rem;color:var(--text-muted);text-align:center;">No stones match your search.</div>`; return; }
+  el.innerHTML = stones.map(s => `
+    <div class="stone-card" onclick="openStone('${s.name.replace(/'/g,"\\'")}','${s.species.replace(/'/g,"\\'")}')">
+      <div class="stone-color-bar" style="background:${s.hex}18;">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+          <polygon points="23,2 44,16 38,44 8,44 2,16" fill="${s.hex}" opacity="0.88"/>
+          <polygon points="23,2 44,16 23,13" fill="white" opacity="0.22"/>
+          <polygon points="23,13 44,16 38,44 8,44 2,16" fill="${s.hex}" opacity="0.35"/>
+        </svg>
+      </div>
+      <div class="stone-card-body">
+        <div class="stone-name">${s.name}</div>
+        <div class="stone-species">${s.species.split('(')[0].trim()}</div>
+        <div class="stone-pills">
+          <span class="pill" style="background:${hColor(s.hardness)}18;color:${hColor(s.hardness)};">Mohs ${s.hardness}</span>
+          ${s.yourstock ? '<span class="pill" style="background:rgba(55,138,221,0.15);color:#85B7EB;">★ Yours</span>' : ''}
+          ${!s.cleavage.toLowerCase().includes('none') ? '<span class="pill" style="background:rgba(239,159,39,0.15);color:#FAC775;">⚠</span>' : ''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderTable(stones) {
+  if(!stones.length){ document.getElementById('stoneTable').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--text-muted);">No stones match your search.</td></tr>`; return; }
+  document.getElementById('stoneTable').innerHTML = stones.map(s => `
+    <tr onclick="openStone('${s.name.replace(/'/g,"\\'")}','${s.species.replace(/'/g,"\\'")}')">
+      <td><span class="col-dot" style="background:${s.hex};"></span>${s.name}</td>
+      <td style="color:var(--text-muted);font-size:12px;">${s.species.split('(')[0].trim()}</td>
+      <td style="color:${hColor(s.hardness)};font-weight:500;">${s.hardness}</td>
+      <td>${s.ri}</td>
+      <td>${s.sg}</td>
+      <td style="font-size:12px;color:${s.cleavage.toLowerCase().includes('perfect')?'var(--warn-text)':'var(--text-muted)'};">${s.cleavage}</td>
+      <td style="font-size:12px;color:var(--text-muted);">${s.colors.split(',').slice(0,2).join(', ')}</td>
+    </tr>`).join('');
+}
+
+/* ══ STONE MODAL ══ */
+function openStone(name, species) {
+  const s = GEMS_CLEAN.find(g => g.name===name && g.species===species);
+  if(!s) return;
+  document.getElementById('modalInner').innerHTML = `
+    <div class="modal-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+            <polygon points="21,2 40,14 34,40 8,40 2,14" fill="${s.hex}" opacity="0.9"/>
+            <polygon points="21,2 40,14 21,12" fill="white" opacity="0.22"/>
+          </svg>
+          <div>
+            <div class="modal-title">${s.name}</div>
+            <div class="modal-species">${s.species}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="pill" style="background:${hColor(s.hardness)}18;color:${hColor(s.hardness)};font-size:12px;padding:4px 10px;">Mohs ${s.hardness}</span>
+          ${s.yourstock ? '<span class="pill" style="background:rgba(55,138,221,0.15);color:#85B7EB;font-size:12px;padding:4px 10px;">★ Your stock</span>' : ''}
+          ${s.group ? `<span class="pill" style="background:rgba(83,74,183,0.2);color:var(--tz-bright);font-size:12px;padding:4px 10px;">${s.group}</span>` : ''}
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeStone()">×</button>
+    </div>
+    <div class="modal-stats">
+    <div class="modal-stat"><div class="modal-stat-label">Refractive index</div><div class="modal-stat-value">${s.ri}</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Critical angle</div><div class="modal-stat-value" style="color:var(--gold);">${(Math.asin(1/parseFloat(s.ri))*180/Math.PI).toFixed(1)}°</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Specific gravity</div><div class="modal-stat-value">${s.sg}</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Cleavage</div><div class="modal-stat-value" style="font-size:13px;">${s.cleavage}</div></div>
+      <div class="modal-stat"><div class="modal-stat-label">Pleochroism</div><div class="modal-stat-value" style="font-size:13px;">${s.pleochroism}</div></div>
+    </div>
+    <p class="modal-desc">${s.desc}</p>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;"><strong style="color:var(--text-dim);">Colors:</strong> ${s.colors}</p>
+    ${s.yourstock ? `<div class="modal-stock">★ In your rough inventory — check Studio tools for lap sequence and cutting angles.</div>` : ''}
+    ${s.warn ? `<div class="modal-warn"><span>⚠</span><span>${s.warn}</span></div>` : ''}
+    ${s.tip  ? `<div class="modal-tip">💡 ${s.tip}</div>` : ''}
+    <button onclick="closeStone()" style="margin-top:0.75rem;padding:9px 20px;background:transparent;border:0.5px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-muted);cursor:pointer;font-size:13px;">Close</button>
+  `;
+  document.getElementById('stoneModal').classList.add('open');
+}
+function closeStone() { document.getElementById('stoneModal').classList.remove('open'); }
+
+/* ══ AUTH ══ */
+let currentUser = JSON.parse(localStorage.getItem('gg_user')||'null');
+function openAuth(mode){ document.getElementById('authOverlay').classList.add('open'); switchAuth(mode||'login'); }
+function closeAuthDirect(){ document.getElementById('authOverlay').classList.remove('open'); }
+function switchAuth(mode){
+  document.getElementById('loginForm').classList.toggle('hidden', mode!=='login');
+  document.getElementById('signupForm').classList.toggle('hidden', mode!=='signup');
+  document.getElementById('loginTab').classList.toggle('active', mode==='login');
+  document.getElementById('signupTab').classList.toggle('active', mode==='signup');
+}
+function showErr(msg){ const e=document.getElementById('authErr'); e.textContent=msg; e.classList.add('show'); e.style.display='block'; }
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){ showErr('Please fill in all fields.'); return; }
+  if(pass!=='gems'){ showErr('Demo password is: gems'); return; }
+  const name=email.split('@')[0];
+  loginUser({name:name.charAt(0).toUpperCase()+name.slice(1),email});
+}
+function doSignup(){
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass=document.getElementById('signupPass').value;
+  if(!name||!email||!pass){ showErr('Please fill in all fields.'); return; }
+  loginUser({name,email});
+}
+function loginUser(user){
+  currentUser=user;
+  localStorage.setItem('gg_user',JSON.stringify(user));
+  closeAuthDirect();
+  applyAuth();
+  toast(`Welcome back, ${user.name}! ✦`);
+}
+function logout(){
+  currentUser=null;
+  localStorage.removeItem('gg_user');
+  applyAuth();
+  toast('Signed out. See you at the bench.');
+}
+function applyAuth(){
+  const in_=!!currentUser;
+  document.getElementById('guestNav').classList.toggle('hidden',in_);
+  document.getElementById('userNav').classList.toggle('hidden',!in_);
+  if(in_){
+    document.getElementById('navUserName').textContent=currentUser.name;
+    document.getElementById('avatarInitials').textContent=currentUser.name.slice(0,2).toUpperCase();
+  }
+}
+
+/* ══ BACKGROUND ══ */
+(function buildBg(){
+  const canvas=document.getElementById('bgCanvas');
+  const colors=['#3C3489','#534AB7','#7F77DD','#AFA9EC','#26215C'];
+  for(let i=0;i<10;i++){
+    const w=document.createElement('div');
+    const sz=18+Math.random()*50;
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    w.style.cssText=`position:absolute;opacity:0.055;left:${Math.random()*100}%;bottom:-80px;`;
+    w.innerHTML=`<svg width="${sz}" height="${sz}" viewBox="0 0 40 40" fill="none" style="animation:floatGem ${14+Math.random()*28}s ${Math.random()*20}s linear infinite;">
+      <polygon points="20,2 38,15 32,38 8,38 2,15" fill="${col}"/>
+      <polygon points="20,2 38,15 20,13" fill="white" opacity="0.15"/>
+    </svg>`;
+    canvas.appendChild(w);
+  }
+})();
+
+/* ══ TOAST ══ */
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+/* ══ FLOAT GEM KEYFRAME ══ */
+const style=document.createElement('style');
+style.textContent=`@keyframes floatGem{0%{transform:translateY(110vh) rotate(0deg);}100%{transform:translateY(-140px) rotate(360deg);}}`;
+document.head.appendChild(style);
+
+/* ══ LIGHT / DARK MODE ══ */
+function toggleMode(){
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('gg_mode', isLight ? 'light' : 'dark');
+  document.getElementById('modeToggle').textContent = isLight ? '🌑' : '🌙';
+}
+function applyMode(){
+  const saved = localStorage.getItem('gg_mode');
+  if(saved === 'light'){
+    document.body.classList.add('light');
+    const btn = document.getElementById('modeToggle');
+    if(btn) btn.textContent = '🌑';
+  }
+}
+
+/* ══ INIT ══ */
+applyMode();
+applyAuth();
+render();
+</script>
+</body>
+</html>

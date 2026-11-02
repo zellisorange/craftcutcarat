@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beginner Book — Galaxy Gems</title>
+  <meta name="description" content="Twelve Easy Gemstone Faceting Designs — a guide for the beginning gemcutter by Andrew Ian Brown & Mark Oros.">
+  <meta name="theme-color" content="#3C3489">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ══════════════════════════════════════
+       GALAXY GEMS — ROOT DESIGN SYSTEM
+    ══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --space:        #0D0B1A;
+      --deep:         #12103A;
+      --tz:           #3C3489;
+      --tz-mid:       #534AB7;
+      --tz-bright:    #7F77DD;
+      --tz-light:     #EEEDFE;
+      --tz-pale:      #F5F4FF;
+      --gold:         #EF9F27;
+      --gold-light:   #FAEEDA;
+      --text:         #F0EFF8;
+      --text-dim:     #AFA9EC;
+      --text-muted:   #6B6499;
+      --border:       #2A2460;
+      --border-light: #3D367A;
+      --card:         #16124A;
+      --card-hover:   #1E1960;
+      --radius:       12px;
+      --radius-sm:    8px;
+      --nav-h:        60px;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Inter', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--space);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    body.light-mode {
+      --space:        #F0EFF8;
+      --deep:         #E8E6F5;
+      --tz:           #534AB7;
+      --tz-mid:       #7F77DD;
+      --tz-bright:    #534AB7;
+      --text:         #1A1640;
+      --text-dim:     #3D367A;
+      --text-muted:   #7F77DD;
+      --border:       #C9C5F0;
+      --border-light: #B0ABDF;
+      --card:         #EEEDFE;
+      --card-hover:   #E0DEFA;
+    }
+
+    /* ══ NAV ══ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: var(--nav-h);
+      background: rgba(13,11,26,0.93);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+    }
+    body.light-mode nav { background: rgba(240,239,248,0.93); }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link {
+      padding: 7px 13px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--font-body);
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(83,74,183,0.18);
+      color: var(--text);
+    }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-btn {
+      padding: 7px 16px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--font-body);
+    }
+    .nav-btn:hover { background: var(--card); color: var(--text); }
+    .nav-btn.primary { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+    .nav-btn.primary:hover { background: var(--tz-bright); }
+    .mode-toggle {
+      padding: 7px 10px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      font-size: 16px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .nav-ham {
+      display: none;
+      padding: 8px 10px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .nav-drawer {
+      display: none;
+      position: fixed;
+      top: var(--nav-h);
+      left: 0; right: 0;
+      background: var(--deep);
+      border-bottom: 0.5px solid var(--border);
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 199;
+    }
+    .nav-drawer.open { display: flex; }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-ham   { display: block; }
+    }
+
+    /* ══ HERO BANNER ══ */
+    .book-hero {
+     position: relative;
+      padding: 3rem 2rem 3rem;
+      text-align: center;
+      overflow: hidden;
+    }
+    .book-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(83,74,183,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .book-hero-ring {
+      position: absolute;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      pointer-events: none;
+    }
+    .book-hero-ring.r1 { width: 500px; height: 500px; border: 0.5px solid rgba(127,119,221,0.09); transform: translate(-50%,-50%); animation: spinRing 50s linear infinite; }
+    .book-hero-ring.r2 { width: 780px; height: 780px; border: 0.5px solid rgba(127,119,221,0.05); transform: translate(-50%,-50%); animation: spinRing 75s linear infinite reverse; }
+    @keyframes spinRing {
+      from { transform: translate(-50%,-50%) rotate(0deg); }
+      to   { transform: translate(-50%,-50%) rotate(360deg); }
+    }
+    .book-hero > * { position: relative; z-index: 1; }
+
+    .book-eyebrow {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--tz-bright);
+      margin-bottom: 1.2rem;
+    }
+    .book-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 7vw, 80px);
+      font-weight: 400;
+      line-height: 1.0;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+    .book-hero-title em { font-style: italic; color: var(--tz-bright); }
+    .book-hero-sub {
+      font-size: 15px;
+      color: var(--text-dim);
+      max-width: 480px;
+      margin: 0 auto 0.75rem;
+      line-height: 1.7;
+    }
+    .book-authors {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      letter-spacing: 0.04em;
+    }
+    .book-badge-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .book-badge {
+      padding: 6px 16px;
+      border: 0.5px solid var(--border-light);
+      border-radius: 99px;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* ══ QUOTE STRIP ══ */
+    .quote-strip {
+      border-top: 0.5px solid var(--border);
+      border-bottom: 0.5px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      background: var(--card);
+    }
+    .quote-text {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 3vw, 32px);
+      font-style: italic;
+      color: var(--tz-light);
+      font-weight: 400;
+    }
+    .quote-attr {
+      margin-top: 0.6rem;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ══ MAIN CONTENT ══ */
+    .page-body {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ══ SECTION TITLE ══ */
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      margin-top: 4rem;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ══ INTRO PILLARS ══ */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .intro-card {
+      background: var(--card);
+      padding: 1.75rem 1.5rem;
+      transition: background 0.2s;
+    }
+    .intro-card:hover { background: var(--card-hover); }
+    .intro-icon { font-size: 28px; margin-bottom: 1rem; display: block; }
+    .intro-label {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+    .intro-desc { font-size: 13px; color: var(--text-dim); line-height: 1.65; }
+
+    /* ══ MARK'S TIPS ══ */
+    .tips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .tip-row {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      background: var(--card);
+      transition: background 0.2s;
+    }
+    .tip-row:hover { background: var(--card-hover); }
+    .tip-num {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1.25rem 0 1.25rem;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-style: italic;
+      color: var(--tz-bright);
+      border-right: 0.5px solid var(--border);
+    }
+    .tip-body {
+      padding: 1.1rem 1.5rem;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .tip-body strong { color: var(--text); font-weight: 500; }
+
+    /* ══ FOUR P'S ══ */
+    .four-p-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .four-p-card {
+      background: var(--card);
+      padding: 2rem 1.5rem;
+      transition: background 0.2s;
+    }
+    .four-p-card:hover { background: var(--card-hover); }
+    .four-p-letter {
+      font-family: var(--font-display);
+      font-size: 56px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--tz-bright);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+    .four-p-label {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .four-p-desc { font-size: 13px; color: var(--text-dim); line-height: 1.65; }
+
+    /* ══ DESIGNS GRID ══ */
+    .designs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .design-card {
+      background: var(--card);
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: background 0.2s;
+      cursor: default;
+    }
+    .design-card:hover { background: var(--card-hover); }
+    .design-num {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-style: italic;
+      color: var(--tz-bright);
+      letter-spacing: 0.08em;
+    }
+    .design-shape {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .design-name {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      font-style: italic;
+    }
+    .design-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 0.3rem;
+    }
+    .design-tag {
+      padding: 3px 10px;
+      border-radius: 99px;
+      border: 0.5px solid var(--border-light);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .design-tag.gold {
+      border-color: rgba(239,159,39,0.4);
+      color: var(--gold);
+    }
+    .design-desc {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-top: 0.25rem;
+    }
+
+    /* ══ RI TABLE ══ */
+    .ri-table-wrap {
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .ri-table-header {
+      background: var(--card);
+      padding: 1rem 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 120px 140px 120px;
+      gap: 1rem;
+    }
+    .ri-table-header span {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .ri-row {
+      display: grid;
+      grid-template-columns: 1fr 120px 140px 120px;
+      gap: 1rem;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--space);
+      transition: background 0.15s;
+      align-items: center;
+    }
+    .ri-row:last-child { border-bottom: none; }
+    .ri-row:hover { background: var(--card); }
+    .ri-gem { font-size: 13px; color: var(--text); }
+    .ri-val { font-size: 13px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+    .ri-val.highlight { color: var(--tz-bright); font-weight: 500; }
+    .ri-angle { font-size: 13px; color: var(--gold); font-variant-numeric: tabular-nums; }
+    .ri-search {
+      width: 100%;
+      padding: 10px 16px;
+      background: var(--card);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font-body);
+      margin-bottom: 1rem;
+      outline: none;
+    }
+    .ri-search:focus { border-color: var(--tz-bright); }
+    .ri-search::placeholder { color: var(--text-muted); }
+
+   /* ══ CUTTING INSTRUCTIONS ══ */
+    .cut-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 1.5rem;
+    }
+    .cut-tab {
+      padding: 7px 14px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--font-body);
+    }
+    .cut-tab:hover { background: var(--card); color: var(--text); }
+    .cut-tab.active { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+
+    .cut-panel-inner {
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .cut-header {
+      background: var(--card);
+      padding: 1.75rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .cut-header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .cut-title {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .cut-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 2px;
+    }
+    .cut-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .cut-badge {
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 0.5px solid var(--border-light);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .cut-badge.gold {
+      border-color: rgba(239,159,39,0.4);
+      color: var(--gold);
+    }
+    .cut-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 680px;
+    }
+    .cut-notes-box {
+      background: rgba(83,74,183,0.10);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .cut-notes-box strong { color: var(--tz-bright); }
+
+    .cut-body { padding: 0; }
+
+    .cut-phase {
+      border-bottom: 0.5px solid var(--border);
+    }
+    .cut-phase:last-child { border-bottom: none; }
+    .cut-phase-title {
+      padding: 0.9rem 2rem;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--tz-bright);
+      background: rgba(83,74,183,0.07);
+      border-bottom: 0.5px solid var(--border);
+      font-weight: 500;
+    }
+
+    .cut-step {
+      display: grid;
+      grid-template-columns: 70px 90px 180px 1fr;
+      gap: 0;
+      border-bottom: 0.5px solid var(--border);
+      transition: background 0.15s;
+    }
+    .cut-step:last-child { border-bottom: none; }
+    .cut-step:hover { background: var(--card-hover); }
+
+    .cut-step-cell {
+      padding: 0.85rem 1.25rem;
+      font-size: 13px;
+      border-right: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+    .cut-step-cell:last-child { border-right: none; }
+
+    .cut-step-label {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--tz-bright);
+      font-style: italic;
+    }
+    .cut-step-angle {
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+    .cut-step-index {
+      color: var(--text-dim);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      word-break: break-all;
+    }
+    .cut-step-inst {
+      color: var(--text-dim);
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+    .cut-step-inst em { color: var(--tz-bright); font-style: normal; font-weight: 500; }
+    .cut-step-inst .frost { color: var(--gold); font-weight: 500; }
+
+    .cut-col-header {
+      display: grid;
+      grid-template-columns: 70px 90px 180px 1fr;
+      background: var(--card);
+      border-bottom: 0.5px solid var(--border);
+    }
+    .cut-col-header span {
+      padding: 0.6rem 1.25rem;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-right: 0.5px solid var(--border);
+    }
+    .cut-col-header span:last-child { border-right: none; }
+
+    .cut-ri-note {
+      padding: 0.75rem 2rem;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--card);
+      border-bottom: 0.5px solid var(--border);
+      font-style: italic;
+    }
+
+    @media (max-width: 680px) {
+      .cut-step { grid-template-columns: 55px 80px 1fr; }
+      .cut-step-cell:nth-child(3) { display: none; }
+      .cut-col-header { grid-template-columns: 55px 80px 1fr; }
+      .cut-col-header span:nth-child(3) { display: none; }
+    }
+
+    /* ══ RESOURCES ══ */
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .resource-card {
+      background: var(--card);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: background 0.2s;
+    }
+    .resource-card:hover { background: var(--card-hover); }
+    .resource-icon { font-size: 24px; margin-bottom: 0.4rem; }
+    .resource-title { font-family: var(--font-display); font-size: 20px; color: var(--text); }
+    .resource-desc { font-size: 12.5px; color: var(--text-dim); line-height: 1.6; }
+    .resource-link {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 12px;
+      color: var(--tz-bright);
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .resource-link:hover { color: var(--tz-light); }
+
+    /* ══ DIVIDER ══ */
+    .divider {
+      border: none;
+      border-top: 0.5px solid var(--border);
+      margin: 3rem 0 0;
+    }
+
+    /* ══ FOOTER ══ */
+    footer {
+      border-top: 0.5px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+    .footer-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+    .footer-links {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .footer-link {
+      padding: 6px 12px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.15s;
+      font-family: var(--font-body);
+    }
+    .footer-link:hover { color: var(--tz-bright); }
+
+    /* ══ HIDDEN ══ */
+    .hidden { display: none !important; }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--card);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 10px 20px;
+      font-size: 13px;
+      color: var(--text);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+      z-index: 999;
+      white-space: nowrap;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 600px) {
+      .ri-table-header,
+      .ri-row { grid-template-columns: 1fr 90px 100px; }
+      .ri-table-header span:nth-child(3),
+      .ri-row .ri-val:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="nav-logo" onclick="location.href='../index.html'">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="rgba(127,119,221,0.35)" stroke-width="0.5" fill="none"/>
+      <polygon points="14,6 22,10 22,18 14,22 6,18 6,10" fill="rgba(83,74,183,0.3)"/>
+      <polygon points="14,8 26,10 22,26 6,26 2,10" fill="rgba(60,52,137,0.55)"/>
+    </svg>
+    Galaxy Gems
+  </div>
+
+  <div class="nav-links">
+    <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+    <button class="nav-link" onclick="location.href='library.html'">Stone library</button>
+    <button class="nav-link" onclick="location.href='studio.html'">Studio</button>
+    <button class="nav-link" onclick="location.href='community.html'">Community</button>
+    <button class="nav-link" onclick="location.href='learn.html'">Learn</button>
+    <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+    <button class="nav-link active" onclick="location.href='beginner-book.html'">📖 Beginner Book</button>
+  </div>
+
+  <div class="nav-right">
+    <button class="mode-toggle" id="modeToggle" onclick="toggleMode()" title="Toggle light/dark mode">🌙</button>
+    <button class="nav-ham" onclick="toggleDrawer()" aria-label="Open menu">☰</button>
+  </div>
+</nav>
+
+<!-- Mobile drawer -->
+<div class="nav-drawer" id="navDrawer">
+  <button class="nav-link" onclick="location.href='../index.html'">Home</button>
+  <button class="nav-link" onclick="location.href='library.html'">Stone library</button>
+  <button class="nav-link" onclick="location.href='studio.html'">Studio</button>
+  <button class="nav-link" onclick="location.href='community.html'">Community</button>
+  <button class="nav-link" onclick="location.href='learn.html'">Learn</button>
+  <button class="nav-link" onclick="location.href='journal.html'">Journal</button>
+  <button class="nav-link active" onclick="location.href='beginner-book.html'">📖 Beginner Book</button>
+</div>
+
+<!-- ══ HERO ══ -->
+<div class="book-hero">
+  <div class="book-hero-ring r1" aria-hidden="true"></div>
+  <div class="book-hero-ring r2" aria-hidden="true"></div>
+
+  <span class="book-eyebrow">Galaxy Gems · Lapidary Library</span>
+
+  <h1 class="book-hero-title">
+    Twelve Easy<br>
+    <em>Gemstone Faceting</em><br>
+    Designs
+  </h1>
+
+  <p class="book-authors">Andrew Ian Brown &amp; Mark Oros</p>
+
+  <p class="book-hero-sub">
+    A guide for the beginning gemcutter — twelve designs presented in order of increasing difficulty,
+    covering the full range of classic shapes.
+  </p>
+
+  <div class="book-badge-row">
+    <span class="book-badge">📐 12 designs</span>
+    <span class="book-badge">⬆ Increasing difficulty</span>
+    <span class="book-badge">💎 RI 1.54 – 2.40</span>
+    <span class="book-badge">🔮 96-index gear</span>
+    <span class="book-badge">✦ Meet-point faceting</span>
+  </div>
+</div>
+
+<!-- ══ QUOTE ══ -->
+<div class="quote-strip">
+  <div class="quote-text">"Excellence is the path, not a destination."</div>
+  <div class="quote-attr">— Mark Oros, Hashnu Stones &amp; Gems</div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="page-body">
+
+  <!-- ABOUT THE BOOK -->
+  <h2 class="section-title">About this book</h2>
+  <p class="section-sub">
+    Designed collaboratively by Andrew Ian Brown and Mark Oros of Hashnu Stones &amp; Gems, this book
+    walks beginning faceters through twelve progressively challenging designs — from a simple nonagon brilliant
+    to a stunning frosted hexagon. Each design uses optimized angles for multiple RI ranges so you always get
+    the best performance from whatever material you're cutting.
+  </p>
+
+  <div class="intro-grid">
+    <div class="intro-card">
+      <span class="intro-icon">📐</span>
+      <div class="intro-label">Meet-point faceting</div>
+      <div class="intro-desc">Every design follows meet-point principles with detailed sequencing so you always know which facet to cut next and what it should meet.</div>
+    </div>
+    <div class="intro-card">
+      <span class="intro-icon">🔢</span>
+      <div class="intro-label">Multiple RI sets</div>
+      <div class="intro-desc">Designs include A, B, and sometimes C angle optimizations. Match your stone's refractive index to the table below and use the right set.</div>
+    </div>
+    <div class="intro-card">
+      <span class="intro-icon">⬆</span>
+      <div class="intro-label">Progressive difficulty</div>
+      <div class="intro-desc">Start with the Nonagon Brilliant (31 facets) and work up to the Frost Star Hex (79 facets). Each design introduces a new skill.</div>
+    </div>
+    <div class="intro-card">
+      <span class="intro-icon">✨</span>
+      <div class="intro-label">Odd symmetry magic</div>
+      <div class="intro-desc">Many designs use 3-fold, 5-fold, or 7-fold odd symmetry to produce exceptional scintillation from a surprisingly small number of facets.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- THE 12 DESIGNS -->
+  <h2 class="section-title">The twelve designs</h2>
+  <p class="section-sub">Cut them in order. Repeat a design before moving on if needed. Each shape introduces something new.</p>
+
+  <div class="designs-grid">
+
+    <div class="design-card">
+      <div class="design-num">Design 01 · Nonagon</div>
+      <div class="design-shape">Brilliant 93</div>
+      <div class="design-name">AIB251</div>
+      <div class="design-meta">
+        <span class="design-tag">31 facets</span>
+        <span class="design-tag">3-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.20</span>
+      </div>
+      <div class="design-desc">Your starting point. A simple round design using 3-fold odd symmetry on a 96 index. Focus on forming a perfect final center point (FCP) — the entire stone is built from it.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 02 · Pentagon</div>
+      <div class="design-shape">Five Steps</div>
+      <div class="design-name">AIB252</div>
+      <div class="design-meta">
+        <span class="design-tag">21 facets</span>
+        <span class="design-tag">1-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.20</span>
+      </div>
+      <div class="design-desc">Introduction to a stepped crown. Uses imperfect 5-fold symmetry on the 96 index. Get your transfer spot-on — even crown steps depend on it.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 03 · Trillion</div>
+      <div class="design-shape">Trioptic Blast</div>
+      <div class="design-name">AIB253</div>
+      <div class="design-meta">
+        <span class="design-tag">37 facets</span>
+        <span class="design-tag">3-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.40</span>
+      </div>
+      <div class="design-desc">Triangular cut with cut corners for easy mounting. Outstanding performance from 3-fold symmetry. Take care with the fine P2 facets that set the girdle outline.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 04 · Marquise</div>
+      <div class="design-shape">Easy Cut Marquise</div>
+      <div class="design-name">AIB254</div>
+      <div class="design-meta">
+        <span class="design-tag">33 facets</span>
+        <span class="design-tag">2-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.00</span>
+      </div>
+      <div class="design-desc">Named after the lips of Madame de Pompadour. Transfer accuracy is critical on this long thin stone. The table will challenge beginners — take your time.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 05 · Square</div>
+      <div class="design-shape">Little Princess</div>
+      <div class="design-name">AIB255</div>
+      <div class="design-meta">
+        <span class="design-tag">49 facets</span>
+        <span class="design-tag">4-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.20</span>
+      </div>
+      <div class="design-desc">Simplified princess cut. Excellent performance even at lower RI. Watch tiers C2 and C3 carefully — same index, ~5° difference. Don't rush them.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 06 · Pear</div>
+      <div class="design-shape">Seven Star Pear</div>
+      <div class="design-name">AIB256</div>
+      <div class="design-meta">
+        <span class="design-tag">36 facets</span>
+        <span class="design-tag">1-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.40</span>
+      </div>
+      <div class="design-desc">Imperfect 7-fold symmetry on P1 creates sparkling scintillation. Two barion-like tiers level the girdle. Table meet points may need gentle adjustment after polishing.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 07 · Decagon</div>
+      <div class="design-shape">DecaCheck Two</div>
+      <div class="design-name">AIB257</div>
+      <div class="design-meta">
+        <span class="design-tag">36 facets</span>
+        <span class="design-tag">1-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.20</span>
+      </div>
+      <div class="design-desc">Your first checker crown — easier than it looks with only a small number of crown facets. Half the G1 facets don't form a level girdle until P2 is cut.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 08 · Shield/Heart</div>
+      <div class="design-shape">Shield Of The Heart</div>
+      <div class="design-name">AIB258</div>
+      <div class="design-meta">
+        <span class="design-tag">31 facets</span>
+        <span class="design-tag">1-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.20</span>
+      </div>
+      <div class="design-desc">3-fold symmetry on P1 creates outstanding scintillation. Introduces barion facets (P3, P4) — half-moon facets first used by Basil Watermeyer in 1971.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 09 · Oval</div>
+      <div class="design-shape">Beginner Oval 1.40</div>
+      <div class="design-name">AIB259</div>
+      <div class="design-meta">
+        <span class="design-tag">47 facets</span>
+        <span class="design-tag">2-fold symmetry</span>
+        <span class="design-tag">RI 1.54–1.90</span>
+      </div>
+      <div class="design-desc">More tiers than previous designs — takes longer but is still straightforward. Follow the pavilion sequence carefully to set the girdle outline correctly.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 10 · Round</div>
+      <div class="design-shape">Six Star Brilliant</div>
+      <div class="design-name">AIB260</div>
+      <div class="design-meta">
+        <span class="design-tag">67 facets</span>
+        <span class="design-tag">3-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.40</span>
+      </div>
+      <div class="design-desc">An exceptional round brilliant combining 6-fold and 3-fold symmetry on an 18-sided round. Exceptional performance especially in quartz, topaz, and sapphire.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 11 · Rectangle</div>
+      <div class="design-shape">150 Emerald</div>
+      <div class="design-name">AIB261</div>
+      <div class="design-meta">
+        <span class="design-tag">37 facets</span>
+        <span class="design-tag">2-fold symmetry</span>
+        <span class="design-tag">RI 1.54–1.90</span>
+      </div>
+      <div class="design-desc">Introduces a preform to set the girdle outline — a great learning step. The preform tiers are later cut away by pavilion facets. Measure carefully before you begin pavilion cutting.</div>
+    </div>
+
+    <div class="design-card">
+      <div class="design-num">Design 12 · Hexagon</div>
+      <div class="design-shape">Frost Star Hex</div>
+      <div class="design-name">AIB262</div>
+      <div class="design-meta">
+        <span class="design-tag">79 facets</span>
+        <span class="design-tag gold">6-fold symmetry</span>
+        <span class="design-tag">RI 1.54–2.30</span>
+        <span class="design-tag gold">★ Frosting</span>
+      </div>
+      <div class="design-desc">The grand finale. Introduces facet-frosting using a worn 800-grit bronze sintered lap. P3, P4, and P5 cut VERY fast — go slowly and check with a hand lens. Practice on a test stone first.</div>
+    </div>
+
+  </div>
+
+<hr class="divider">
+
+  <!-- CUTTING INSTRUCTIONS -->
+  <h2 class="section-title">Step-by-step cutting instructions</h2>
+  <p class="section-sub">Select a design below to see the full cutting sequence — every tier, angle, index position, and meet-point instruction exactly as it appears in the book.</p>
+
+  <!-- TAB ROW -->
+  <div class="cut-tabs" id="cutTabs">
+    <button class="cut-tab active" onclick="showCut('d01')">1 · Nonagon</button>
+    <button class="cut-tab" onclick="showCut('d02')">2 · Pentagon</button>
+    <button class="cut-tab" onclick="showCut('d03')">3 · Trillion</button>
+    <button class="cut-tab" onclick="showCut('d04')">4 · Marquise</button>
+    <button class="cut-tab" onclick="showCut('d05')">5 · Square</button>
+    <button class="cut-tab" onclick="showCut('d06')">6 · Pear</button>
+    <button class="cut-tab" onclick="showCut('d07')">7 · Decagon</button>
+    <button class="cut-tab" onclick="showCut('d08')">8 · Shield/Heart</button>
+    <button class="cut-tab" onclick="showCut('d09')">9 · Oval</button>
+    <button class="cut-tab" onclick="showCut('d10')">10 · Round</button>
+    <button class="cut-tab" onclick="showCut('d11')">11 · Rectangle</button>
+    <button class="cut-tab" onclick="showCut('d12')">12 · Hexagon</button>
+    <button class="cut-tab" onclick="showCut('d13')">✦ Tribal</button>
+    <button class="cut-tab" onclick="showCut('d14')">✦ Tripsy</button>
+    <button class="cut-tab" onclick="showCut('d15')">✦ Camomilla</button>
+  </div>
+
+  <div id="cutPanel"></div>
+
+  <hr class="divider">
+
+  <!-- MARK'S 16 TIPS -->
+  <h2 class="section-title">Mark's guide to your first twelve gemstones</h2>
+  <p class="section-sub">
+    Mark Oros of Hashnu Stones &amp; Gems shares the hard-won wisdom he gives every student before they head home to cut alone.
+  </p>
+
+  <div class="tips-list">
+    <div class="tip-row">
+      <div class="tip-num">1</div>
+      <div class="tip-body"><strong>Monitor your progress.</strong> Every gemstone needs to be better than the last. As long as you're moving forward, you're on the right path.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">2</div>
+      <div class="tip-body"><strong>Practice, practice, practice.</strong> It takes a minimum of seven to twelve gemstones to start working through the basics. Tiffany, Voulkos, and O'Keeffe didn't produce masterpieces on their first tries either.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">3</div>
+      <div class="tip-body"><strong>Start with 10 mm rough.</strong> Light smoky quartz is ideal — you can see the facets clearly, it's inexpensive, and it won't disappear if you make a mistake. Cover the stone with pencil between laps to see what you've cut.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">4</div>
+      <div class="tip-body"><strong>Advice comes from many sources — filter it.</strong> Beware of anyone insisting their way is the only way. Balance reading and watching with actually cutting. The only way to learn to facet is to facet.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">5</div>
+      <div class="tip-body"><strong>Keep a journal.</strong> Track your failures and successes. Each design in this book has a notes page — use it. Your Galaxy Gems Journal is perfect for this.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">6</div>
+      <div class="tip-body"><strong>Start simple, progress deliberately.</strong> Baby steps are fine. Don't overstep your progress by leaping ahead. Read "Learn to Facet the Right Way" by Jeff Graham.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">7</div>
+      <div class="tip-body"><strong>Trust your machine.</strong> If you've cut one to three stones and are blaming the machine — it's most likely not the machine. Put the time in first. Buy a good machine and trust it to do its job while you learn yours.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">8</div>
+      <div class="tip-body"><strong>Don't skip laps.</strong> All faceting does is replace larger scratches with smaller ones up to the polished state. Each lap takes you along a gradual path. Skipping laps limits precision and makes polishing a chore.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">9</div>
+      <div class="tip-body"><strong>Watch what each lap is doing.</strong> Make sure laps are clean and not contaminated. It's very common to think scratches came from the previous lap when the current lap simply needs to be cleaned.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">10</div>
+      <div class="tip-body"><strong>Build your foundation carefully.</strong> The girdle, pavilion girdle facets, and crown girdle facets are the foundation. Go around these tiers two or three times on each lap to set everything correctly before moving on.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">11</div>
+      <div class="tip-body"><strong>The extra pass saves time.</strong> It takes a little longer to go around the tiers again, but it saves you time putting in all the following facets correctly.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">12</div>
+      <div class="tip-body"><strong>Take care of your equipment.</strong> Clean laps, maintained machine, tidy workspace. They will take care of you in return.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">13</div>
+      <div class="tip-body"><strong>Ask for help.</strong> If a problem keeps repeating, stop and ask the community. The only unanswered question is the one not asked. When in doubt, ask about.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">14</div>
+      <div class="tip-body"><strong>Don't rush dopping.</strong> Ensure significant surface-area contact. Clean and oil-free surfaces. Let the glue set overnight. Rushing this step costs you later.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">15</div>
+      <div class="tip-body"><strong>Buy rough carefully.</strong> Only buy from dealers with a return policy. Inspect rough on receipt. If a deal seems too good to be true from an unknown seller — it probably is.</div>
+    </div>
+    <div class="tip-row">
+      <div class="tip-num">16</div>
+      <div class="tip-body"><strong>Set realistic expectations.</strong> Come back with a clear head if frustration hits. Your first twelve gemstones are practice. Keep the queue moving while you build your craft.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- FOUR P'S -->
+  <h2 class="section-title">The four P's of buying facet rough</h2>
+  <p class="section-sub">Mark Oros's framework for thinking about your rough gemstone purchases — from practice stones to passion pieces.</p>
+
+  <div class="four-p-grid">
+    <div class="four-p-card">
+      <div class="four-p-letter">P</div>
+      <div class="four-p-label">Practice</div>
+      <div class="four-p-desc">The rough you use to learn how to facet. Buy a variety of materials and sizes that match these 12 designs. Light smoky quartz is ideal — affordable and easy to see.</div>
+    </div>
+    <div class="four-p-card">
+      <div class="four-p-letter">P</div>
+      <div class="four-p-label">Portfolio</div>
+      <div class="four-p-desc">Rough you facet to show clients. You need examples of your work to demonstrate your style and capabilities. These stones are for sale, but keep a reasonable portfolio until established.</div>
+    </div>
+    <div class="four-p-card">
+      <div class="four-p-letter">P</div>
+      <div class="four-p-label">Purchase</div>
+      <div class="four-p-desc">Rough you cut to fill specific orders from clients. Many prefer to cut on request and use Portfolio stones for immediate sales rather than maintaining a large finished inventory.</div>
+    </div>
+    <div class="four-p-card">
+      <div class="four-p-letter">P</div>
+      <div class="four-p-label">Passion</div>
+      <div class="four-p-desc">The rough that needs no serious justification. These are the reward for successful selling — the stones you love, in species that excite you. Buy rare material when it appears.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- RI TABLE -->
+  <h2 class="section-title">Refractive index &amp; critical angle reference</h2>
+  <p class="section-sub">Find your stone's RI, then match it to the A, B, or C angle set in the design cutting instructions. Your stones — sapphire, ruby, topaz, and tanzanite — are highlighted.</p>
+
+  <input class="ri-search" type="text" id="riSearch" placeholder="Search gemstones — e.g. sapphire, quartz, topaz…" oninput="filterRI()">
+
+  <div class="ri-table-wrap">
+    <div class="ri-table-header">
+      <span>Gemstone</span>
+      <span>RI range</span>
+      <span>Double refraction</span>
+      <span>Critical angle</span>
+    </div>
+    <div id="riTableBody">
+      <!-- rows injected by JS -->
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- RESOURCES -->
+  <h2 class="section-title">Further resources</h2>
+  <p class="section-sub">Communities, instructors, and tools recommended in this book and by the Galaxy Gems community.</p>
+
+  <div class="resource-grid">
+    <div class="resource-card">
+      <div class="resource-icon">🏫</div>
+      <div class="resource-title">Hashnu Stones &amp; Gems</div>
+      <div class="resource-desc">Mark Oros's full-service lapidary studio in the Finger Lakes, NY. Private faceting lessons, ULTRA TEC equipment, and colored gemstone consulting.</div>
+      <a class="resource-link" href="https://www.hashnustones.com" target="_blank" rel="noopener">hashnustones.com →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-icon">📐</div>
+      <div class="resource-title">facetingdesigns.com</div>
+      <div class="resource-desc">Andrew Brown's design library — more designs, book previews, sample renderings, and free designs. The source for all AIB-series patterns.</div>
+      <a class="resource-link" href="https://www.facetingdesigns.com" target="_blank" rel="noopener">facetingdesigns.com →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-icon">🌐</div>
+      <div class="resource-title">US Faceters Guild</div>
+      <div class="resource-desc">Join to connect with fellow faceters across the US, access resources, and find local clubs. Highly recommended by both authors.</div>
+      <a class="resource-link" href="https://www.usfacetersguild.org" target="_blank" rel="noopener">usfacetersguild.org →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-icon">🌐</div>
+      <div class="resource-title">Faceters Guild (AU)</div>
+      <div class="resource-desc">The Australian Faceters Guild — another excellent community resource recommended in this book for all skill levels.</div>
+      <a class="resource-link" href="https://www.facetorsguild.com.au" target="_blank" rel="noopener">facetorsguild.com.au →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-icon">📦</div>
+      <div class="resource-title">Storied Gemstones</div>
+      <div class="resource-desc">Mark's recommended source for facet-grade rough. He sold his personal facet rough inventory here and highly recommends them for quality and reliability.</div>
+      <a class="resource-link" href="https://www.storiedgemstones.com" target="_blank" rel="noopener">storiedgemstones.com →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-icon">📖</div>
+      <div class="resource-title">Recommended reading</div>
+      <div class="resource-desc">"Learn to Facet the Right Way" — Jeff Graham. "Amateur Gemstone Faceting Vol. 1" — Tom Herbst. Read the Herbst book cover-to-cover while waiting for your machine to arrive.</div>
+    </div>
+  </div>
+
+</div><!-- /page-body -->
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-logo">Galaxy Gems</div>
+  <div class="footer-sub">Your personal gem faceting studio &nbsp;·&nbsp; Built with ♦ for lapidary artists</div>
+  <div class="footer-links">
+    <button class="footer-link" onclick="location.href='library.html'">Stone library</button>
+    <button class="footer-link" onclick="location.href='studio.html'">Studio tools</button>
+    <button class="footer-link" onclick="location.href='community.html'">Community</button>
+    <button class="footer-link" onclick="location.href='learn.html'">Learn</button>
+    <button class="footer-link" onclick="location.href='journal.html'">Journal</button>
+    <button class="footer-link" onclick="location.href='beginner-book.html'">Beginner Book</button>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+ /* ── CUTTING INSTRUCTIONS DATA ── */
+  const DESIGNS = {
+    d01: {
+      num: '01', shape: 'Nonagon', name: 'Brilliant 93', code: 'AIB251',
+      facets: '31', symmetry: '3-fold mirror', ri: '1.54 – 2.20', index: '96',
+      desc: 'A simple round design for the beginning faceter using 3-fold odd symmetry on the 96 index. Not a perfect equal-sided nonagon — the 3-fold symmetry creates beautiful scintillation from a small number of facets.',
+      notes: [
+        'Form a perfect final center point (FCP) — the girdle and crown are built from it.',
+        'Use angle set A for RI 1.54–1.70, set B for RI 1.70–2.20.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 1.70  ·  B = RI 1.70 to 2.20',
+          steps: [
+            { label:'P1', angleA:'41.50°', angleB:'40.70°', index:'96-11-21-32-43-53-64-75-85', inst:'Form the <em>final center point (FCP)</em>. Cut all 9 indexes.' },
+            { label:'G1', angleA:'90.00°', angleB:'90.00°', index:'96-11-21-32-43-53-64-75-85', inst:'Set stone size. Establish a <em>level girdle</em>. Match the same 9 indexes as P1.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 1.70  ·  B = RI 1.70 to 2.20',
+          steps: [
+            { label:'C1', angleA:'31.50°', angleB:'31.50°', index:'96-11-21-32-43-53-64-75-85', inst:'Establish <em>girdle width</em>. Same indexes as P1 and G1.' },
+            { label:'C2', angleA:'25.00°', angleB:'25.00°', index:'16-48-80', inst:'Meet G1 and C1 on 3 indexes only.' },
+            { label:'T',  angleA:'0.00°',  angleB:'0.00°',  index:'Table', inst:'Cut table to <em>meet C1 and C2</em>.' },
+          ]
+        }
+      ]
+    },
+    d02: {
+      num: '02', shape: 'Pentagon', name: 'Five Steps', code: 'AIB252',
+      facets: '21', symmetry: '1-fold mirror', ri: '1.54 – 2.20', index: '96',
+      desc: 'A pentagon using imperfect 5-fold symmetry on the 96 index. Excellent introduction to cutting a stepped crown. Only one angle set — works across the full RI range.',
+      notes: [
+        'Get your transfer spot-on. If transfer is off, crown steps will be uneven and girdle width will vary.',
+        'Consider polishing the girdle after transfer to check alignment before cutting the crown.',
+        'Crown proportions don\'t need to match the diagram exactly — the stone will still look great.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 2.20 (single angle set)',
+          steps: [
+            { label:'P1', angleA:'44.87°', angleB:'—', index:'96-19-38-58-77', inst:'Form the <em>final center point (FCP)</em>. Cut all 5 indexes.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'96-19-38-58-77', inst:'Set stone size. Establish a <em>level girdle</em>.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 2.20 (single angle set)',
+          steps: [
+            { label:'C1', angleA:'42.00°', angleB:'—', index:'96-19-38-58-77', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'27.00°', angleB:'—', index:'96-19-38-58-77', inst:'<em>Float in tier</em> as shown in diagram. Same indexes as C1.' },
+            { label:'T',  angleA:'0.00°',  angleB:'—', index:'Table', inst:'<em>Float in table</em> as shown in diagram.' },
+          ]
+        }
+      ]
+    },
+    d03: {
+      num: '03', shape: 'Trillion', name: 'Trioptic Blast', code: 'AIB253',
+      facets: '37', symmetry: '3-fold mirror', ri: '1.54 – 2.40', index: '96',
+      desc: 'Triangular cut with cut corners for easy mounting. Excellent performance from 3-fold symmetry. Origins traced to the Asscher brothers of Amsterdam in the 18th century.',
+      notes: [
+        'Take care cutting fine P2 facets — they set the girdle outline and form the cut corners.',
+        'Check crown C3 facets frequently — ensure they meet C1 and C2 on both ends evenly.',
+        'Cut P2, G2, and P3 slowly — they establish critical meet points.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 1.90  ·  B = RI 1.90 to 2.40',
+          steps: [
+            { label:'P1', angleA:'47.80°', angleB:'46.90°', index:'14-18-46-50-78-82', inst:'Form <em>FCP</em>. 6 indexes.' },
+            { label:'P2', angleA:'43.70°', angleB:'42.80°', index:'11-21-43-53-75-85', inst:'Meet FCP. <em>Cut slowly.</em>' },
+            { label:'G1', angleA:'90.00°', angleB:'90.00°', index:'14-18-46-50-78-82', inst:'Set stone size. Establish a <em>level girdle</em>.' },
+            { label:'G2', angleA:'90.00°', angleB:'90.00°', index:'96-32-64', inst:'Meet G1, P1, P2. <em>Cut slowly.</em>' },
+            { label:'P3', angleA:'50.50°', angleB:'50.50°', index:'96-32-64', inst:'Meet G1, G2, P1, P2. Maintain a <em>level girdle</em>. <em>Cut slowly.</em>' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 1.90  ·  B = RI 1.90 to 2.40',
+          steps: [
+            { label:'C1', angleA:'37.80°', angleB:'37.80°', index:'14-18-46-50-78-82', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'40.62°', angleB:'40.62°', index:'96-32-64', inst:'Meet G1, G2, C1. Maintain girdle width.' },
+            { label:'C3', angleA:'32.00°', angleB:'32.00°', index:'16-48-80', inst:'Meet G1, C1 and C1, C2.' },
+            { label:'T',  angleA:'0.00°',  angleB:'0.00°',  index:'Table', inst:'Meet C1, C2, C3.' },
+          ]
+        }
+      ]
+    },
+    d04: {
+      num: '04', shape: 'Marquise', name: 'Easy Cut Marquise', code: 'AIB254',
+      facets: '33', symmetry: '2-fold mirror', ri: '1.54 – 2.00', index: '96',
+      desc: 'Named after the lips of Madame de Pompadour. Three angle sets — A, B, C — optimized for different RI ranges. Transfer accuracy is critical on this long thin stone.',
+      notes: [
+        'Get transfer spot-on. Errors show on the ends of the stone — girdle levelling and table meet points will suffer.',
+        'Polishing the long table may challenge beginners — use your machine\'s cheater to align correctly.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54–1.65  ·  B = RI 1.65–1.85  ·  C = RI 1.85–2.00',
+          steps: [
+            { label:'P1', angleA:'41.50° / 40.19° / 38.81°', angleB:'—', index:'04-44-52-92', inst:'Form <em>FCP</em>.' },
+            { label:'P2', angleA:'43.17° / 41.86° / 40.46°', angleB:'—', index:'03-45-51-93', inst:'Meet FCP.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'03-45-51-93', inst:'Set stone size. Establish a <em>level girdle</em>.' },
+            { label:'G2', angleA:'90.00°', angleB:'—', index:'10-38-58-86', inst:'Meet G1, P1, P2.' },
+            { label:'P3', angleA:'48.79° / 47.48° / 46.08°', angleB:'—', index:'10-38-58-86', inst:'Meet G1, G2, P1, P2. Maintain a <em>level girdle</em>.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54–1.65  ·  B = RI 1.65–1.85  ·  C = RI 1.85–2.00',
+          steps: [
+            { label:'C1', angleA:'43.23°', angleB:'—', index:'10-38-58-86', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'36.14°', angleB:'—', index:'03-45-51-93', inst:'Meet G1, G2, C1. Maintain girdle width.' },
+            { label:'C3', angleA:'29.70°', angleB:'—', index:'05-43-53-91', inst:'Meet G1, G2, C1, C2.' },
+            { label:'T',  angleA:'0.00°',  angleB:'—', index:'Table', inst:'Meet C2, C3, C1, C3.' },
+          ]
+        }
+      ]
+    },
+    d05: {
+      num: '05', shape: 'Square', name: 'Little Princess', code: 'AIB255',
+      facets: '49', symmetry: '4-fold mirror', ri: '1.54 – 2.20', index: '96',
+      desc: 'Simplified princess cut — second most popular shape after round brilliants. Excellent performance even at lower RI. Single angle set works across the full range.',
+      notes: [
+        'Take care cutting P1 and G1 — they form the foundation for a level girdle when cutting P2.',
+        'Watch C2 and C3 carefully — same index positions but about 5° apart. Take your time to see what is happening before each meets.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 2.20 (single angle set)',
+          steps: [
+            { label:'P1', angleA:'41.00°', angleB:'—', index:'02-22-26-46-50-70-74-94', inst:'Form <em>FCP</em>.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'96-24-48-72', inst:'Set stone size.' },
+            { label:'P2', angleA:'55.33°', angleB:'—', index:'96-24-48-72', inst:'Meet G1, P1. Establish a <em>level girdle</em>.' },
+            { label:'P3', angleA:'43.19°', angleB:'—', index:'01-23-25-47-49-71-73-95', inst:'Meet G1, P1, P2.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 2.20 (single angle set)',
+          steps: [
+            { label:'C1', angleA:'50.00°', angleB:'—', index:'96-24-48-72', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'32.95°', angleB:'—', index:'02-22-26-46-50-70-74-94', inst:'Meet G1, C1.' },
+            { label:'C3', angleA:'28.22°', angleB:'—', index:'02-22-26-46-50-70-74-94', inst:'Meet C1, C2. Same indexes as C2.' },
+            { label:'C4', angleA:'23.44°', angleB:'—', index:'96-24-48-72', inst:'Meet C1, C2, C3.' },
+            { label:'T',  angleA:'0.00°',  angleB:'—', index:'Table', inst:'Meet C3, C4.' },
+          ]
+        }
+      ]
+    },
+    d06: {
+      num: '06', shape: 'Pear', name: 'Seven Star Pear', code: 'AIB256',
+      facets: '36', symmetry: '1-fold mirror', ri: '1.54 – 2.40', index: '96',
+      desc: 'Imperfect 7-fold symmetry on P1 creates scintillation across the full RI range. Two barion-like tiers (P2, P3) level the girdle after the shape is set.',
+      notes: [
+        'Take your time cutting P3 to create a level girdle.',
+        'Table meet points may be challenging — if meet points are off, go back and gently adjust C1 facets after polishing the table.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 2.40 (single angle set)',
+          steps: [
+            { label:'P1', angleA:'42.40°', angleB:'—', index:'96-14-28-41-55-68-82', inst:'Form <em>FCP</em>. 7 indexes.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'96-14-28-68-82', inst:'Set stone size. 5 indexes only.' },
+            { label:'G2', angleA:'90.00°', angleB:'—', index:'38-58', inst:'Meet G1, P1.' },
+            { label:'P2', angleA:'62.92°', angleB:'—', index:'38-58', inst:'Meet G2, P1. Establish a <em>level girdle</em>.' },
+            { label:'P3', angleA:'64.44°', angleB:'—', index:'96-14-28-68-82', inst:'Meet G1, G2, P1, P2 on indexes 28 and 68 to set tier depth. Cut remaining facets to same depth. Maintain a <em>level girdle</em>.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 2.40 (single angle set)',
+          steps: [
+            { label:'C1', angleA:'42.80°', angleB:'—', index:'96-14-28-68-82', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'42.80°', angleB:'—', index:'38-58', inst:'Meet G1, G2, C1. Maintain girdle width.' },
+            { label:'C3', angleA:'30.58°', angleB:'—', index:'07-21-75-89', inst:'Meet G1, C1.' },
+            { label:'C4', angleA:'33.59°', angleB:'—', index:'33-63', inst:'Meet G1, G2, C1, C2.' },
+            { label:'C5', angleA:'25.44°', angleB:'—', index:'48', inst:'Meet G2, C2.' },
+            { label:'T',  angleA:'0.00°',  angleB:'—', index:'Table', inst:'Meet C1, C3 and C1, C3, C4 and C2, C4, C5.' },
+          ]
+        }
+      ]
+    },
+    d07: {
+      num: '07', shape: 'Decagon', name: 'DecaCheck Two', code: 'AIB257',
+      facets: '36', symmetry: '1-fold mirror', ri: '1.54 – 2.20', index: '96',
+      desc: 'Your first checker crown. Imperfect 5-fold odd symmetry generates performance and scintillation. Only half the G1 facets form a level girdle with P1 — P2 finishes the job.',
+      notes: [
+        'Only half the G1 facets form a level girdle with P1. Cut P2 after G1 to complete the level girdle.',
+        'The crown looks trickier than it is — a small number of facets makes it manageable.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 2.30 (single angle set)',
+          steps: [
+            { label:'P1', angleA:'43.60°', angleB:'—', index:'96-19-38-58-77', inst:'Form <em>FCP</em>.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'96-10-19-29-38-48-58-67-77-86', inst:'Establish a <em>level girdle</em> on corresponding P1 indexes to set tier depth. Cut remaining facets to the same depth.' },
+            { label:'P2', angleA:'50.20°', angleB:'—', index:'10-29-48-67-86', inst:'Meet G1, P1. Maintain a <em>level girdle</em>.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 2.30 (single angle set)',
+          steps: [
+            { label:'C1', angleA:'37.93°', angleB:'—', index:'10-38-58-86', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'44.60°', angleB:'—', index:'19-29-67-77', inst:'Meet G1, C1. Maintain girdle width.' },
+            { label:'C3', angleA:'31.72°', angleB:'—', index:'96-48', inst:'Meet G1, C1. Maintain girdle width.' },
+            { label:'C4', angleA:'29.70°', angleB:'—', index:'15-33-63-81', inst:'Meet G1, C1, C2.' },
+            { label:'C5', angleA:'17.59°', angleB:'—', index:'96-48', inst:'Meet C1, C3, C4.' },
+          ]
+        }
+      ]
+    },
+    d08: {
+      num: '08', shape: 'Shield / Heart', name: 'Shield Of The Heart', code: 'AIB258',
+      facets: '31', symmetry: '1-fold mirror', ri: '1.54 – 2.20', index: '96',
+      desc: '3-fold symmetry on P1 creates outstanding scintillation. Introduces barion facets on P3 and P4 — half-moon-like facets first used by Basil Watermeyer in 1971 to level the girdle.',
+      notes: [
+        'With skills from previous designs this one should be straightforward.',
+        'Barion facets P3 and P4 level the girdle after the shape is set — cut them carefully to maintain evenness.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 2.30 (single angle set)',
+          steps: [
+            { label:'P1', angleA:'43.00°', angleB:'—', index:'13-19-45-51-77-83', inst:'Form <em>FCP</em>.' },
+            { label:'P2', angleA:'45.00°', angleB:'—', index:'48', inst:'Meet FCP.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'10-22-74-86', inst:'Set stone size.' },
+            { label:'G2', angleA:'90.00°', angleB:'—', index:'40-56', inst:'Meet G1, P1.' },
+            { label:'G3', angleA:'90.00°', angleB:'—', index:'48', inst:'Meet G2, P1, P2. Establish a <em>level girdle</em>.' },
+            { label:'P3', angleA:'52.06°', angleB:'—', index:'40-56', inst:'Meet G2, G3, P1, P2. Maintain a <em>level girdle</em>.' },
+            { label:'P4', angleA:'54.47°', angleB:'—', index:'10-22-74-86', inst:'Meet G1, P1. Maintain a <em>level girdle</em>.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 2.30 (single angle set)',
+          steps: [
+            { label:'C1', angleA:'40.00°', angleB:'—', index:'10-22-74-86', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'32.71°', angleB:'—', index:'40-56', inst:'Meet G1, G2, C1. Maintain girdle width.' },
+            { label:'C3', angleA:'44.10°', angleB:'—', index:'48', inst:'Meet G2, G3, C2. Maintain girdle width.' },
+            { label:'C4', angleA:'20.34°', angleB:'—', index:'96-32-64', inst:'Meet G1, C1 on index 96. Meet G1, G2, C1, C2 on indexes 32 and 64.' },
+            { label:'T',  angleA:'0.00°',  angleB:'—', index:'Table', inst:'Meet C1, C4 and C2, C3, C4.' },
+          ]
+        }
+      ]
+    },
+    d09: {
+      num: '09', shape: 'Oval', name: 'Beginner Oval 1.40', code: 'AIB259',
+      facets: '47', symmetry: '2-fold mirror', ri: '1.54 – 1.90', index: '96',
+      desc: 'More tiers than previous designs — takes longer but still straightforward. Follow the pavilion sequence carefully to correctly set the girdle outline.',
+      notes: [
+        'Follow the pavilion sequence carefully — the girdle outline depends on cutting in the right order.',
+        'Adjust tier C5 angle slightly if having trouble hitting the meet points.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 1.90 (single angle set)',
+          steps: [
+            { label:'P1', angleA:'43.00°', angleB:'—', index:'03-45-51-93', inst:'Form <em>FCP</em>.' },
+            { label:'P2', angleA:'41.50°', angleB:'—', index:'05-43-53-91', inst:'Meet FCP.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'03-45-51-93', inst:'Set stone size. Establish a <em>level girdle</em>.' },
+            { label:'G2', angleA:'90.00°', angleB:'—', index:'09-39-57-87', inst:'Meet G1, P1, P2.' },
+            { label:'P3', angleA:'45.22°', angleB:'—', index:'09-39-57-87', inst:'Meet G1, G2, P1, P2. Maintain a <em>level girdle</em>.' },
+            { label:'P4', angleA:'46.83°', angleB:'—', index:'18-30-66-78', inst:'Meet P2, P3.' },
+            { label:'G3', angleA:'90.00°', angleB:'—', index:'18-30-66-78', inst:'Meet G2, P3, P4. Maintain a <em>level girdle</em>.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 1.90 (single angle set)',
+          steps: [
+            { label:'C1', angleA:'42.50°', angleB:'—', index:'03-45-51-93', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'40.47°', angleB:'—', index:'09-39-57-87', inst:'Meet G1, G2, C1. Maintain girdle width.' },
+            { label:'C3', angleA:'38.19°', angleB:'—', index:'18-30-66-78', inst:'Meet G2, G3, C2. Maintain a level girdle.' },
+            { label:'C4', angleA:'36.00°', angleB:'—', index:'06-42-54-90', inst:'Meet G1, G2, C1, C2.' },
+            { label:'C5', angleA:'30.88°', angleB:'—', index:'24-72', inst:'Meet G3, C3 and C2, C3, C4.' },
+            { label:'T',  angleA:'0.00°',  angleB:'—', index:'Table', inst:'Meet C1, C4 and C2, C3, C4, C5.' },
+          ]
+        }
+      ]
+    },
+    d10: {
+      num: '10', shape: 'Round', name: 'Six Star Brilliant', code: 'AIB260',
+      facets: '67', symmetry: '3-fold mirror', ri: '1.54 – 2.40', index: '96',
+      desc: 'Exceptional round brilliant combining 6-fold and 3-fold symmetry on an 18-sided round. Outstanding performance especially in low-mid RI minerals like quartz, topaz, and sapphire.',
+      notes: [
+        'Only half the G1 facets form a level girdle with P1 — P2 finishes the level girdle.',
+        'G1 requires cutting 18 indexes — set the depth on P1 indexes first, then cut remaining to the same depth.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54 to 2.40 (single angle set)',
+          steps: [
+            { label:'P1', angleA:'40.82°', angleB:'—', index:'96-11-21-32-43-53-64-75-85', inst:'Form <em>FCP</em>. 9 indexes.' },
+            { label:'G1', angleA:'90.00°', angleB:'—', index:'96-05-11-16-21-27-32-37-43-48-53-59-64-69-75-80-85-91', inst:'Set stone size. Establish a <em>level girdle</em> on corresponding P1 indexes. 18 total indexes.' },
+            { label:'P2', angleA:'42.31°', angleB:'—', index:'05-16-27-37-48-59-69-80-91', inst:'Meet G1, P1. Maintain a <em>level girdle</em>. 9 indexes.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54 to 2.40 (single angle set)',
+          steps: [
+            { label:'C1', angleA:'45.06°', angleB:'—', index:'96-16-32-48-64-80', inst:'Establish <em>girdle width</em>. 6 indexes.' },
+            { label:'C2', angleA:'42.00°', angleB:'—', index:'05-11-21-27-37-43-53-59-69-75-85-91', inst:'Meet G1, P1, P2. 12 indexes.' },
+            { label:'C3', angleA:'36.66°', angleB:'—', index:'08-24-40-56-72-88', inst:'Meet G1, G2, C2 and C1, C2. 6 indexes.' },
+            { label:'C4', angleA:'18.74°', angleB:'—', index:'96-16-32-48-64-80', inst:'Meet C1, C2, C3. 6 indexes.' },
+            { label:'T',  angleA:'0.00°',  angleB:'—', index:'Table', inst:'Meet C3, C4.' },
+          ]
+        }
+      ]
+    },
+    d11: {
+      num: '11', shape: 'Rectangle', name: '150 Emerald', code: 'AIB261',
+      facets: '37', symmetry: '2-fold mirror', ri: '1.54 – 1.90', index: '96',
+      desc: 'Introduces a preform to set the girdle outline — the preform tiers are later cut away by pavilion facets. A great learning step for the beginner.',
+      notes: [
+        'After cutting the preform, measure your rough carefully — position the girdle with enough material for all pavilion tiers.',
+        'The preform tiers may only be cut away late in the pavilion sequence — you will cut away the TCP, not meet it.',
+        'If you run out of crown material, the crown can be tangent-ratioed lower without changing pavilion angles.',
+      ],
+      phases: [
+        {
+          label: 'PREFORM',
+          riNote: 'A = RI 1.54–1.70  ·  B = RI 1.70–1.90',
+          steps: [
+            { label:'PF1', angleA:'21.00°', angleB:'21.00°', index:'12-24-36-60-72-84', inst:'Form a <em>temporary center point (TCP)</em>.' },
+            { label:'PF2', angleA:'30.00°', angleB:'30.00°', index:'96-48', inst:'Meet TCP.' },
+          ]
+        },
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54–1.70  ·  B = RI 1.70–1.90',
+          steps: [
+            { label:'G1', angleA:'90.00°', angleB:'90.00°', index:'12-24-36-60-72-84', inst:'Set stone size.' },
+            { label:'G2', angleA:'90.00°', angleB:'90.00°', index:'96-48', inst:'Meet G1, PF1, PF2.' },
+            { label:'P1', angleA:'64.00°', angleB:'64.00°', index:'96-48', inst:'Establish a <em>level girdle</em>.' },
+            { label:'P2', angleA:'60.36°', angleB:'60.36°', index:'12-36-60-84', inst:'Meet G1, G2, P1. Maintain a <em>level girdle</em>.' },
+            { label:'P3', angleA:'51.17°', angleB:'51.17°', index:'24-72', inst:'Meet G2, P2.' },
+            { label:'P4', angleA:'51.23°', angleB:'51.23°', index:'01-47-49-95', inst:'Meet G1, G2, P1, P2. Forms TCP if material is available.' },
+            { label:'P5', angleA:'41.08°', angleB:'41.08°', index:'02-46-50-94', inst:'Meet P2, P3, P4. Form <em>FCP</em>.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54–1.70  ·  B = RI 1.70–1.90',
+          steps: [
+            { label:'C1', angleA:'45.00°', angleB:'40.42°', index:'96-48', inst:'Establish <em>girdle width</em>.' },
+            { label:'C2', angleA:'54.74°', angleB:'50.31°', index:'12-36-60-84', inst:'Meet G1, G2, C1. Maintain girdle width.' },
+            { label:'C3', angleA:'45.00°', angleB:'40.42°', index:'24-72', inst:'Meet G1, C2. Maintain girdle width.' },
+            { label:'C4', angleA:'30.00°', angleB:'26.19°', index:'96-48', inst:'Meet C1, C2, C3.' },
+            { label:'C5', angleA:'30.00°', angleB:'26.19°', index:'24-72', inst:'Meet C1, C2, C3, C4.' },
+            { label:'T',  angleA:'0.00°',  angleB:'0.00°',  index:'Table', inst:'<em>Float in table</em> as shown in diagram.' },
+          ]
+        }
+      ]
+    },
+    d12: {
+      num: '12', shape: 'Hexagon', name: 'Frost Star Hex', code: 'AIB262',
+      facets: '79', symmetry: '6-fold mirror', ri: '1.54 – 2.30', index: '96',
+      desc: 'The grand finale. Uses facet-frosting to create the main pattern. Frosted facets shown in bold in the original book. Practice frosting on a test stone first using a worn 800-grit bronze sintered lap.',
+      notes: [
+        'Practice frosting on a test stone before choosing your lap. Find a lap coarse enough for a bright frosting effect yet fine enough that chipping is not visible to the eye.',
+        'P3, P4, and P5 cut VERY fast. Cut slowly and check with a hand lens frequently.',
+        'Polish P1 and P2 before cutting P3. Polish P4 before cutting P5.',
+        'Do not leave frosted facets larger than shown — the pattern will not be as distinct.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'A = RI 1.54–1.90  ·  B = RI 1.90–2.30',
+          steps: [
+            { label:'P1', angleA:'45.75°', angleB:'45.75°', index:'02-14-18-30-34-46-50-62-66-78-82-94', inst:'Form a <em>TCP</em>. 12 indexes.' },
+            { label:'G1', angleA:'90.00°', angleB:'90.00°', index:'96-16-32-48-64-80', inst:'Set stone size. 6 indexes.' },
+            { label:'P2', angleA:'51.92°', angleB:'51.92°', index:'96-16-32-48-64-80', inst:'Meet G1, P1. Establish a <em>level girdle</em>.' },
+            { label:'P3', angleA:'44.69°', angleB:'44.69°', index:'01-15-17-31-33-47-49-63-65-79-81-95', inst:'Meet P1, P2. <em class="frost">⬡ FROST THIS TIER.</em> Cut slowly.' },
+            { label:'P4', angleA:'43.64°', angleB:'43.64°', index:'96-16-32-48-64-80', inst:'Float in tier as shown in diagram. Form <em>FCP</em>. <em>Cut slowly.</em>' },
+            { label:'P5', angleA:'41.86°', angleB:'41.86°', index:'08-24-40-56-72-88', inst:'Meet FCP. <em class="frost">⬡ FROST THIS TIER.</em> <em>Cut very slowly.</em>' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'A = RI 1.54–1.90  ·  B = RI 1.90–2.30',
+          steps: [
+            { label:'C1', angleA:'65.00°', angleB:'61.00°', index:'96-16-32-48-64-80', inst:'Establish <em>girdle width</em>. 6 indexes.' },
+            { label:'C2', angleA:'48.75°', angleB:'43.81°', index:'04-12-20-28-36-44-52-60-68-76-84-92', inst:'Meet G1, C1. 12 indexes.' },
+            { label:'C3', angleA:'34.87°', angleB:'30.38°', index:'04-12-20-28-36-44-52-60-68-76-84-92', inst:'Meet C1, C2. Same 12 indexes as C2.' },
+           { label:'T',  angleA:'0.00°',  angleB:'0.00°',  index:'Table', inst:'<em>Float in table</em> as shown in diagram.' },
+          ]
+        }
+      ]
+    },
+    d13: {
+      num: '13', shape: 'Triangle', name: 'Tribal', code: 'Marco Voltolini',
+      facets: '64', symmetry: '24-fold mirror', ri: '1.54+', index: '96',
+      desc: 'A stunning triangular design by Marco Voltolini with 24-fold mirror-image symmetry. 55 facets plus 9 girdles. Cut in quartz and above RI materials. Features a stepped crown with tiny finish facets requiring close attention.',
+      notes: [
+        'Tier F facets are tiny — pay close attention when cutting these.',
+        'Table can be cut to meet E and F, or floated as you prefer.',
+        'Designed for quartz (RI 1.540) and higher RI materials.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'Angles for RI 1.540 — scale up slightly for higher RI materials',
+          steps: [
+            { label:'1', angleA:'41.00°', angleB:'—', index:'02-06-10-14-18-22-26-30-34-38-42-46-50-54-58-62-66-70-74-78-82-86-90-94', inst:'<em>Cut to centerpoint.</em> 24 indexes.' },
+            { label:'2', angleA:'90.00°', angleB:'—', index:'96-32-64', inst:'Set stone size. 3 indexes.' },
+            { label:'3', angleA:'90.00°', angleB:'—', index:'14-18-46-50-78-82', inst:'Meet 1, 2. 6 indexes.' },
+            { label:'4', angleA:'72.08°', angleB:'—', index:'96-32-64', inst:'Meet 2, 3.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'Angles for RI 1.540 — scale up slightly for higher RI materials',
+          steps: [
+            { label:'A', angleA:'42.24°', angleB:'—', index:'96-32-64', inst:'Set <em>girdle thickness</em>.' },
+            { label:'B', angleA:'42.24°', angleB:'—', index:'14-18-46-50-78-82', inst:'Set girdle thickness.' },
+            { label:'C', angleA:'32.00°', angleB:'—', index:'96-32-64', inst:'Cut simple steps.' },
+            { label:'D', angleA:'32.00°', angleB:'—', index:'14-18-46-50-78-82', inst:'Cut simple steps.' },
+            { label:'E', angleA:'21.50°', angleB:'—', index:'96-32-64', inst:'Cut simple steps.' },
+            { label:'F', angleA:'21.50°', angleB:'—', index:'14-18-46-50-78-82', inst:'Cut simple steps. <em class="frost">⚠ Tiny facets — pay close attention.</em>' },
+            { label:'T', angleA:'0.00°',  angleB:'—', index:'Table', inst:'Meet E, F — or <em>float</em> as you prefer.' },
+          ]
+        }
+      ]
+    },
+    d14: {
+      num: '14', shape: 'Rounded Triangle', name: 'Tripsy', code: 'Marco Voltolini',
+      facets: '58', symmetry: '3-fold mirror', ri: '1.54+', index: '96',
+      desc: 'A beautiful rounded triangle by Marco Voltolini with 3-fold mirror-image symmetry. 49 facets plus 9 girdles. Features optional barion facet tightening on tier 5. Works well for quartz and higher RI stones.',
+      notes: [
+        'Tier 5 is optional — it tightens the barion facets and improves the girdle appearance.',
+        'Tier 3 cuts the corners meeting tiers 1 and 2.',
+        'Works well for quartz and higher RI materials.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'Angles for RI 1.540 — works well for higher RI stones too',
+          steps: [
+            { label:'1', angleA:'42.00°', angleB:'—', index:'96-08-16-24-32-40-48-56-64-72-80-88', inst:'<em>Cut centerpoint.</em> 12 indexes.' },
+            { label:'2', angleA:'90.00°', angleB:'—', index:'03-29-35-61-67-93', inst:'Set stone size. 6 indexes.' },
+            { label:'3', angleA:'90.00°', angleB:'—', index:'16-48-80', inst:'Cut corners meeting 1 and 2. 3 indexes.' },
+            { label:'4', angleA:'66.25°', angleB:'—', index:'03-29-35-61-67-93', inst:'Level girdle.' },
+            { label:'5', angleA:'58.69°', angleB:'—', index:'96-32-64', inst:'<em>(Optional)</em> Tightening of the barion facets.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'Angles for RI 1.540',
+          steps: [
+            { label:'A', angleA:'35.00°', angleB:'—', index:'03-29-35-61-67-93', inst:'Set <em>girdle thickness</em>.' },
+            { label:'B', angleA:'35.00°', angleB:'—', index:'16-48-80', inst:'Now it\'s a common step cut.' },
+            { label:'C', angleA:'25.00°', angleB:'—', index:'03-29-35-61-67-93', inst:'Step cut continues.' },
+            { label:'D', angleA:'25.00°', angleB:'—', index:'16-48-80', inst:'Step cut continues.' },
+            { label:'E', angleA:'18.00°', angleB:'—', index:'03-29-35-61-67-93', inst:'Step cut continues.' },
+            { label:'F', angleA:'18.00°', angleB:'—', index:'16-48-80', inst:'Step cut continues.' },
+            { label:'G', angleA:'0.00°',  angleB:'—', index:'Table', inst:'Cut <em>table</em>.' },
+          ]
+        }
+      ]
+    },
+    d15: {
+      num: '15', shape: 'Round', name: 'Camomilla', code: 'Marco Voltolini',
+      facets: '96', symmetry: '6-fold radial', ri: '1.54+', index: '96',
+      desc: 'A stunning round design by Marco Voltolini with 6-fold radial symmetry. 84 facets plus 12 girdles = 96 total. Designed for quartz — performs well in higher RI stones too. L/W = 1.000, a perfect round.',
+      notes: [
+        'Crown tier B has 48 index positions — take your time going around.',
+        'Designed for quartz (RI 1.540) — performs well also in higher RI materials.',
+        'No table/T listed — the crown terminates at tier F meeting E.',
+      ],
+      phases: [
+        {
+          label: 'PAVILION',
+          riNote: 'Angles for RI 1.540',
+          steps: [
+            { label:'1', angleA:'40.50°', angleB:'—', index:'96-08-16-24-32-40-48-56-64-72-80-88', inst:'<em>Cut to centerpoint.</em> 12 indexes.' },
+            { label:'2', angleA:'90.00°', angleB:'—', index:'96-08-16-24-32-40-48-56-64-72-80-88', inst:'Set stone size. Same 12 indexes as tier 1.' },
+          ]
+        },
+        {
+          label: 'CROWN',
+          riNote: 'Angles for RI 1.540',
+          steps: [
+            { label:'A', angleA:'30.00°', angleB:'—', index:'96-08-16-24-32-40-48-56-64-72-80-88', inst:'Set <em>girdle thickness</em>. 12 indexes.' },
+            { label:'B', angleA:'26.30°', angleB:'—', index:'02-06-10-14-18-22-26-30-34-38-42-46-50-54-58-62-66-70-74-78-82-86-90-94', inst:'Meet girdle. 24 indexes.' },
+            { label:'C', angleA:'25.35°', angleB:'—', index:'04-12-20-28-36-44-52-60-68-76-84-92', inst:'Meet girdle. 12 indexes.' },
+            { label:'D', angleA:'13.78°', angleB:'—', index:'08-24-40-56-72-88', inst:'Meet B. 6 indexes.' },
+            { label:'E', angleA:'16.98°', angleB:'—', index:'04-12-20-28-36-44-52-60-68-76-84-92', inst:'Meet B. 12 indexes.' },
+            { label:'F', angleA:'6.99°',  angleB:'—', index:'08-24-40-56-72-88', inst:'Meet E. 6 indexes.' },
+          ]
+        }
+      ]
+    },
+  };
+
+  let activeCut = 'd01';
+
+  function showCut(id) {
+    activeCut = id;
+    // update tabs
+    document.querySelectorAll('.cut-tab').forEach((t,i) => {
+      t.classList.toggle('active', Object.keys(DESIGNS)[i] === id);
+    });
+    const d = DESIGNS[id];
+    let html = `<div class="cut-panel-inner">
+      <div class="cut-header">
+        <div class="cut-header-top">
+          <div>
+            <div class="cut-title">${d.name}</div>
+            <div class="cut-subtitle">${d.shape} · ${d.code}</div>
+          </div>
+          <div class="cut-badges">
+            <span class="cut-badge">✦ ${d.facets} facets</span>
+            <span class="cut-badge">${d.symmetry}</span>
+            <span class="cut-badge">RI ${d.ri}</span>
+            <span class="cut-badge">Index ${d.index}</span>
+          </div>
+        </div>
+        <div class="cut-desc">${d.desc}</div>`;
+
+    if (d.notes && d.notes.length) {
+      html += `<div class="cut-notes-box"><strong>⚠ Cutter's notes</strong><br>${d.notes.map(n => '· ' + n).join('<br>')}`;
+      html += `</div>`;
+    }
+    html += `</div><div class="cut-body">`;
+
+    d.phases.forEach(phase => {
+      html += `
+        <div class="cut-phase">
+          <div class="cut-phase-title">${phase.label}</div>
+          <div class="cut-ri-note">${phase.riNote}</div>
+          <div class="cut-col-header">
+            <span>Facet</span><span>Angle</span><span>Index positions</span><span>Instructions</span>
+          </div>`;
+      phase.steps.forEach(s => {
+        html += `<div class="cut-step">
+          <div class="cut-step-cell"><span class="cut-step-label">${s.label}</span></div>
+          <div class="cut-step-cell"><span class="cut-step-angle">${s.angleA}</span></div>
+          <div class="cut-step-cell"><span class="cut-step-index">${s.index}</span></div>
+          <div class="cut-step-cell"><span class="cut-step-inst">${s.inst}</span></div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    html += `</div></div>`;
+    document.getElementById('cutPanel').innerHTML = html;
+  }
+
+  showCut('d01');
+
+  /* ── MODE TOGGLE ── */
+  function toggleMode() {
+    document.body.classList.toggle('light-mode');
+    const btn = document.getElementById('modeToggle');
+    btn.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    localStorage.setItem('ggMode', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  }
+  if (localStorage.getItem('ggMode') === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('modeToggle').textContent = '☀️';
+  }
+
+  /* ── DRAWER ── */
+  function toggleDrawer() {
+    document.getElementById('navDrawer').classList.toggle('open');
+  }
+
+  /* ── TOAST ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* ── RI DATA ── */
+  const riData = [
+    { gem: 'Alexandrite',        ri: '1.746 – 1.755', dr: '0.008 – 0.010', ca: '34.74 – 34.94', mine: false },
+    { gem: 'Almandine garnet',   ri: '1.770 – 1.820', dr: 'none',           ca: '33.33 – 34.40', mine: false },
+    { gem: 'Amethyst',           ri: '1.544 – 1.553', dr: '0.01',           ca: '40.08 – 40.37', mine: false },
+    { gem: 'Andradite garnet',   ri: '1.88 – 1.94',   dr: 'none',           ca: '31.03 – 32.13', mine: false },
+    { gem: 'Apatite',            ri: '1.628 – 1.649', dr: '0.002 – 0.006', ca: '37.33 – 37.90', mine: false },
+    { gem: 'Aquamarine',         ri: '1.564 – 1.596', dr: '0.004 – 0.005', ca: '38.80 – 39.75', mine: false },
+    { gem: 'Beryl',              ri: '1.562 – 1.602', dr: '0.004 – 0.010', ca: '38.62 – 39.81', mine: false },
+    { gem: 'Chalcedony',         ri: '1.530 – 1.540', dr: '0.004 – 0.009', ca: '40.49 – 40.81', mine: false },
+    { gem: 'Chrysoberyl',        ri: '1.746 – 1.763', dr: '0.007 – 0.011', ca: '34.56 – 34.94', mine: false },
+    { gem: 'Chrysoprase',        ri: '1.530 – 1.540', dr: '0.004 – 0.009', ca: '40.49 – 40.81', mine: false },
+    { gem: 'Citrine',            ri: '1.544 – 1.553', dr: '0.01',           ca: '40.08 – 40.37', mine: false },
+    { gem: 'Clear quartz',       ri: '1.544 – 1.553', dr: '0.01',           ca: '40.08 – 40.37', mine: false },
+    { gem: 'Cubic zirconia',     ri: '2.150 – 2.180', dr: 'none',           ca: '27.30 – 27.72', mine: false },
+    { gem: 'Danburite',          ri: '1.630 – 1.636', dr: '0.006 – 0.008', ca: '37.68 – 37.84', mine: false },
+    { gem: 'Diamond',            ri: '2.417 – 2.419', dr: 'anomalous',      ca: '24.42 – 24.44', mine: false },
+    { gem: 'Diopside',           ri: '1.664 – 1.730', dr: '0.024 – 0.031', ca: '35.31 – 36.94', mine: false },
+    { gem: 'Emerald',            ri: '1.565 – 1.602', dr: '0.01',           ca: '38.62 – 39.72', mine: false },
+    { gem: 'Fluorite',           ri: '1.43',           dr: 'none',           ca: '44.21',          mine: false },
+    { gem: 'GGG',                ri: '1.970 – 2.020', dr: '0.06',           ca: '29.67 – 30.51', mine: false },
+    { gem: 'Iolite',             ri: '1.542 – 1.551', dr: '0.01',           ca: '40.15 – 40.43', mine: false },
+    { gem: 'Labradorite',        ri: '1.559 – 1.570', dr: '0.008 – 0.010', ca: '39.56 – 39.90', mine: false },
+    { gem: 'Moissanite',         ri: '2.650 – 2.690', dr: '0.313',          ca: '21.82 – 22.17', mine: false },
+    { gem: 'Moonstone',          ri: '1.518 – 1.526', dr: '0.01',           ca: '40.94 – 41.21', mine: false },
+    { gem: 'Opal',               ri: '1.37 – 1.52',   dr: 'none',           ca: '41.14 – 46.88', mine: false },
+    { gem: 'Peridot',            ri: '1.650 – 1.703', dr: '0.036 – 0.038', ca: '35.96 – 37.31', mine: false },
+    { gem: 'Pyrope garnet',      ri: '1.720 – 1.756', dr: 'none',           ca: '34.71 – 35.55', mine: false },
+    { gem: 'Rose quartz',        ri: '1.544 – 1.553', dr: '0.01',           ca: '40.08 – 40.37', mine: false },
+    { gem: 'Ruby',               ri: '1.762 – 1.778', dr: '0.01',           ca: '34.22 – 34.58', mine: true  },
+    { gem: 'Sapphire',           ri: '1.762 – 1.778', dr: '0.01',           ca: '34.22 – 34.58', mine: true  },
+    { gem: 'Scapolite',          ri: '1.531 – 1.600', dr: '0.004 – 0.037', ca: '38.68 – 40.78', mine: false },
+    { gem: 'Smoky quartz',       ri: '1.544 – 1.553', dr: '0.01',           ca: '40.08 – 40.37', mine: false },
+    { gem: 'Spessartine garnet', ri: '1.790 – 1.820', dr: 'none',           ca: '33.33 – 33.96', mine: false },
+    { gem: 'Spinel',             ri: '1.712 – 1.762', dr: 'none',           ca: '34.58 – 35.74', mine: false },
+    { gem: 'Sunstone',           ri: '1.525 – 1.548', dr: '0.01',           ca: '40.24 – 40.98', mine: false },
+    { gem: 'Tanzanite',          ri: '1.691 – 1.700', dr: '0.01',           ca: '36.03 – 36.25', mine: true  },
+    { gem: 'Topaz',              ri: '1.609 – 1.643', dr: '0.008 – 0.016', ca: '37.49 – 38.43', mine: true  },
+    { gem: 'Tourmaline',         ri: '1.614 – 1.666', dr: '0.014 – 0.032', ca: '36.89 – 38.29', mine: false },
+    { gem: 'YAG',                ri: '1.833 – 1.835', dr: 'none',           ca: '33.02 – 33.06', mine: false },
+    { gem: 'Zircon',             ri: '1.810 – 2.024', dr: '0.0002 – 0.059',ca: '29.61 – 33.54', mine: false },
+  ];
+
+  function renderRI(data) {
+    const body = document.getElementById('riTableBody');
+    if (!data.length) {
+      body.innerHTML = '<div class="ri-row"><div class="ri-gem" style="grid-column:1/-1;color:var(--text-muted);padding:1.5rem 0;">No gemstones match your search.</div></div>';
+      return;
+    }
+    body.innerHTML = data.map(r => `
+      <div class="ri-row">
+        <div class="ri-gem">${r.mine ? '⭐ ' : ''}${r.gem}${r.mine ? ' <span style="font-size:11px;color:var(--tz-bright);margin-left:4px;">your stone</span>' : ''}</div>
+        <div class="ri-val ${r.mine ? 'highlight' : ''}">${r.ri}</div>
+        <div class="ri-val">${r.dr}</div>
+        <div class="ri-angle">${r.ca}°</div>
+      </div>
+    `).join('');
+  }
+
+  function filterRI() {
+    const q = document.getElementById('riSearch').value.toLowerCase().trim();
+    if (!q) { renderRI(riData); return; }
+    renderRI(riData.filter(r => r.gem.toLowerCase().includes(q)));
+  }
+
+  renderRI(riData);
+</script>
+
+</body>
+</html>

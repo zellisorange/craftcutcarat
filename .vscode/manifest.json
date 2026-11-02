@@ -1,0 +1,17 @@
+{
+  "name": "Galaxy Gems",
+  "short_name": "GalaxyGems",
+  "description": "Your personal gem faceting studio — cut, learn, collaborate.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0D0B1A",
+  "theme_color": "#3C3489",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230D0B1A'/><polygon points='256,40 470,160 400,472 112,472 42,160' fill='%23534AB7'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

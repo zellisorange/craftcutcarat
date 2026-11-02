@@ -1,0 +1,2310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Craft Cut Carat — Precision Gem Faceting Studio</title>
+    <meta name="description" content="Precision faceted gemstones hand-cut in Canada. Shop loose sapphire, ruby, topaz and more — every stone cut by Zellis Orange at Craft Cut Carat.">
+  <meta name="theme-color" content="#3C3489">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Craft Cut Carat">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --space:        #0D0B1A;
+      --deep:         #12103A;
+      --tz:           #3C3489;
+      --tz-mid:       #534AB7;
+      --tz-bright:    #7F77DD;
+      --tz-light:     #EEEDFE;
+      --tz-pale:      #F5F4FF;
+      --gold:         #EF9F27;
+      --gold-light:   #FAEEDA;
+      --text:         #F0EFF8;
+      --text-dim:     #AFA9EC;
+      --text-muted:   #6B6499;
+      --border:       #2A2460;
+      --border-light: #3D367A;
+      --card:         #16124A;
+      --card-hover:   #1E1960;
+      --warn-bg:      #2A1F0A;
+      --warn-text:    #FAC775;
+      --radius:       12px;
+      --radius-sm:    8px;
+      --nav-h:        60px;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--space);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font-body); cursor: pointer; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--deep); }
+    ::-webkit-scrollbar-thumb { background: var(--tz); border-radius: 3px; }
+
+    /* ── BACKGROUND ── */
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    @keyframes floatGem {
+      0%   { transform: translateY(110vh) rotate(0deg); }
+      100% { transform: translateY(-140px) rotate(360deg); }
+    }
+
+    /* ── NAV ── */
+    #nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: var(--nav-h);
+      background: rgba(13,11,26,0.93);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link {
+      padding: 7px 13px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(83,74,183,0.18);
+      color: var(--text);
+    }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-btn {
+      padding: 7px 16px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+    .nav-btn:hover { background: var(--card); color: var(--text); }
+    .nav-btn.primary { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+    .nav-btn.primary:hover { background: var(--tz-bright); }
+    .user-chip {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 12px 4px 4px;
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: 99px;
+    }
+    .user-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--tz-mid);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 500; color: var(--tz-light);
+    }
+    .user-name { font-size: 13px; color: var(--text); }
+    .nav-ham {
+      display: none;
+      padding: 8px 10px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 18px;
+      line-height: 1;
+    }
+    .nav-drawer {
+      display: none;
+      position: fixed;
+      top: var(--nav-h);
+      left: 0; right: 0;
+      background: var(--deep);
+      border-bottom: 0.5px solid var(--border);
+      padding: 1rem 1.5rem;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 199;
+    }
+    .nav-drawer.open { display: flex; }
+  @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-ham   { display: block; }
+    }
+
+    /* ══ GEM STORE BUTTON ══ */
+    .gs-ham-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px 7px 10px;
+      border: 0.5px solid rgba(127,119,221,0.4);
+      border-radius: var(--radius-sm);
+      background: rgba(83,74,183,0.12);
+      color: var(--tz-bright);
+      font-size: 13px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .gs-ham-btn:hover {
+      background: rgba(83,74,183,0.28);
+      border-color: var(--tz-bright);
+      color: var(--text);
+    }
+    .gs-ham-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 16px;
+    }
+    .gs-ham-lines span {
+      display: block;
+      height: 1.5px;
+      background: currentColor;
+      border-radius: 2px;
+    }
+    .gs-ham-label { line-height: 1; }
+
+    /* ══ STORE OVERLAY ══ */
+    .gs-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,6,20,0.78);
+      z-index: 600;
+      backdrop-filter: blur(5px);
+    }
+    .gs-overlay.open { display: block; }
+
+    /* ══ STORE SIDE PANEL ══ */
+    .gs-panel {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: min(300px, 88vw);
+      background: var(--deep);
+      border-right: 0.5px solid var(--border-light);
+      z-index: 601;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+      overflow: hidden;
+    }
+    .gs-panel.open { transform: translateX(0); }
+
+    .gs-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+    .gs-panel-title {
+      font-family: var(--font-display);
+      font-size: 21px;
+      color: var(--text);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+    .gs-panel-close {
+      width: 30px; height: 30px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .gs-panel-close:hover { background: var(--card); color: var(--text); }
+
+    .gs-panel-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 1rem 1.25rem 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .gs-tab-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0.5rem 1rem 2rem;
+      overflow-y: auto;
+    }
+    .gs-tab-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 1.1rem 1rem;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gs-tab-row:hover {
+      border-color: var(--tz-bright);
+      background: var(--card-hover);
+      transform: translateX(5px);
+    }
+    .gs-tab-icon { font-size: 26px; flex-shrink: 0; }
+    .gs-tab-info { flex: 1; }
+    .gs-tab-name {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .gs-tab-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+    .gs-tab-arrow {
+      font-size: 15px;
+      color: var(--tz-bright);
+      opacity: 0.5;
+      transition: all 0.2s;
+    }
+    .gs-tab-row:hover .gs-tab-arrow { opacity: 1; transform: translateX(3px); }
+
+    /* ══ FULL PAGE STORE ══ */
+    .gs-fullpage {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--space);
+      z-index: 700;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .gs-fullpage.open { display: flex; }
+
+    .gs-fp-topbar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 2rem;
+      height: 60px;
+      background: rgba(13,11,26,0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .gs-fp-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gs-fp-back:hover { background: var(--card); color: var(--text); }
+    .gs-fp-topbar-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--text);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+    .gs-fp-content {
+      flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 3rem 2rem 6rem;
+    }
+    .gs-fp-hero {
+      text-align: center;
+      padding: 1rem 0 3.5rem;
+    }
+    .gs-fp-hero-icon { font-size: 60px; margin-bottom: 1rem; display: block; }
+    .gs-fp-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(38px,7vw,70px);
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.05;
+      margin-bottom: 0.75rem;
+    }
+    .gs-fp-hero-title em { font-style: italic; color: var(--tz-bright); }
+    .gs-fp-hero-sub {
+      font-size: 15px;
+      color: var(--text-dim);
+      max-width: 460px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.75;
+    }
+    .gs-fp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px,1fr));
+      gap: 14px;
+    }
+    .gs-fp-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.25rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gs-fp-card:hover {
+      border-color: rgba(127,119,221,0.55);
+      background: var(--card-hover);
+      transform: translateY(-3px);
+    }
+    .gs-fp-card-icon { font-size: 32px; text-align: center; }
+    .gs-fp-card-name { font-size: 13px; font-weight: 500; color: var(--text); text-align: center; line-height: 1.3; }
+    .gs-fp-card-sub { font-size: 11px; color: var(--text-muted); text-align: center; }
+    .gs-fp-card-price { font-size: 15px; font-weight: 600; color: var(--tz-bright); text-align: center; }
+    .gs-fp-card-btn {
+      width: 100%;
+      margin-top: auto;
+      padding: 8px;
+      background: rgba(83,74,183,0.15);
+      border: 0.5px solid rgba(127,119,221,0.35);
+      border-radius: var(--radius-sm);
+      color: var(--tz-bright);
+      font-size: 12px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gs-fp-card-btn:hover { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+
+    /* ── PAGE ── */
+    .page { position: relative; z-index: 1; }
+/* ── HERO ── */
+    .hero {
+      display: block;
+      text-align: center;
+      padding: 3rem 2rem 4rem;
+      position: relative;
+    }
+    .hero-ring {
+      position: absolute;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      pointer-events: none;
+    }
+    .hero-ring.r1 { width: 420px; height: 420px; border: 0.5px solid rgba(127,119,221,0.11); transform: translate(-50%,-50%); animation: spinRing 40s linear infinite; }
+    .hero-ring.r2 { width: 660px; height: 660px; border: 0.5px solid rgba(127,119,221,0.07); transform: translate(-50%,-50%); animation: spinRing 62s linear infinite reverse; }
+    .hero-ring.r3 { width: 900px; height: 900px; border: 0.5px solid rgba(127,119,221,0.04); transform: translate(-50%,-50%); animation: spinRing 85s linear infinite; }
+    @keyframes spinRing {
+      from { transform: translate(-50%,-50%) rotate(0deg); }
+      to   { transform: translate(-50%,-50%) rotate(360deg); }
+    }
+    .hero > * { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--tz-bright);
+      margin-bottom: 1rem;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 9vw, 100px);
+      font-weight: 400;
+      line-height: 1.0;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .hero-title em { font-style: italic; color: var(--tz-bright); }
+    .hero-sub {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 500px;
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-hero {
+      padding: 14px 32px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .btn-hero.primary { background: var(--tz-mid); color: var(--tz-light); }
+    .btn-hero.primary:hover { background: var(--tz-bright); transform: translateY(-2px); }
+    .btn-hero.ghost { background: transparent; color: var(--text-dim); border: 0.5px solid var(--border-light); }
+    .btn-hero.ghost:hover { background: var(--card); color: var(--text); transform: translateY(-2px); }
+
+    .hero-stats { display: flex; gap: 3.5rem; justify-content: center; flex-wrap: wrap; }
+    .hero-stat-num {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 500;
+      color: var(--tz-bright);
+      line-height: 1;
+    }
+    .hero-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 5px;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      padding: 5rem 2rem;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(30px, 5vw, 50px);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .section-sub {
+      font-size: 15px;
+      color: var(--text-dim);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+    }
+    .divider { border: none; border-top: 0.5px solid var(--border); }
+
+    /* ── PILLARS ── */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px,1fr));
+      gap: 1px;
+      background: var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .pillar {
+      background: var(--card);
+      padding: 2.25rem 2rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .pillar:hover { background: var(--card-hover); }
+    .pillar-icon { font-size: 32px; margin-bottom: 1.25rem; display: block; }
+    .pillar-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+    .pillar-desc { font-size: 13px; color: var(--text-dim); line-height: 1.7; flex: 1; }
+    .pillar-link { display: inline-block; margin-top: 1.25rem; font-size: 12px; color: var(--tz-bright); letter-spacing: 0.05em; }
+
+    /* ── STONE PREVIEW ── */
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
+      gap: 10px;
+      margin-bottom: 2rem;
+    }
+    .prev-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .prev-card:hover { border-color: var(--tz-bright); transform: translateY(-3px); }
+    .prev-card svg  { margin: 0 auto 8px; }
+    .prev-name { font-family: var(--font-display); font-size: 13px; color: var(--text); line-height: 1.2; }
+    .prev-mohs { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── CTA BAND ── */
+    .cta-band {
+      background: var(--deep);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 3.5rem 2rem;
+      text-align: center;
+    }
+    .cta-band h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px,4vw,44px);
+      color: var(--text);
+      font-weight: 400;
+      margin-bottom: 1rem;
+    }
+    .cta-band p { color: var(--text-dim); max-width: 480px; margin: 0 auto 2rem; font-size: 15px; line-height: 1.7; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 0.5px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    .footer-logo { font-family: var(--font-display); font-size: 20px; color: var(--text); margin-bottom: 0.5rem; }
+    .footer-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+    .footer-link {
+      font-size: 12px; color: var(--text-muted);
+      background: none; border: none; cursor: pointer;
+      padding: 4px 8px; border-radius: var(--radius-sm); transition: color 0.15s;
+    }
+    .footer-link:hover { color: var(--tz-bright); }
+
+    /* ── AUTH MODAL ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(8,6,20,0.9);
+      z-index: 500; display: none;
+      align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .overlay.open { display: flex; }
+    .modal-box {
+      background: var(--deep);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 2.25rem; width: 100%; max-width: 400px;
+    }
+    .modal-close-btn {
+      float: right; background: none; border: none;
+      color: var(--text-muted); font-size: 22px; cursor: pointer;
+      margin: -0.5rem -0.5rem 0 0; line-height: 1;
+    }
+    .modal-close-btn:hover { color: var(--text); }
+    .modal-logo-txt { font-family: var(--font-display); font-size: 26px; color: var(--text); text-align: center; margin-bottom: 0.4rem; }
+    .modal-logo-sub { font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 1.75rem; }
+    .auth-tabs { display: flex; gap: 4px; background: var(--card); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 1.25rem; }
+    .auth-tab { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-muted); font-size: 13px; cursor: pointer; border-radius: 7px; transition: all 0.15s; }
+    .auth-tab.active { background: var(--tz-mid); color: var(--tz-light); }
+    .field-label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px; margin-top: 12px; }
+    .field-input {
+      width: 100%; padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-size: 14px; font-family: var(--font-body);
+      outline: none; transition: border-color 0.15s;
+    }
+    .field-input:focus { border-color: var(--tz-bright); }
+    .field-input::placeholder { color: var(--text-muted); }
+    .auth-submit {
+      width: 100%; margin-top: 14px; padding: 12px;
+      background: var(--tz-mid); color: var(--tz-light);
+      border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s;
+    }
+    .auth-submit:hover { background: var(--tz-bright); }
+    .auth-err {
+      display: none;
+      background: rgba(226,75,74,0.15);
+      border: 0.5px solid rgba(226,75,74,0.4);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px; font-size: 13px; color: #F09595; margin-bottom: 10px;
+    }
+    .auth-err.show { display: block; }
+    .auth-hint { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 10px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--tz-mid); color: var(--tz-light);
+      padding: 12px 20px; border-radius: var(--radius-sm);
+      font-size: 13px; z-index: 9999;
+      opacity: 0; transform: translateY(10px);
+      transition: all 0.3s; pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+   .hidden { display: none !important; }
+
+    /* ══ ADMIN PANEL ══ */
+    .admin-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,6,20,0.85);
+      z-index: 800;
+      backdrop-filter: blur(6px);
+    }
+    .admin-overlay.open { display: block; }
+
+    .admin-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(820px, 96vw);
+      background: var(--deep);
+      border-left: 0.5px solid var(--border-light);
+      z-index: 801;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .admin-panel.open { transform: translateX(0); }
+
+    .admin-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      height: 58px;
+      background: rgba(13,11,26,0.98);
+      border-bottom: 0.5px solid var(--border-light);
+      flex-shrink: 0;
+    }
+    .admin-topbar-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .admin-close {
+      padding: 6px 14px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .admin-close:hover { background: var(--card); color: var(--text); }
+
+    .admin-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .admin-sidebar {
+      width: 180px;
+      flex-shrink: 0;
+      background: var(--space);
+      border-right: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 0;
+      overflow-y: auto;
+    }
+    .admin-sidebar-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      margin-top: 0.5rem;
+    }
+    .admin-sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 1.25rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+    .admin-sidebar-btn:hover { background: var(--card); color: var(--text); }
+    .admin-sidebar-btn.active { background: rgba(83,74,183,0.2); color: var(--tz-bright); border-right: 2px solid var(--tz-bright); }
+
+    .admin-main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .admin-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .admin-section-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      color: var(--text);
+      font-weight: 400;
+    }
+    .admin-add-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--gold);
+      color: #1A1640;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .admin-add-btn:hover { opacity: 0.85; }
+
+    .admin-listing {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .admin-listing:hover { border-color: var(--border-light); }
+    .admin-listing-img {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-sm);
+      background: var(--deep);
+      border: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+    .admin-listing-img img { width: 100%; height: 100%; object-fit: cover; }
+    .admin-listing-img:hover::after {
+      content: '📷';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .admin-listing-info { flex: 1; min-width: 0; }
+    .admin-listing-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+    .admin-listing-sub { font-size: 12px; color: var(--text-muted); }
+    .admin-listing-price { font-size: 15px; font-weight: 600; color: var(--tz-bright); flex-shrink: 0; }
+    .admin-listing-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .admin-action-btn {
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      border: 0.5px solid var(--border-light);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .admin-action-btn:hover { background: var(--card-hover); color: var(--text); }
+    .admin-action-btn.danger:hover { background: rgba(226,75,74,0.15); color: #F09595; border-color: rgba(226,75,74,0.4); }
+    .admin-action-btn.sale { color: var(--gold); border-color: rgba(239,159,39,0.4); }
+    .admin-action-btn.sale:hover { background: rgba(239,159,39,0.15); }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-left: 8px;
+    }
+    .status-badge.instock { background: rgba(80,200,120,0.15); color: #6fcf97; border: 0.5px solid rgba(80,200,120,0.3); }
+    .status-badge.soldout { background: rgba(226,75,74,0.15); color: #F09595; border: 0.5px solid rgba(226,75,74,0.3); }
+    .status-badge.sale { background: rgba(239,159,39,0.15); color: var(--gold); border: 0.5px solid rgba(239,159,39,0.3); }
+
+    /* ── ADMIN EDIT MODAL ── */
+    .admin-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,6,20,0.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .admin-modal-overlay.open { display: flex; }
+    .admin-modal-box {
+      background: var(--deep);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .admin-modal-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 600px) {
+      .hero-stats   { gap: 2rem; }
+      .hero-ring.r1 { width: 280px; height: 280px; }
+      .hero-ring.r2 { width: 420px; height: 420px; }
+      .hero-ring.r3 { width: 560px; height: 560px; }
+      #guestNav  { display: none !important; }
+      #userNav   { display: none !important; }
+      .mode-toggle { display: none !important; }
+    }
+
+    /* ══ LIGHT MODE ══ */
+    body.light {
+      --space:        #F0EFF8;
+      --deep:         #E8E6F5;
+      --tz:           #534AB7;
+      --tz-mid:       #534AB7;
+      --tz-bright:    #3C3489;
+      --tz-light:     #3C3489;
+      --text:         #1A1640;
+      --text-dim:     #3C3489;
+      --text-muted:   #7F77DD;
+      --border:       #C8C4E8;
+      --border-light: #AFA9EC;
+      --card:         #E0DEFA;
+      --card-hover:   #D0CCF5;
+      --warn-bg:      #FFF4E0;
+      --warn-text:    #8B5E00;
+    }
+    body.light #nav {
+      background: rgba(240,239,248,0.93);
+      border-bottom-color: #C8C4E8;
+    }
+    body.light .nav-drawer {
+      background: #E8E6F5;
+    }
+    body.light #bgCanvas { opacity: 0.3; }
+    body.light .hero-ring.r1 { border-color: rgba(83,74,183,0.18); }
+    body.light .hero-ring.r2 { border-color: rgba(83,74,183,0.12); }
+    body.light .hero-ring.r3 { border-color: rgba(83,74,183,0.07); }
+
+   /* ── MODE TOGGLE BUTTON ── */
+    .mode-toggle {
+      padding: 7px 10px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .mode-toggle:hover { background: var(--card); color: var(--text); }
+
+    /* ── GEM STORE BUTTON ── */
+    .gem-store-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 13px;
+      border: 0.5px solid rgba(127,119,221,0.45);
+      border-radius: var(--radius-sm);
+      background: rgba(83,74,183,0.12);
+      color: var(--tz-bright);
+      font-size: 13px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .gem-store-btn:hover {
+      background: rgba(83,74,183,0.28);
+      border-color: var(--tz-bright);
+      color: var(--text);
+    }
+    .gem-store-btn .gs-icon { font-size: 16px; }
+
+    /* ── GEM STORE DRAWER ── */
+    .gs-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,11,26,0.65);
+      z-index: 500;
+      backdrop-filter: blur(4px);
+    }
+    .gs-overlay.open { display: block; }
+
+    .gs-drawer {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: min(420px, 92vw);
+      background: var(--deep);
+      border-right: 0.5px solid var(--border);
+      z-index: 501;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+      overflow: hidden;
+    }
+    .gs-drawer.open { transform: translateX(0); }
+
+    .gs-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+    .gs-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .gs-close {
+      width: 32px; height: 32px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .gs-close:hover { background: var(--card); color: var(--text); }
+
+    .gs-search {
+      padding: 1rem 1.5rem 0.75rem;
+      flex-shrink: 0;
+    }
+    .gs-search input {
+      width: 100%;
+      padding: 9px 14px;
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font-body);
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s;
+    }
+    .gs-search input:focus { border-color: var(--tz-bright); }
+    .gs-search input::placeholder { color: var(--text-muted); }
+
+    .gs-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0 1.5rem 0.75rem;
+      flex-shrink: 0;
+    }
+    .gs-tab {
+      padding: 5px 12px;
+      border-radius: 99px;
+      border: 0.5px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gs-tab.active, .gs-tab:hover {
+      background: rgba(83,74,183,0.2);
+      border-color: var(--tz-bright);
+      color: var(--text);
+    }
+
+    .gs-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem 1.5rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-content: start;
+    }
+    .gs-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .gs-card:hover {
+      border-color: rgba(127,119,221,0.5);
+      background: var(--card-hover);
+      transform: translateY(-2px);
+    }
+    .gs-gem-icon {
+      font-size: 28px;
+      text-align: center;
+      padding: 8px 0;
+    }
+    .gs-gem-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      text-align: center;
+    }
+    .gs-gem-type {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    .gs-gem-price {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--tz-bright);
+      text-align: center;
+    }
+    .gs-add-btn {
+      width: 100%;
+      padding: 7px;
+      background: rgba(83,74,183,0.15);
+      border: 0.5px solid rgba(127,119,221,0.35);
+      border-radius: var(--radius-sm);
+      color: var(--tz-bright);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gs-add-btn:hover { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+
+    .gs-footer {
+      padding: 1rem 1.5rem;
+      border-top: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .gs-cart-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .gs-cart-count span { color: var(--tz-bright); font-weight: 600; }
+    .gs-checkout-btn {
+      padding: 9px 20px;
+      background: var(--tz-mid);
+      color: var(--tz-light);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .gs-checkout-btn:hover { background: var(--tz-bright); }
+  </style>
+</head>
+<body>
+
+<!-- ══ BACKGROUND GEMS ══ -->
+<div id="bgCanvas" aria-hidden="true"></div>
+
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <button class="gs-ham-btn" onclick="openStoreMenu()" aria-label="Open Gem Store">
+    <span class="gs-ham-lines"><span></span><span></span><span></span></span>
+    <span class="gs-ham-label">💎 Store</span>
+  </button>
+
+  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <span style="display:inline-block;width:14px;height:14px;background:var(--tz-bright);transform:rotate(45deg);flex-shrink:0;"></span>
+    Craft Cut Carat
+  </div>
+
+  <div class="nav-links">
+    <button class="nav-link active">Home</button>
+    <button class="nav-link" onclick="openStorePage('finished')">💎 Finished Gems</button>
+    <button class="nav-link" onclick="openStorePage('rough')">🪨 Rough Stones</button>
+    <button class="nav-link" onclick="openStorePage('supplies')">⚙️ Supplies</button>
+    <button class="nav-link" onclick="openStorePage('merch')">👕 Merch</button>
+    <button class="nav-link" onclick="openStorePage('jewelry')">💍 Jewellery</button>
+    <button class="nav-link" onclick="openStoreMenu()">🛒 All</button>
+    <button class="nav-link" onclick="location.href='#ourstory'">Our Story</button>
+  </div>
+
+  <div class="nav-right">
+    <div id="guestNav" style="display:flex;gap:8px;align-items:center;">
+      <button class="nav-btn" onclick="openAuth('login')">Sign in</button>
+      <a href="https://www.etsy.com/shop/craftcutcarat" target="_blank" style="display:flex;align-items:center;gap:6px;padding:7px 16px;background:var(--gold);color:#1A1640;border-radius:var(--radius-sm);font-size:13px;font-weight:600;letter-spacing:0.02em;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">🛒 Buy on Etsy</a>
+    </div>
+    <div id="userNav" class="hidden" style="display:flex;align-items:center;gap:8px;">
+      <div class="user-chip">
+        <div class="user-avatar" id="avatarInitials">GG</div>
+        <span class="user-name" id="navUserName">Faceter</span>
+      </div>
+      <button class="nav-btn" onclick="logout()">Sign out</button>
+    </div>
+    <button class="mode-toggle" id="modeToggle" onclick="toggleMode()" title="Toggle light/dark mode">🌙</button>
+    <button class="nav-ham" onclick="toggleDrawer()" aria-label="Open menu">☰</button>
+  </div>
+</nav>
+
+<!-- ══ STORE OVERLAY ══ -->
+<div class="gs-overlay" id="gsOverlay" onclick="closeStoreMenu()"></div>
+
+<!-- ══ STORE SIDE PANEL ══ -->
+<div class="gs-panel" id="gsPanel">
+  <div class="gs-panel-head">
+    <div class="gs-panel-title">💎 Craft Cut Carat Shop</div>
+    <button class="gs-panel-close" onclick="closeStoreMenu()">✕</button>
+  </div>
+  <div class="gs-panel-eyebrow">What are you looking for?</div>
+ <div class="gs-tab-list">
+    <div class="gs-tab-row" onclick="openStorePage('rough')">
+      <div class="gs-tab-icon">🪨</div>
+      <div class="gs-tab-info">
+        <div class="gs-tab-name">Rough</div>
+        <div class="gs-tab-desc">Raw gem rough — sapphire, ruby, tanzanite, topaz & more</div>
+      </div>
+      <div class="gs-tab-arrow">→</div>
+    </div>
+    <div class="gs-tab-row" onclick="openStorePage('cabbing')">
+      <div class="gs-tab-icon">💠</div>
+      <div class="gs-tab-info">
+        <div class="gs-tab-name">Cabbing</div>
+        <div class="gs-tab-desc">Cab-grade rough & pre-forms ready for the wheel</div>
+      </div>
+      <div class="gs-tab-arrow">→</div>
+    </div>
+    <div class="gs-tab-row" onclick="openStorePage('finished')">
+      <div class="gs-tab-icon">💎</div>
+      <div class="gs-tab-info">
+        <div class="gs-tab-name">Finished Gems</div>
+        <div class="gs-tab-desc">Precision faceted stones ready to set</div>
+      </div>
+      <div class="gs-tab-arrow">→</div>
+    </div>
+    <div class="gs-tab-row" onclick="openStorePage('crystals')">
+      <div class="gs-tab-icon">🔮</div>
+      <div class="gs-tab-info">
+        <div class="gs-tab-name">Healing Crystals</div>
+        <div class="gs-tab-desc">Clusters, points, tumbles & mineral specimens</div>
+      </div>
+      <div class="gs-tab-arrow">→</div>
+    </div>
+    <div class="gs-tab-row" onclick="openStorePage('supplies')">
+      <div class="gs-tab-icon">⚙️</div>
+      <div class="gs-tab-info">
+        <div class="gs-tab-name">Supplies</div>
+        <div class="gs-tab-desc">Laps, dop wax, polishing powder, gem oil & tools</div>
+      </div>
+      <div class="gs-tab-arrow">→</div>
+    </div>
+    <div class="gs-tab-row" onclick="openStorePage('merch')">
+      <div class="gs-tab-icon">👕</div>
+      <div class="gs-tab-info">
+        <div class="gs-tab-name">Merch</div>
+        <div class="gs-tab-desc">Galaxy Gems apparel, mugs, stickers & collectibles</div>
+      </div>
+      <div class="gs-tab-arrow">→</div>
+    </div>
+    <div class="gs-tab-row" onclick="openStorePage('jewelry')">
+      <div class="gs-tab-icon">💍</div>
+      <div class="gs-tab-info">
+        <div class="gs-tab-name">Jewellery</div>
+        <div class="gs-tab-desc">Finished pieces — settings, pendants, rings & custom work</div>
+      </div>
+      <div class="gs-tab-arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FULL PAGE STORE ══ -->
+<div class="gs-fullpage" id="gsFullpage">
+  <div class="gs-fp-topbar">
+    <button class="gs-fp-back" onclick="closeStorePage()">← Back</button>
+    <div class="gs-fp-topbar-title" id="gsFpTitle">Store</div>
+  </div>
+  <div class="gs-fp-content" id="gsFpContent"></div>
+</div>
+
+<!-- Mobile drawer -->
+<div class="nav-drawer" id="navDrawer">
+  <button class="nav-link" onclick="openStorePage('finished')">💎 Finished Gems</button>
+  <button class="nav-link" onclick="openStorePage('rough')">🪨 Rough Stones</button>
+  <button class="nav-link" onclick="openStorePage('supplies')">⚙️ Supplies</button>
+  <button class="nav-link" onclick="openStorePage('merch')">👕 Merch</button>
+  <button class="nav-link" onclick="openStorePage('jewelry')">💍 Jewellery</button>
+  <button class="nav-link" onclick="openStoreMenu()">🛒 All Departments</button>
+  <button class="nav-link" onclick="location.href='#ourstory'">Our Story</button>
+  <div style="height:0.5px;background:var(--border);margin:8px 0;"></div>
+  <a href="https://www.etsy.com/shop/craftcutcarat" target="_blank" style="display:block;padding:7px 13px;background:var(--gold);color:#1A1640;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-align:center;text-decoration:none;margin-bottom:6px;">🛒 Buy on Etsy</a>
+  <button class="nav-link" onclick="openAuth('login')">Sign in</button>
+  <button class="nav-link" onclick="toggleMode()">🌙 Toggle dark/light</button>
+</div>
+
+
+
+<!-- ══ PAGE ══ -->
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+
+    <span class="eyebrow">Canadian Precision Gem Faceting Studio</span>
+
+    <h1 class="hero-title">
+      Precision cut.<br>
+      Hand polished.<br>
+      <em>Born from fire<br>and obsession.</em><br>
+      <span style="color:var(--text-dim);font-size:0.45em;letter-spacing:0.18em;font-style:normal;">✦ &nbsp; Craft Cut Carat &nbsp; ✦</span>
+    </h1>
+
+    <img src="saphirespin.gif" alt="Spinning sapphire gem" style="width:180px;height:180px;object-fit:contain;margin:0 auto 1.5rem;display:block;border-radius:16px;">
+    <p class="hero-sub">
+      Every stone hand-cut and polished by one person, one machine, one obsession.
+      Precision faceted loose gemstones — sapphire, ruby, topaz and more —
+      cut in Cambridge, Ontario, Canada and shipped worldwide.
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn-hero primary" onclick="openStorePage('finished')">Shop Finished Gems</button>
+      <button class="btn-hero ghost" onclick="location.href='#ourstory'">Our Story</button>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">4</div>
+        <div class="hero-stat-label">Stones cut so far</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">50</div>
+        <div class="hero-stat-label">Goal by Christmas</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">🇨🇦</div>
+        <div class="hero-stat-label">Made in Canada</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── 4 PILLARS ── -->
+  <div class="section">
+    <span class="eyebrow">Why Craft Cut Carat</span>
+    <h2 class="section-title">One cutter.<br>One obsession.</h2>
+    <p class="section-sub">Every stone that leaves this studio was cut by hand, on one machine, by one person who cares deeply about every facet, every meetpoint, and every mirror polish.</p>
+
+    <div class="pillar-grid">
+      <div class="pillar" onclick="openStorePage('finished')">
+        <span class="pillar-icon">💎</span>
+        <div class="pillar-title">Precision Cut</div>
+        <p class="pillar-desc">Every stone is faceted on an Ultra Tec VL Classic — the gold standard of faceting machines. Tight meetpoints, mirror polish, and obsessive attention to every angle before it ever leaves the bench.</p>
+        <span class="pillar-link">Shop finished gems →</span>
+      </div>
+      <div class="pillar" onclick="openStorePage('rough')">
+        <span class="pillar-icon">🪨</span>
+        <div class="pillar-title">Premium Rough</div>
+        <p class="pillar-desc">Sapphire, ruby, topaz, tanzanite, fluorite, apatite, kyanite and more. Lab grown and natural rough sourced for quality — cut to bring out the best in every stone.</p>
+        <span class="pillar-link">Browse rough inventory →</span>
+      </div>
+      <div class="pillar" onclick="location.href='#ourstory'">
+        <span class="pillar-icon">🔥</span>
+        <div class="pillar-title">Made in Canada</div>
+        <p class="pillar-desc">Cut in Cambridge, Ontario by Zellis Orange — a self-taught lapidary with a decade of precision grinding and fabrication behind him. Every stone has a story. Every cut is personal.</p>
+        <span class="pillar-link">Read our story →</span>
+      </div>
+      <div class="pillar" onclick="openStorePage('finished')">
+        <span class="pillar-icon">✨</span>
+        <div class="pillar-title">Ship Worldwide</div>
+        <p class="pillar-desc">Loose faceted gemstones shipped safely anywhere in the world. Each stone comes with full species, carat weight, cut details and origin info. Collectors, jewellers and enthusiasts welcome.</p>
+        <span class="pillar-link">Start shopping →</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── STONE PREVIEW ── -->
+  <div class="section">
+    <span class="eyebrow">Stone library</span>
+    <h2 class="section-title">Every gem. Every spec.</h2>
+    <p class="section-sub">A taste of what's waiting. Click any stone or explore the full database — searchable, filterable, and packed with cutting data.</p>
+    <div class="preview-grid" id="previewGrid"></div>
+    <div style="text-align:center;">
+            <button class="btn-hero primary" onclick="openStorePage('finished')">Shop all finished gems →</button>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── OUR STORY ── -->
+  <div class="section" id="ourstory">
+    <span class="eyebrow">The person behind the bench</span>
+    <h2 class="section-title">Our Story.</h2>
+    <p class="section-sub">Why Craft Cut Carat exists — and why it matters.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;">
+      <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;">
+        <span style="font-size:32px;display:block;margin-bottom:1rem;">🔥</span>
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:0.75rem;">The Obsession</div>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">I'm Zellis Orange — a self-taught lapidary based in Cambridge, Ontario. I cut on an Ultra Tec VL Classic, the gold standard of faceting machines. Every stone that leaves my bench has been touched by my hands, cut to my standards, and polished to a mirror finish I'm proud of.</p>
+      </div>
+      <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;">
+        <span style="font-size:32px;display:block;margin-bottom:1rem;">⚙️</span>
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:0.75rem;">The Background</div>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">A decade of precision stainless steel fabrication and grinding gave me the eye for tight tolerances and the patience for slow, careful work. That background lives in every facet I cut. Slow is fast. Light pressure. Mirror finish. Every time.</p>
+      </div>
+      <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;">
+        <span style="font-size:32px;display:block;margin-bottom:1rem;">💎</span>
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:0.75rem;">The Stones</div>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">Sapphire, ruby, topaz, tanzanite, fluorite, apatite, kyanite and more. Lab grown and natural rough sourced for quality. I cut loose faceted gemstones only — no jewellery, no settings. Just the stone, at its absolute best.</p>
+      </div>
+      <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;">
+        <span style="font-size:32px;display:block;margin-bottom:1rem;">🇨🇦</span>
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:0.75rem;">Made in Canada</div>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.8;">Every stone is cut right here in Cambridge, Ontario. When you buy from Craft Cut Carat you're buying directly from the person who cut it — no middleman, no mystery. Just a cutter who loves what he does and puts that love into every stone.</p>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <button class="btn-hero primary" onclick="openStorePage('finished')">Shop the collection →</button>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── CTA ── -->
+  <div class="section">
+    <div class="cta-band">
+      <span class="eyebrow">Hand cut in Cambridge, Ontario</span>
+      <h2>Your perfect stone is waiting.</h2>
+      <p>Every gem is precision faceted by hand on an Ultra Tec VL Classic. Tight meetpoints, mirror polish, and real passion in every cut. Shop loose faceted gemstones and own something truly handmade.</p>
+      <div class="cta-actions">
+        <button class="btn-hero primary" onclick="openStorePage('finished')">Shop finished gems</button>
+        <button class="btn-hero ghost" onclick="openStorePage('rough')">Browse rough stones</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-logo">Craft Cut Carat</div>
+  <div class="footer-sub">Precision faceted gemstones &nbsp;·&nbsp; Hand cut in Cambridge, Ontario, Canada &nbsp;·&nbsp; ♦ by Zellis Orange</div>
+  <div class="footer-links">
+    <button class="footer-link" onclick="openStorePage('finished')">Finished Gems</button>
+    <button class="footer-link" onclick="openStorePage('rough')">Rough Stones</button>
+    <button class="footer-link" onclick="openStorePage('supplies')">Supplies</button>
+    <button class="footer-link" onclick="location.href='#ourstory'">Our Story</button>
+    <button class="footer-link" onclick="openStoreMenu()">All Departments</button>
+  </div>
+  <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;">
+    <a href="https://www.instagram.com/craft_cut_carat" target="_blank" style="font-size:12px;color:var(--text-muted);padding:6px 14px;border:0.5px solid var(--border);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.color='var(--tz-bright)';this.style.borderColor='var(--tz-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">📸 Instagram</a>
+    <a href="https://www.tiktok.com/@craft_cut_carat" target="_blank" style="font-size:12px;color:var(--text-muted);padding:6px 14px;border:0.5px solid var(--border);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.color='var(--tz-bright)';this.style.borderColor='var(--tz-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">🎵 TikTok</a>
+    <a href="https://www.youtube.com/@craft_cut_carat" target="_blank" style="font-size:12px;color:var(--text-muted);padding:6px 14px;border:0.5px solid var(--border);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.color='var(--tz-bright)';this.style.borderColor='var(--tz-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">▶️ YouTube</a>
+    <a href="https://www.etsy.com/shop/craftcutcarat" target="_blank" style="font-size:12px;color:var(--gold);padding:6px 14px;border:0.5px solid var(--gold);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">🛒 Etsy Shop</a>
+  </div>
+</footer>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="overlay" id="authOverlay" onclick="closeAuth(event)">
+  <div class="modal-box">
+    <button class="modal-close-btn" onclick="closeAuthDirect()">×</button>
+    <div class="modal-logo-txt">Craft Cut Carat</div>
+    <div class="modal-logo-sub">Precision faceted gemstones — Cambridge, Ontario</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="loginTab"  onclick="switchAuth('login')">Sign in</button>
+      <button class="auth-tab"        id="signupTab" onclick="switchAuth('signup')">Join free</button>
+    </div>
+    <div class="auth-err" id="authErr"></div>
+    <div id="loginForm">
+      <label class="field-label">Email</label>
+      <input class="field-input" type="email" id="loginEmail" placeholder="you@example.com">
+      <label class="field-label">Password</label>
+      <input class="field-input" type="password" id="loginPass" placeholder="••••••••">
+      <button class="auth-submit" onclick="doLogin()">Sign in</button>
+      <p class="auth-hint">Demo: any email · password is <strong style="color:var(--tz-bright);">gems</strong></p>
+    </div>
+    <div id="signupForm" class="hidden">
+      <label class="field-label">Your name</label>
+      <input class="field-input" type="text" id="signupName" placeholder="Zellis">
+      <label class="field-label">Email</label>
+      <input class="field-input" type="email" id="signupEmail" placeholder="you@example.com">
+      <label class="field-label">Password</label>
+      <input class="field-input" type="password" id="signupPass" placeholder="Choose a password">
+      <button class="auth-submit" onclick="doSignup()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GEMCUTTER PRO OVERLAY ══ -->
+<div id="gcpOverlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:900;
+  background:rgba(8,6,20,0.96);
+  flex-direction:column;
+">
+  <div style="
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 1.5rem;
+    height:52px;
+    background:rgba(13,11,26,0.98);
+    border-bottom:0.5px solid var(--border-light);
+    flex-shrink:0;
+  ">
+    <div style="font-family:var(--font-display);font-size:20px;color:var(--text);letter-spacing:0.04em;">
+      ✂️ GemCutter Pro
+    </div>
+    <button onclick="closeGemCutter()" style="
+      padding:6px 14px;
+      border:0.5px solid var(--border-light);
+      border-radius:var(--radius-sm);
+      background:transparent;
+      color:var(--text-muted);
+      font-size:13px;
+      font-family:var(--font-body);
+      cursor:pointer;
+    ">✕ Close</button>
+  </div>
+  <iframe
+    id="gcpFrame"
+    src=""
+    style="flex:1;border:none;width:100%;height:100%;"
+    allow="fullscreen"
+  ></iframe>
+</div>
+
+<!-- ══ ADMIN OVERLAY ══ -->
+<div class="admin-overlay" id="adminOverlay" onclick="closeAdmin()"></div>
+
+<!-- ══ ADMIN PANEL ══ -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-topbar">
+    <div class="admin-topbar-title">⚙️ Admin Dashboard</div>
+    <button class="admin-close" onclick="closeAdmin()">✕ Close</button>
+  </div>
+  <div class="admin-body">
+
+    <!-- SIDEBAR -->
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-label">Departments</div>
+      <button class="admin-sidebar-btn active" onclick="adminShowDept('finished',this)">💎 Finished Gems</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('rough',this)">🪨 Rough Stones</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('cabbing',this)">💠 Cabbing</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('crystals',this)">🔮 Crystals</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('supplies',this)">⚙️ Supplies</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('merch',this)">👕 Merch</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('jewelry',this)">💍 Jewellery</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="admin-main" id="adminMain">
+      <!-- filled by JS -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ ADMIN EDIT MODAL ══ -->
+<div class="admin-modal-overlay" id="adminModalOverlay">
+  <div class="admin-modal-box">
+    <div class="admin-modal-title">
+      <span id="adminModalTitle">Edit Gem</span>
+      <button onclick="closeAdminModal()" style="background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <label class="field-label">Emoji Icon</label>
+    <input class="field-input" id="am_icon" placeholder="💎">
+    <label class="field-label">Gem Name</label>
+    <input class="field-input" id="am_name" placeholder="Pink Sapphire · 1.7ct">
+    <label class="field-label">Details / Description</label>
+    <input class="field-input" id="am_sub" placeholder="Lab grown · Corundum · Cambridge cut">
+    <label class="field-label">Price</label>
+    <input class="field-input" id="am_price" placeholder="$49.00">
+    <label class="field-label">Sale Price (leave blank if no sale)</label>
+    <input class="field-input" id="am_sale" placeholder="$39.00">
+    <label class="field-label">Etsy Listing URL</label>
+    <input class="field-input" id="am_etsy" placeholder="https://etsy.com/listing/...">
+    <label class="field-label">Notify Me Email (for sold out)</label>
+    <input class="field-input" id="am_notify" placeholder="leave blank">
+    <label class="field-label">Status</label>
+    <select class="field-input" id="am_status">
+      <option value="instock">✅ In Stock</option>
+      <option value="soldout">❌ Sold Out</option>
+      <option value="low">⚠️ Low Stock</option>
+    </select>
+    <label class="field-label">Image URL (or upload below)</label>
+    <input class="field-input" id="am_img" placeholder="images/my-sapphire.jpg">
+    <input type="file" id="am_imgfile" accept="image/*" style="margin-top:8px;font-size:12px;color:var(--text-muted);" onchange="previewAdminImg(this)">
+    <div id="am_imgpreview" style="margin-top:8px;display:none;">
+      <img id="am_imgpreview_img" style="width:100%;max-height:160px;object-fit:contain;border-radius:var(--radius-sm);border:0.5px solid var(--border);">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1.25rem;">
+      <button onclick="saveAdminGem()" style="flex:1;padding:12px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">💾 Save</button>
+      <button onclick="closeAdminModal()" style="padding:12px 20px;background:transparent;color:var(--text-muted);border:0.5px solid var(--border-light);border-radius:var(--radius-sm);font-size:14px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<!-- ══ SCRIPTS ══ -->
+<script>
+const PREVIEW_GEMS = [
+  {name:"Sapphire",   hex:"#378ADD", hardness:9},
+  {name:"Ruby",       hex:"#E24B4A", hardness:9},
+  {name:"Tanzanite",  hex:"#534AB7", hardness:6.5},
+  {name:"Topaz",      hex:"#85B7EB", hardness:8},
+  {name:"Emerald",    hex:"#1D9E75", hardness:7.5},
+  {name:"Diamond",    hex:"#B5D4F4", hardness:10},
+  {name:"Amethyst",   hex:"#7F77DD", hardness:7},
+  {name:"Tourmaline", hex:"#ED93B1", hardness:7},
+  {name:"Spinel",     hex:"#D4537E", hardness:8},
+  {name:"Aquamarine", hex:"#85B7EB", hardness:7.5},
+  {name:"Garnet",     hex:"#E24B4A", hardness:7.5},
+  {name:"Zircon",     hex:"#B5D4F4", hardness:7.5},
+  {name:"Peridot",    hex:"#97C459", hardness:6.5},
+  {name:"Iolite",     hex:"#534AB7", hardness:7},
+  {name:"Kunzite",    hex:"#F4C0D1", hardness:7},
+  {name:"Benitoite",  hex:"#185FA5", hardness:6},
+];
+
+document.getElementById('previewGrid').innerHTML = PREVIEW_GEMS.map(g => `
+  <div class="prev-card" onclick="openStorePage('finished')">
+    <svg width="38" height="38" viewBox="0 0 38 38" fill="none" aria-hidden="true">
+      <polygon points="19,2 36,13 30,36 8,36 2,13" fill="${g.hex}" opacity="0.88"/>
+      <polygon points="19,2 36,13 19,11" fill="white" opacity="0.22"/>
+    </svg>
+    <div class="prev-name">${g.name}</div>
+    <div class="prev-mohs">Mohs ${g.hardness}</div>
+  </div>`).join('');
+
+/* ── BACKGROUND FLOATING GEMS ── */
+(function buildBg(){
+  const canvas = document.getElementById('bgCanvas');
+  const gems = [
+    { color:'#E24B4A', glow:'rgba(226,75,74,0.35)' },
+    { color:'#378ADD', glow:'rgba(55,138,221,0.35)' },
+    { color:'#534AB7', glow:'rgba(83,74,183,0.4)' },
+    { color:'#1D9E75', glow:'rgba(29,158,117,0.35)' },
+    { color:'#EF9F27', glow:'rgba(239,159,39,0.35)' },
+    { color:'#7F77DD', glow:'rgba(127,119,221,0.4)' },
+    { color:'#D4537E', glow:'rgba(212,83,126,0.35)' },
+    { color:'#85B7EB', glow:'rgba(133,183,235,0.3)' },
+    { color:'#97C459', glow:'rgba(151,196,89,0.3)' },
+    { color:'#B5D4F4', glow:'rgba(181,212,244,0.3)' },
+  ];
+
+  // Big gems
+  for(let i=0;i<8;i++){
+    const g=gems[Math.floor(Math.random()*gems.length)];
+    const sz=40+Math.random()*70;
+    const w=document.createElement('div');
+    w.style.cssText=`position:absolute;left:${Math.random()*96}%;bottom:-120px;pointer-events:none;filter:drop-shadow(0 0 ${Math.floor(sz/4)}px ${g.glow});`;
+    w.innerHTML=`<svg width="${sz}" height="${sz}" viewBox="0 0 60 60" fill="none"
+      style="opacity:${0.12+Math.random()*0.18};animation:floatGem ${22+Math.random()*30}s ${Math.random()*25}s linear infinite;" aria-hidden="true">
+      <polygon points="30,2 58,20 50,58 10,58 2,20" fill="${g.color}"/>
+      <polygon points="30,2 58,20 30,16" fill="white" opacity="0.35"/>
+      <polygon points="30,16 58,20 50,58 10,58 2,20" fill="${g.color}" opacity="0.5"/>
+      <polygon points="30,16 44,39 30,58 16,39" fill="white" opacity="0.08"/>
+    </svg>`;
+    canvas.appendChild(w);
+  }
+
+  // Medium gems
+  for(let i=0;i<12;i++){
+    const g=gems[Math.floor(Math.random()*gems.length)];
+    const sz=18+Math.random()*32;
+    const w=document.createElement('div');
+    w.style.cssText=`position:absolute;left:${Math.random()*98}%;bottom:-80px;pointer-events:none;`;
+    w.innerHTML=`<svg width="${sz}" height="${sz}" viewBox="0 0 40 40" fill="none"
+      style="opacity:${0.07+Math.random()*0.10};animation:floatGem ${16+Math.random()*22}s ${Math.random()*30}s linear infinite;" aria-hidden="true">
+      <polygon points="20,2 38,14 32,38 8,38 2,14" fill="${g.color}"/>
+      <polygon points="20,2 38,14 20,12" fill="white" opacity="0.25"/>
+    </svg>`;
+    canvas.appendChild(w);
+  }
+
+  // Tiny gems
+  for(let i=0;i<10;i++){
+    const g=gems[Math.floor(Math.random()*gems.length)];
+    const sz=6+Math.random()*12;
+    const w=document.createElement('div');
+    w.style.cssText=`position:absolute;left:${Math.random()*99}%;bottom:-40px;pointer-events:none;`;
+    w.innerHTML=`<svg width="${sz}" height="${sz}" viewBox="0 0 20 20" fill="none"
+      style="opacity:${0.15+Math.random()*0.25};animation:floatGem ${10+Math.random()*14}s ${Math.random()*20}s linear infinite;" aria-hidden="true">
+      <polygon points="10,1 19,7 16,19 4,19 1,7" fill="${g.color}"/>
+      <polygon points="10,1 19,7 10,6" fill="white" opacity="0.4"/>
+    </svg>`;
+    canvas.appendChild(w);
+  }
+})();
+
+/* ── AUTH ── */
+let currentUser = JSON.parse(localStorage.getItem('gg_user')||'null');
+
+function openAuth(mode){
+  document.getElementById('authOverlay').classList.add('open');
+  switchAuth(mode||'login');
+}
+function closeAuth(e){ if(e.target.id==='authOverlay') closeAuthDirect(); }
+function closeAuthDirect(){
+  document.getElementById('authOverlay').classList.remove('open');
+  document.getElementById('authErr').classList.remove('show');
+}
+function switchAuth(mode){
+  document.getElementById('loginForm').classList.toggle('hidden', mode!=='login');
+  document.getElementById('signupForm').classList.toggle('hidden', mode!=='signup');
+  document.getElementById('loginTab').classList.toggle('active', mode==='login');
+  document.getElementById('signupTab').classList.toggle('active', mode==='signup');
+  document.getElementById('authErr').classList.remove('show');
+}
+function showErr(msg){ const e=document.getElementById('authErr'); e.textContent=msg; e.classList.add('show'); }
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){ showErr('Please fill in all fields.'); return; }
+  if(pass==='Maylamoo400$'){
+    loginUser({name:'Admin', email, isAdmin:true});
+    return;
+  }
+  if(pass!=='gems'){ showErr('Incorrect password. Demo password is: gems'); return; }
+  const name=email.split('@')[0];
+  loginUser({name:name.charAt(0).toUpperCase()+name.slice(1), email, isAdmin:false});
+}
+function doSignup(){
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass=document.getElementById('signupPass').value;
+  if(!name||!email||!pass){ showErr('Please fill in all fields.'); return; }
+  loginUser({name, email});
+}
+function loginUser(user){
+  currentUser=user;
+  localStorage.setItem('gg_user', JSON.stringify(user));
+  closeAuthDirect();
+  applyAuth();
+  toast(`Welcome to Craft Cut Carat, ${user.name}! ✦`);
+}
+function logout(){
+  currentUser=null;
+  localStorage.removeItem('gg_user');
+  applyAuth();
+  toast('Signed out. See you at the bench.');
+}
+function applyAuth(){
+  const in_=!!currentUser;
+  document.getElementById('guestNav').classList.toggle('hidden', in_);
+  document.getElementById('userNav').classList.toggle('hidden', !in_);
+  if(in_){
+    document.getElementById('navUserName').textContent=currentUser.name;
+    document.getElementById('avatarInitials').textContent=currentUser.name.slice(0,2).toUpperCase();
+    const existing = document.getElementById('adminNavBtn');
+    if(currentUser.isAdmin && !existing){
+      const btn = document.createElement('button');
+      btn.id = 'adminNavBtn';
+      btn.className = 'nav-btn';
+      btn.style.cssText = 'background:rgba(239,159,39,0.15);color:var(--gold);border-color:rgba(239,159,39,0.4);';
+      btn.textContent = '⚙️ Admin';
+      btn.onclick = openAdmin;
+      document.getElementById('userNav').prepend(btn);
+    } else if(!currentUser.isAdmin && existing){
+      existing.remove();
+    }
+  }
+}
+/* ── DRAWER ── */
+function toggleDrawer(){ document.getElementById('navDrawer').classList.toggle('open'); }
+
+/* ══ GEM STORE ══ */
+const STORE_DATA = {
+  rough: {
+    icon: '🪨', title: 'Rough',
+    subtitle: 'Raw gem rough for the serious faceter — direct from the source',
+    items: [
+      { icon:'🔷', name:'Blue Sapphire Rough',  sub:'Lab grown · Corundum · ~5ct',  price:'$24.99' },
+      { icon:'🔴', name:'Ruby Rough',            sub:'Lab grown · Corundum · ~4ct',  price:'$18.50' },
+      { icon:'🟣', name:'Tanzanite Rough',       sub:'Natural · Tanzania · ~3ct',    price:'$42.00' },
+      { icon:'💠', name:'Blue Topaz Rough',      sub:'Natural · Brazil · ~8ct',      price:'$12.00' },
+      { icon:'🟪', name:'Amethyst Rough',        sub:'Natural · Uruguay · ~10ct',    price:'$8.99'  },
+      { icon:'💚', name:'Emerald Rough',         sub:'Natural · Colombia · ~2ct',    price:'$55.00' },
+      { icon:'🟡', name:'Citrine Rough',         sub:'Natural · Brazil · ~12ct',     price:'$9.99'  },
+      { icon:'🔵', name:'Aquamarine Rough',      sub:'Natural · Brazil · ~6ct',      price:'$32.00' },
+      { icon:'🟠', name:'Spessartite Garnet',    sub:'Natural · Nigeria · ~3ct',     price:'$38.00' },
+      { icon:'⚪', name:'White Sapphire Rough',  sub:'Lab grown · Corundum · ~5ct',  price:'$19.99' },
+      { icon:'🩷', name:'Pink Sapphire Rough',   sub:'Lab grown · Corundum · ~4ct',  price:'$28.00' },
+      { icon:'🟤', name:'Smoky Quartz Rough',    sub:'Natural · Brazil · ~15ct',     price:'$7.99'  },
+    ]
+  },
+  cabbing: {
+    icon: '💠', title: 'Cabbing',
+    subtitle: 'Cab-grade rough and pre-forms ready for the cabbing wheel',
+    items: [
+      { icon:'🔵', name:'Labradorite Slab',      sub:'Natural · Madagascar · 4x6cm',   price:'$14.99' },
+      { icon:'🟢', name:'Malachite Slab',        sub:'Natural · Congo · 3x5cm',        price:'$22.00' },
+      { icon:'🔴', name:'Jasper Slab',           sub:'Natural · Various · 4x6cm',      price:'$9.99'  },
+      { icon:'⚫', name:'Black Onyx Slab',       sub:'Natural · Brazil · 4x6cm',       price:'$11.99' },
+      { icon:'🔵', name:'Lapis Lazuli Slab',     sub:'Natural · Afghanistan · 3x5cm',  price:'$28.00' },
+      { icon:'🟠', name:'Carnelian Slab',        sub:'Natural · Brazil · 4x6cm',       price:'$10.99' },
+      { icon:'🟢', name:'Chrysoprase Slab',      sub:'Natural · Australia · 3x5cm',    price:'$19.99' },
+      { icon:'⚪', name:'Moonstone Pre-form',    sub:'Natural · India · 15x20mm',      price:'$16.99' },
+      { icon:'🔵', name:'Turquoise Pre-form',    sub:'Natural · USA · 12x16mm',        price:'$24.99' },
+      { icon:'🟣', name:'Charoite Slab',         sub:'Natural · Russia · 3x5cm',       price:'$34.99' },
+      { icon:'🟤', name:'Tiger Eye Slab',        sub:'Natural · South Africa · 4x6cm', price:'$8.99'  },
+      { icon:'🌈', name:'Opal Rough',            sub:'Natural · Australia · ~2ct',     price:'$45.00' },
+    ]
+  },
+  finished: {
+    icon: '💎', title: 'Finished Gems',
+    subtitle: 'Precision faceted stones cut and polished to mirror finish',
+    items: [
+      { icon:'💎', name:'Cut Blue Sapphire',     sub:'Precision faceted · 2ct · Round',   price:'$89.00'  },
+      { icon:'❤️', name:'Cut Ruby',             sub:'Precision faceted · 1.5ct · Oval',  price:'$74.00'  },
+      { icon:'🔮', name:'Cut Tanzanite',         sub:'Precision faceted · 3ct · Cushion', price:'$130.00' },
+      { icon:'🧊', name:'Cut Blue Topaz',        sub:'Precision faceted · 4ct · Emerald', price:'$38.00'  },
+      { icon:'💚', name:'Cut Emerald',           sub:'Precision faceted · 1ct · Emerald', price:'$165.00' },
+      { icon:'🌿', name:'Cut Peridot',           sub:'Precision faceted · 2ct · Round',   price:'$22.00'  },
+      { icon:'✨', name:'Cut Spinel',            sub:'Precision faceted · 1ct · Oval',    price:'$95.00'  },
+      { icon:'💜', name:'Cut Amethyst',          sub:'Precision faceted · 5ct · Pear',    price:'$28.00'  },
+      { icon:'🩵', name:'Cut Aquamarine',        sub:'Precision faceted · 3ct · Emerald', price:'$55.00'  },
+      { icon:'🟡', name:'Cut Citrine',           sub:'Precision faceted · 6ct · Cushion', price:'$19.99'  },
+      { icon:'🩷', name:'Cut Pink Sapphire',     sub:'Precision faceted · 1.5ct · Round', price:'$110.00' },
+      { icon:'🔴', name:'Cut Garnet',            sub:'Precision faceted · 2ct · Round',   price:'$32.00'  },
+    ]
+  },
+  crystals: {
+    icon: '🔮', title: 'Healing Crystals',
+    subtitle: 'Clusters, points, tumbles and mineral specimens',
+    items: [
+      { icon:'🔮', name:'Amethyst Cluster',      sub:'Natural · Uruguay · ~200g',     price:'$34.99' },
+      { icon:'⚪', name:'Clear Quartz Point',    sub:'Natural · Brazil · ~80g',       price:'$18.99' },
+      { icon:'🩷', name:'Rose Quartz Sphere',    sub:'Natural · Brazil · 60mm',       price:'$28.99' },
+      { icon:'⚫', name:'Black Tourmaline Raw',  sub:'Natural · Brazil · ~100g',      price:'$14.99' },
+      { icon:'🔵', name:'Celestite Cluster',     sub:'Natural · Madagascar · ~150g',  price:'$42.00' },
+      { icon:'🟢', name:'Green Fluorite Tower',  sub:'Natural · China · 10cm',        price:'$22.99' },
+      { icon:'🟠', name:'Carnelian Tumble Set',  sub:'Natural · Brazil · 6 pieces',   price:'$12.99' },
+      { icon:'🟡', name:'Citrine Point',         sub:'Natural · Brazil · ~60g',       price:'$19.99' },
+      { icon:'🔵', name:'Lapis Lazuli Sphere',   sub:'Natural · Afghanistan · 50mm',  price:'$38.00' },
+      { icon:'🟣', name:'Lepidolite Cluster',    sub:'Natural · Brazil · ~180g',      price:'$26.99' },
+      { icon:'⚪', name:'Selenite Wand',         sub:'Natural · Morocco · 20cm',      price:'$9.99'  },
+      { icon:'🌈', name:'Labradorite Palm Stone',sub:'Natural · Madagascar · ~80g',   price:'$16.99' },
+    ]
+  },
+  supplies: {
+    icon: '⚙️', title: 'Supplies',
+    subtitle: 'Everything you need at the bench',
+    items: [
+      { icon:'⚙️', name:'Sintered Diamond Lap 260', sub:'Corundum grade · 6"',      price:'$89.00' },
+      { icon:'⚙️', name:'Sintered Diamond Lap 600', sub:'Pre-polish · 6"',          price:'$94.00' },
+      { icon:'⚡', name:'Lightning Lap 1200',        sub:'Pre-polish stage',         price:'$55.00' },
+      { icon:'🪩', name:'Batt Lap',                 sub:'Polish stage · 6"',        price:'$48.00' },
+      { icon:'✨', name:'Diamond Powder 50k',        sub:'Ultra fine polish',        price:'$29.99' },
+      { icon:'✨', name:'Diamond Powder 100k',       sub:'Mirror polish',            price:'$34.99' },
+      { icon:'🕯️', name:'Dop Wax Kit',             sub:'Green & brown · 4 sticks', price:'$19.99' },
+      { icon:'🌿', name:'Cedarwood Gem Oil',         sub:'100ml · Loupe grade',      price:'$9.99'  },
+      { icon:'🧴', name:'Gorilla Glue Gel',          sub:'Stone dopping adhesive',   price:'$7.99'  },
+      { icon:'💧', name:'Acetone 500ml',             sub:'Dop removal solvent',      price:'$11.99' },
+      { icon:'🔍', name:'10x Loupe',                sub:'Triplet · achromatic',     price:'$24.99' },
+      { icon:'💡', name:'UV Torch 365nm',            sub:'Fluorescence testing',     price:'$18.99' },
+    ]
+  },
+  merch: {
+    icon: '👕', title: 'Merch',
+    subtitle: 'Wear your obsession proudly',
+    items: [
+      { icon:'👕', name:'Galaxy Gems Tee',       sub:'Black · Unisex',           price:'$28.00' },
+      { icon:'🧢', name:'Faceter Cap',           sub:'Embroidered logo',         price:'$24.00' },
+      { icon:'☕', name:'Gem Studio Mug',        sub:'15oz · Dishwasher safe',   price:'$18.00' },
+      { icon:'🎽', name:'Bench Hoodie',          sub:'Galaxy purple · Fleece',   price:'$54.00' },
+      { icon:'🛍️', name:'Tote Bag',             sub:'Canvas · Gem print',       price:'$16.00' },
+      { icon:'🔖', name:'Sticker Pack',          sub:'12 gem species stickers',  price:'$9.00'  },
+      { icon:'📓', name:'Cutting Journal Book',  sub:'Hardcover · 200 pages',    price:'$22.00' },
+      { icon:'🖼️', name:'Gem Anatomy Print',    sub:'A3 · Framed optional',     price:'$35.00' },
+    ]
+  },
+  jewelry: {
+    icon: '💍', title: 'Jewellery',
+    subtitle: 'Finished pieces crafted from the finest faceted stones',
+    items: [
+      { icon:'💍', name:'Sapphire Solitaire Ring', sub:'Sterling silver · Size 7',   price:'$189.00' },
+      { icon:'📿', name:'Tanzanite Pendant',       sub:'18k gold fill · 16" chain',  price:'$245.00' },
+      { icon:'💎', name:'Ruby Stud Earrings',      sub:'Sterling silver · Pair',     price:'$155.00' },
+      { icon:'✨', name:'Topaz Tennis Bracelet',   sub:'Sterling silver · 7"',       price:'$310.00' },
+      { icon:'💛', name:'Peridot Drop Earrings',   sub:'Gold fill · Pair',           price:'$98.00'  },
+      { icon:'🔮', name:'Amethyst Cluster Ring',   sub:'Sterling silver · Size 6',   price:'$134.00' },
+      { icon:'🌟', name:'Spinel Pendant',          sub:'Rose gold fill · 18"',       price:'$198.00' },
+      { icon:'💍', name:'Custom Commission',       sub:'Your stone · Your design',   price:'POA'     },
+    ]
+  }
+};
+
+let gsCart = 0;
+
+function openStoreMenu() {
+  document.getElementById('gsOverlay').classList.add('open');
+  document.getElementById('gsPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeStoreMenu() {
+  document.getElementById('gsOverlay').classList.remove('open');
+  document.getElementById('gsPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function getCustomItems(dept){
+  const saved = localStorage.getItem('ccc_products');
+  if(!saved) return [];
+  return JSON.parse(saved).filter(p => p.dept === dept);
+}
+
+function getHidden(){
+  return JSON.parse(localStorage.getItem('ccc_hidden')||'[]');
+}
+
+function isHidden(dept, name){
+  return getHidden().includes(dept+'::'+name);
+}
+
+function openStorePage(dept) {
+  const data = STORE_DATA[dept];
+  if (!data) return;
+  closeStoreMenu();
+  const isAdmin = currentUser && currentUser.isAdmin;
+  const customItems = getCustomItems(dept);
+  const allItems = [...data.items.filter(i => !isHidden(dept, i.name)), ...customItems];
+  document.getElementById('gsFpTitle').textContent = data.icon + ' ' + data.title;
+  document.getElementById('gsFpContent').innerHTML = `
+    <div class="gs-fp-hero">
+      <span class="gs-fp-hero-icon">${data.icon}</span>
+      <h1 class="gs-fp-hero-title"><em>${data.title}</em></h1>
+      <p class="gs-fp-hero-sub">${data.subtitle}</p>
+      ${isAdmin ? `<button onclick="openAddGem('${dept}')" style="margin-top:1rem;padding:10px 24px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;">+ Add Gem to This Department</button>` : ''}
+    </div>
+    <div class="gs-fp-grid">
+      ${allItems.map((item, idx) => `
+        <div class="gs-fp-card">
+          <div class="gs-fp-card-icon">${item.icon}</div>
+          <div class="gs-fp-card-name">${item.name}</div>
+          <div class="gs-fp-card-sub">${item.sub}</div>
+          <div class="gs-fp-card-price">${item.price}</div>
+          <button class="gs-fp-card-btn" onclick="gsAddCart(this)">+ Add to Cart</button>
+          ${isAdmin && item.custom ? `<button onclick="deleteGem('${item.id}')" style="width:100%;padding:6px;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.4);border-radius:var(--radius-sm);color:#F09595;font-size:11px;cursor:pointer;margin-top:4px;">🗑 Delete</button>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('gsFullpage').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeStorePage() {
+  document.getElementById('gsFullpage').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function openAddGem(dept){
+  const existing = document.getElementById('addGemModal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'addGemModal';
+  modal.style.cssText = `position:fixed;inset:0;background:rgba(8,6,20,0.92);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1.5rem;`;
+  modal.innerHTML = `
+    <div style="background:var(--deep);border:0.5px solid var(--border-light);border-radius:var(--radius);padding:2rem;width:100%;max-width:420px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--text);">+ Add New Gem</div>
+        <button onclick="document.getElementById('addGemModal').remove()" style="background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;">✕</button>
+      </div>
+      <label class="field-label">Emoji Icon</label>
+      <input class="field-input" id="ag_icon" placeholder="💎" value="💎">
+      <label class="field-label">Gem Name</label>
+      <input class="field-input" id="ag_name" placeholder="Pink Sapphire · 1.7ct · Brilliant 93">
+      <label class="field-label">Details</label>
+      <input class="field-input" id="ag_sub" placeholder="Lab grown · Corundum · Cambridge cut">
+      <label class="field-label">Price</label>
+      <input class="field-input" id="ag_price" placeholder="$49.00">
+      <label class="field-label">Etsy Link (optional)</label>
+      <input class="field-input" id="ag_etsy" placeholder="https://etsy.com/listing/...">
+      <button onclick="saveGem('${dept}')" style="width:100%;margin-top:1rem;padding:12px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">💎 Save Gem</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function saveGem(dept){
+  const icon  = document.getElementById('ag_icon').value.trim() || '💎';
+  const name  = document.getElementById('ag_name').value.trim();
+  const sub   = document.getElementById('ag_sub').value.trim();
+  const price = document.getElementById('ag_price').value.trim();
+  const etsy  = document.getElementById('ag_etsy').value.trim();
+  if(!name||!price){ alert('Name and price are required!'); return; }
+  const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+  products.push({
+    id: 'ccc_' + Date.now(),
+    dept, icon, name, sub, price, etsy, custom: true
+  });
+  localStorage.setItem('ccc_products', JSON.stringify(products));
+  document.getElementById('addGemModal').remove();
+  openStorePage(dept);
+  toast(`💎 ${name} added to the store!`);
+}
+
+function deleteGem(id){
+  if(!confirm('Delete this gem from the store?')) return;
+  const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+  const updated = products.filter(p => p.id !== id);
+  localStorage.setItem('ccc_products', JSON.stringify(updated));
+  toast('Gem removed from store.');
+  closeStorePage();
+}
+
+function gsAddCart(btn) {
+  gsCart++;
+  btn.textContent = '✓ Added!';
+  btn.style.background = 'rgba(80,200,120,0.18)';
+  btn.style.borderColor = 'rgba(80,200,120,0.5)';
+  btn.style.color = '#6fcf97';
+  setTimeout(() => {
+    btn.textContent = '+ Add to Cart';
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 1500);
+  toast(`🛒 ${gsCart} item${gsCart>1?'s':''} in cart!`);
+}
+
+
+function toggleMode(){
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('gg_mode', isLight ? 'light' : 'dark');
+  document.getElementById('modeToggle').textContent = isLight ? '🌑' : '🌙';
+}
+function applyMode(){
+  const saved = localStorage.getItem('gg_mode');
+  if(saved === 'dark'){
+    document.body.classList.remove('light');
+    const btn = document.getElementById('modeToggle');
+    if(btn) btn.textContent = '🌙';
+  } else {
+    document.body.classList.add('light');
+    const btn = document.getElementById('modeToggle');
+    if(btn) btn.textContent = '🌑';
+  }
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+applyMode();
+applyAuth();
+
+/* ══ ADMIN SYSTEM ══ */
+let adminCurrentDept = 'finished';
+let adminEditingId = null;
+
+function openAdmin(){
+  document.getElementById('adminOverlay').classList.add('open');
+  document.getElementById('adminPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  adminShowDept('finished', document.querySelector('.admin-sidebar-btn'));
+}
+function closeAdmin(){
+  document.getElementById('adminOverlay').classList.remove('open');
+  document.getElementById('adminPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function openAdminModal(){ document.getElementById('adminModalOverlay').classList.add('open'); }
+function closeAdminModal(){ document.getElementById('adminModalOverlay').classList.remove('open'); adminEditingId = null; }
+
+function adminShowDept(dept, btn){
+  adminCurrentDept = dept;
+  document.querySelectorAll('.admin-sidebar-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const data = STORE_DATA[dept];
+  const custom = JSON.parse(localStorage.getItem('ccc_products')||'[]').filter(p=>p.dept===dept);
+  const hidden = getHidden();
+  const allItems = [
+    ...data.items.map(i=>({...i, custom:false, hidden:hidden.includes(dept+'::'+i.name)})),
+    ...custom
+  ];
+  document.getElementById('adminMain').innerHTML = `
+    <div class="admin-section-header">
+      <div class="admin-section-title">${data.icon} ${data.title}</div>
+      <button class="admin-add-btn" onclick="adminNewGem('${dept}')">+ Add New Gem</button>
+    </div>
+    ${allItems.length === 0 ? `<p style="color:var(--text-muted);font-size:13px;">No gems in this department yet.</p>` : ''}
+    ${allItems.map(item => `
+      <div class="admin-listing">
+        <div class="admin-listing-img" onclick="${item.custom ? `adminEditImg('${item.id}')` : ''}">
+          ${item.img ? `<img src="${item.img}">` : item.icon}
+        </div>
+        <div class="admin-listing-info">
+          <div class="admin-listing-name">
+            ${item.name}
+            <span class="status-badge ${item.status||'instock'}">${item.status==='soldout'?'Sold Out':item.status==='low'?'Low Stock':'In Stock'}</span>
+            ${item.sale ? `<span class="status-badge sale">Sale</span>` : ''}
+          </div>
+          <div class="admin-listing-sub">${item.sub||''}</div>
+        </div>
+        <div class="admin-listing-price">
+          ${item.sale ? `<span style="text-decoration:line-through;color:var(--text-muted);font-size:12px;">${item.price}</span><br>${item.sale}` : item.price}
+        </div>
+        <div class="admin-listing-actions">
+          ${item.custom ? `
+            <button class="admin-action-btn" onclick="adminEditGem('${item.id}')">✏️ Edit</button>
+            <button class="admin-action-btn danger" onclick="adminDeleteGem('${item.id}','${dept}')">🗑</button>
+          ` : `
+            <button class="admin-action-btn" onclick="adminPromoteBuiltin('${dept}','${item.name}')">✏️ Edit</button>
+            ${item.hidden
+              ? `<button class="admin-action-btn sale" onclick="adminRestoreBuiltin('${dept}','${item.name}')">↩ Restore</button>`
+              : `<button class="admin-action-btn danger" onclick="adminHideBuiltin('${dept}','${item.name}')">🗑 Hide</button>`
+            }
+          `}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function adminNewGem(dept){
+  adminEditingId = null;
+  adminCurrentDept = dept;
+  document.getElementById('adminModalTitle').textContent = '+ Add New Gem';
+  document.getElementById('am_icon').value = '💎';
+  document.getElementById('am_name').value = '';
+  document.getElementById('am_sub').value = '';
+  document.getElementById('am_price').value = '';
+  document.getElementById('am_sale').value = '';
+  document.getElementById('am_etsy').value = '';
+  document.getElementById('am_status').value = 'instock';
+  document.getElementById('am_img').value = '';
+  document.getElementById('am_imgpreview').style.display = 'none';
+  openAdminModal();
+}
+
+function adminEditGem(id){
+  const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+  const item = products.find(p=>p.id===id);
+  if(!item) return;
+  adminEditingId = id;
+  document.getElementById('adminModalTitle').textContent = '✏️ Edit Gem';
+  document.getElementById('am_icon').value = item.icon||'💎';
+  document.getElementById('am_name').value = item.name||'';
+  document.getElementById('am_sub').value = item.sub||'';
+  document.getElementById('am_price').value = item.price||'';
+  document.getElementById('am_sale').value = item.sale||'';
+  document.getElementById('am_etsy').value = item.etsy||'';
+  document.getElementById('am_status').value = item.status||'instock';
+  document.getElementById('am_img').value = item.img||'';
+  if(item.img){
+    document.getElementById('am_imgpreview').style.display='block';
+    document.getElementById('am_imgpreview_img').src=item.img;
+  } else {
+    document.getElementById('am_imgpreview').style.display='none';
+  }
+  openAdminModal();
+}
+
+function saveAdminGem(){
+  const icon   = document.getElementById('am_icon').value.trim()||'💎';
+  const name   = document.getElementById('am_name').value.trim();
+  const sub    = document.getElementById('am_sub').value.trim();
+  const price  = document.getElementById('am_price').value.trim();
+  const sale   = document.getElementById('am_sale').value.trim();
+  const etsy   = document.getElementById('am_etsy').value.trim();
+  const status = document.getElementById('am_status').value;
+  const img    = document.getElementById('am_img').value.trim();
+  if(!name||!price){ toast('⚠️ Name and price are required!'); return; }
+  const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+  if(adminEditingId){
+    const idx = products.findIndex(p=>p.id===adminEditingId);
+    if(idx>-1) products[idx] = {...products[idx], icon,name,sub,price,sale,etsy,status,img,custom:true};
+  } else {
+    products.push({id:'ccc_'+Date.now(), dept:adminCurrentDept, icon,name,sub,price,sale,etsy,status,img,custom:true});
+  }
+  localStorage.setItem('ccc_products', JSON.stringify(products));
+  closeAdminModal();
+  adminShowDept(adminCurrentDept, null);
+  toast(`💎 ${name} saved!`);
+}
+
+function adminDeleteGem(id, dept){
+  if(!confirm('Delete this gem?')) return;
+  const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+  localStorage.setItem('ccc_products', JSON.stringify(products.filter(p=>p.id!==id)));
+  adminShowDept(dept, null);
+  toast('Gem deleted.');
+}
+
+function previewAdminImg(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('am_img').value = e.target.result;
+    document.getElementById('am_imgpreview_img').src = e.target.result;
+    document.getElementById('am_imgpreview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function adminEditImg(id){ adminEditGem(id); }
+
+function adminRestoreBuiltin(dept, name){
+  const hidden = JSON.parse(localStorage.getItem('ccc_hidden')||'[]');
+  localStorage.setItem('ccc_hidden', JSON.stringify(hidden.filter(h=>h!==dept+'::'+name)));
+  adminShowDept(dept, null);
+  toast('Listing restored to store.');
+}
+
+function adminHideBuiltin(dept, name){
+  if(!confirm('Hide this listing from the store?')) return;
+  const hidden = JSON.parse(localStorage.getItem('ccc_hidden')||'[]');
+  if(!hidden.includes(dept+'::'+name)){
+    hidden.push(dept+'::'+name);
+    localStorage.setItem('ccc_hidden', JSON.stringify(hidden));
+  }
+  adminShowDept(dept, null);
+  toast('Listing hidden from store.');
+}
+
+function adminPromoteBuiltin(dept, name){
+  const deptData = STORE_DATA[dept];
+  const item = deptData.items.find(i=>i.name===name);
+  if(!item) return;
+  const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+  const existing = products.find(p=>p.name===name && p.dept===dept);
+  if(existing){
+    adminEditGem(existing.id);
+    return;
+  }
+  const newItem = {
+    id: 'ccc_'+Date.now(),
+    dept,
+    icon: item.icon,
+    name: item.name,
+    sub: item.sub,
+    price: item.price,
+    sale: '',
+    etsy: '',
+    status: 'instock',
+    img: '',
+    custom: true
+  };
+  products.push(newItem);
+  localStorage.setItem('ccc_products', JSON.stringify(products));
+  adminEditGem(newItem.id);
+}
+
+/* ══ GEMCUTTER PRO ══ */
+function openGemCutter(){
+  const ov = document.getElementById('gcpOverlay');
+  const fr = document.getElementById('gcpFrame');
+  ov.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // load the tool — adjust path if your gemcutter-pro folder is named differently
+  if(!fr.src || fr.src === window.location.href){
+    fr.src = 'gemcutter-pro/index.html';
+  }
+}
+function closeGemCutter(){
+  document.getElementById('gcpOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+</script>
+
+</body>
+</html>

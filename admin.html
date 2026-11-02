@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galaxy Gems — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --space:        #0D0B1A;
+      --deep:         #12103A;
+      --tz:           #3C3489;
+      --tz-mid:       #534AB7;
+      --tz-bright:    #7F77DD;
+      --tz-light:     #EEEDFE;
+      --text:         #F0EFF8;
+      --text-dim:     #AFA9EC;
+      --text-muted:   #6B6499;
+      --border:       #2A2460;
+      --border-light: #3D367A;
+      --card:         #16124A;
+      --card-hover:   #1E1960;
+      --green:        #4CAF82;
+      --green-bg:     rgba(76,175,130,0.12);
+      --red:          #E24B4A;
+      --red-bg:       rgba(226,75,74,0.12);
+      --gold:         #EF9F27;
+      --gold-bg:      rgba(239,159,39,0.12);
+      --radius:       12px;
+      --radius-sm:    8px;
+      --sidebar-w:    240px;
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body:    'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--space);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    button { font-family: var(--font-body); cursor: pointer; }
+    input, textarea, select { font-family: var(--font-body); }
+
+    /* ══ LOGIN SCREEN ══ */
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--space);
+      padding: 2rem;
+    }
+    .login-box {
+      background: var(--deep);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 380px;
+    }
+    .login-logo {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+    .login-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .login-field { margin-bottom: 1rem; }
+    .login-label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .login-input {
+      width: 100%; padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-size: 14px;
+      outline: none; transition: border-color 0.15s;
+    }
+    .login-input:focus { border-color: var(--tz-bright); }
+    .login-btn {
+      width: 100%; padding: 12px;
+      background: var(--tz-mid); color: var(--tz-light);
+      border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: background 0.15s;
+      margin-top: 0.5rem;
+    }
+    .login-btn:hover { background: var(--tz-bright); }
+    .login-err {
+      display: none;
+      background: var(--red-bg);
+      border: 0.5px solid rgba(226,75,74,0.4);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px; font-size: 12px;
+      color: #F09595; margin-bottom: 10px;
+    }
+    .login-err.show { display: block; }
+    .login-hint { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 10px; }
+
+    /* ══ APP SHELL ══ */
+    #adminApp { display: none; min-height: 100vh; }
+    #adminApp.visible { display: flex; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--deep);
+      border-right: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .sidebar-logo-txt {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--text);
+      display: block;
+    }
+    .sidebar-logo-badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--tz-bright);
+      background: rgba(83,74,183,0.2);
+      border: 0.5px solid rgba(127,119,221,0.3);
+      border-radius: 99px;
+      padding: 2px 8px;
+      margin-top: 4px;
+    }
+    .sidebar-section {
+      padding: 1rem 0.75rem 0.5rem;
+    }
+    .sidebar-section-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+      margin-bottom: 4px;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      width: 100%;
+      text-align: left;
+    }
+    .sidebar-item:hover { background: rgba(83,74,183,0.12); color: var(--text); }
+    .sidebar-item.active { background: rgba(83,74,183,0.2); color: var(--tz-bright); }
+    .sidebar-item-icon { font-size: 15px; flex-shrink: 0; }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 1rem 0.75rem;
+      border-top: 0.5px solid var(--border);
+    }
+
+    /* ══ MAIN ══ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      height: 56px;
+      background: rgba(13,11,26,0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+    .topbar-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--text);
+      font-weight: 400;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .topbar-btn {
+      padding: 6px 14px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .topbar-btn:hover { background: var(--card); color: var(--text); }
+    .topbar-btn.primary { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
+    .topbar-btn.primary:hover { background: var(--tz-bright); }
+
+    .content { padding: 2rem; flex: 1; }
+
+    /* ══ PANELS ══ */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ══ STATS GRID ══ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+      gap: 14px;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      color: var(--tz-bright);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* ══ SECTION HEADER ══ */
+    .section-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .section-hd-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    /* ══ DEPT TABS ══ */
+    .dept-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .dept-tab {
+      padding: 5px 14px;
+      border-radius: 99px;
+      border: 0.5px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .dept-tab.active, .dept-tab:hover {
+      background: rgba(83,74,183,0.2);
+      border-color: var(--tz-bright);
+      color: var(--text);
+    }
+
+    /* ══ PRODUCT TABLE ══ */
+    .prod-table {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .prod-table-head {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr 120px 100px 100px;
+      gap: 12px;
+      padding: 10px 16px;
+      background: rgba(83,74,183,0.1);
+      border-bottom: 0.5px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .prod-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr 120px 100px 100px;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 0.5px solid var(--border);
+      align-items: center;
+      transition: background 0.15s;
+    }
+    .prod-row:last-child { border-bottom: none; }
+    .prod-row:hover { background: rgba(83,74,183,0.06); }
+    .prod-icon { font-size: 20px; }
+    .prod-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .prod-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .prod-price { font-size: 13px; color: var(--tz-bright); font-weight: 500; }
+    .prod-actions { display: flex; gap: 6px; }
+    .prod-btn {
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      border: 0.5px solid var(--border-light);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .prod-btn:hover { background: var(--card-hover); color: var(--text); }
+    .prod-btn.danger:hover { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+    .prod-btn.edit-active { background: rgba(83,74,183,0.2); border-color: var(--tz-bright); color: var(--tz-bright); }
+
+    /* ══ ADD PRODUCT FORM ══ */
+    .add-form {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .add-form-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+      gap: 14px;
+      margin-bottom: 1rem;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+    .form-input, .form-select {
+      padding: 9px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--tz-bright); }
+    .form-select option { background: var(--deep); }
+    .form-actions { display: flex; gap: 10px; }
+    .btn {
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--tz-mid); color: var(--tz-light); }
+    .btn-primary:hover { background: var(--tz-bright); }
+    .btn-ghost { background: transparent; border: 0.5px solid var(--border-light); color: var(--text-muted); }
+    .btn-ghost:hover { background: var(--card-hover); color: var(--text); }
+    .btn-danger { background: var(--red-bg); border: 0.5px solid rgba(226,75,74,0.4); color: var(--red); }
+    .btn-danger:hover { background: rgba(226,75,74,0.25); }
+    .btn-green { background: var(--green-bg); border: 0.5px solid rgba(76,175,130,0.4); color: var(--green); }
+    .btn-green:hover { background: rgba(76,175,130,0.25); }
+
+    /* ══ CONTENT EDITOR ══ */
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px,1fr));
+      gap: 16px;
+    }
+    .content-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .content-card-title {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .content-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      min-height: 80px;
+      transition: border-color 0.15s;
+      margin-bottom: 10px;
+    }
+    .content-textarea:focus { border-color: var(--tz-bright); }
+
+    /* ══ DANGER ZONE ══ */
+    .danger-zone {
+      background: var(--red-bg);
+      border: 0.5px solid rgba(226,75,74,0.3);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .danger-zone-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--red);
+      margin-bottom: 0.5rem;
+    }
+    .danger-zone-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 1rem; }
+    .danger-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ══ MODAL ══ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,6,20,0.85);
+      z-index: 900;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--deep);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .modal-actions { display: flex; gap: 10px; margin-top: 1.25rem; justify-content: flex-end; }
+
+    /* ══ TOAST ══ */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--tz-mid); color: var(--tz-light);
+      padding: 12px 20px; border-radius: var(--radius-sm);
+      font-size: 13px; z-index: 9999;
+      opacity: 0; transform: translateY(10px);
+      transition: all 0.3s; pointer-events: none;
+      max-width: 320px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { background: #2D6E52; }
+    #toast.error { background: #7A2020; }
+
+    /* ══ BADGE ══ */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .badge-green { background: var(--green-bg); color: var(--green); border: 0.5px solid rgba(76,175,130,0.3); }
+    .badge-gold { background: var(--gold-bg); color: var(--gold); border: 0.5px solid rgba(239,159,39,0.3); }
+
+    /* ══ EMPTY STATE ══ */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-muted);
+    }
+    .empty-state-icon { font-size: 36px; margin-bottom: 1rem; }
+    .empty-state-title { font-size: 15px; color: var(--text-dim); margin-bottom: 0.5rem; }
+    .empty-state-desc { font-size: 13px; }
+
+    /* ══ ACTIVITY LOG ══ */
+    .activity-list { display: flex; flex-direction: column; gap: 6px; }
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+    }
+    .activity-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .activity-dot.green { background: var(--green); }
+    .activity-dot.red { background: var(--red); }
+    .activity-dot.gold { background: var(--gold); }
+    .activity-text { flex: 1; color: var(--text-dim); }
+    .activity-time { color: var(--text-muted); font-size: 11px; }
+
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 2rem 0; }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">💎 Galaxy Gems</div>
+    <div class="login-sub">Admin Panel</div>
+    <div class="login-err" id="loginErr">Incorrect password.</div>
+    <div class="login-field">
+      <label class="login-label">Admin Password</label>
+      <input class="login-input" type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()">
+    </div>
+    <button class="login-btn" onclick="doAdminLogin()">Enter Admin Panel</button>
+    <p class="login-hint">Default password: <strong style="color:var(--tz-bright)">admin123</strong></p>
+  </div>
+</div>
+
+<!-- ══ ADMIN APP ══ -->
+<div id="adminApp">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="sidebar-logo-txt">Galaxy Gems</span>
+      <span class="sidebar-logo-badge">Admin</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Overview</div>
+      <button class="sidebar-item active" onclick="showPanel('dashboard',this)">
+        <span class="sidebar-item-icon">📊</span> Dashboard
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Store</div>
+      <button class="sidebar-item" onclick="showPanel('products',this)">
+        <span class="sidebar-item-icon">💎</span> Products
+      </button>
+      <button class="sidebar-item" onclick="showPanel('departments',this)">
+        <span class="sidebar-item-icon">🗂️</span> Departments
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Content</div>
+      <button class="sidebar-item" onclick="showPanel('hero',this)">
+        <span class="sidebar-item-icon">🏠</span> Hero / Home
+      </button>
+      <button class="sidebar-item" onclick="showPanel('pages',this)">
+        <span class="sidebar-item-icon">📄</span> Page Content
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">System</div>
+      <button class="sidebar-item" onclick="showPanel('activity',this)">
+        <span class="sidebar-item-icon">📋</span> Activity Log
+      </button>
+      <button class="sidebar-item" onclick="showPanel('settings',this)">
+        <span class="sidebar-item-icon">⚙️</span> Settings
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-item" onclick="location.href='index.html'">
+        <span class="sidebar-item-icon">🌐</span> View Site
+      </button>
+      <button class="sidebar-item" onclick="adminLogout()">
+        <span class="sidebar-item-icon">🚪</span> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <span style="font-size:12px;color:var(--text-muted);">Logged in as Admin</span>
+        <button class="topbar-btn primary" onclick="saveAll()">💾 Save All</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="section-hd">
+          <div class="section-hd-title">Recent Activity</div>
+        </div>
+        <div class="activity-list" id="activityList">
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">No activity yet</div>
+            <div class="empty-state-desc">Changes you make will appear here</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PRODUCTS ── -->
+      <div class="panel" id="panel-products">
+        <div class="add-form">
+          <div class="add-form-title" id="addFormTitle">➕ Add New Product</div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Icon (emoji)</label>
+              <input class="form-input" id="pIcon" placeholder="💎" maxlength="4">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Product Name</label>
+              <input class="form-input" id="pName" placeholder="Blue Sapphire Rough">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Description</label>
+              <input class="form-input" id="pSub" placeholder="Lab grown · Corundum · ~5ct">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Price</label>
+              <input class="form-input" id="pPrice" placeholder="$24.99">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Department</label>
+              <select class="form-select" id="pDept">
+                <option value="rough">🪨 Rough</option>
+                <option value="cabbing">💠 Cabbing</option>
+                <option value="finished">💎 Finished Gems</option>
+                <option value="crystals">🔮 Healing Crystals</option>
+                <option value="supplies">⚙️ Supplies</option>
+                <option value="merch">👕 Merch</option>
+                <option value="jewelry">💍 Jewellery</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="addProductBtn" onclick="addOrUpdateProduct()">➕ Add Product</button>
+            <button class="btn btn-ghost" onclick="clearProductForm()">Clear</button>
+          </div>
+        </div>
+
+        <div class="section-hd">
+          <div class="section-hd-title">All Products</div>
+          <div style="font-size:12px;color:var(--text-muted);" id="prodCountLabel"></div>
+        </div>
+
+        <div class="dept-tabs" id="deptTabs"></div>
+
+        <div class="prod-table">
+          <div class="prod-table-head">
+            <div>Icon</div>
+            <div>Name</div>
+            <div>Description</div>
+            <div>Price</div>
+            <div>Dept</div>
+            <div>Actions</div>
+          </div>
+          <div id="prodTableBody"></div>
+        </div>
+      </div>
+
+      <!-- ── DEPARTMENTS ── -->
+      <div class="panel" id="panel-departments">
+        <div class="section-hd">
+          <div class="section-hd-title">Departments</div>
+        </div>
+        <div class="content-grid" id="deptGrid"></div>
+      </div>
+
+      <!-- ── HERO ── -->
+      <div class="panel" id="panel-hero">
+        <div class="section-hd">
+          <div class="section-hd-title">Hero & Home Content</div>
+        </div>
+        <div class="content-grid" id="heroGrid"></div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn btn-primary" onclick="saveContent()">💾 Save Content</button>
+          <button class="btn btn-ghost" style="margin-left:8px;" onclick="resetContent()">Reset to Default</button>
+        </div>
+      </div>
+
+      <!-- ── PAGES ── -->
+      <div class="panel" id="panel-pages">
+        <div class="section-hd">
+          <div class="section-hd-title">Page Content</div>
+        </div>
+        <div class="content-grid" id="pagesGrid"></div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn btn-primary" onclick="saveContent()">💾 Save Content</button>
+        </div>
+      </div>
+
+      <!-- ── ACTIVITY ── -->
+      <div class="panel" id="panel-activity">
+        <div class="section-hd">
+          <div class="section-hd-title">Activity Log</div>
+          <button class="btn btn-ghost" onclick="clearActivity()">Clear Log</button>
+        </div>
+        <div class="activity-list" id="fullActivityList"></div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="panel" id="panel-settings">
+        <div class="section-hd">
+          <div class="section-hd-title">Settings</div>
+        </div>
+
+        <div class="add-form">
+          <div class="add-form-title">🔐 Change Admin Password</div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Current Password</label>
+              <input class="form-input" type="password" id="currPass" placeholder="••••••••">
+            </div>
+            <div class="form-field">
+              <label class="form-label">New Password</label>
+              <input class="form-input" type="password" id="newPass" placeholder="••••••••">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Confirm New Password</label>
+              <input class="form-input" type="password" id="confPass" placeholder="••••••••">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+        </div>
+
+        <div class="danger-zone">
+          <div class="danger-zone-title">⚠️ Danger Zone</div>
+          <div class="danger-zone-desc">These actions are irreversible. All data will be permanently deleted.</div>
+          <div class="danger-actions">
+            <button class="btn btn-danger" onclick="confirmReset('products')">Reset All Products</button>
+            <button class="btn btn-danger" onclick="confirmReset('content')">Reset All Content</button>
+            <button class="btn btn-danger" onclick="confirmReset('all')">Reset Everything</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /adminApp -->
+
+<!-- ══ EDIT MODAL ══ -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Edit Product</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label class="form-label">Icon</label>
+        <input class="form-input" id="eIcon" maxlength="4">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Name</label>
+        <input class="form-input" id="eName">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Description</label>
+        <input class="form-input" id="eSub">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Price</label>
+        <input class="form-input" id="ePrice">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Department</label>
+        <select class="form-select" id="eDept">
+          <option value="rough">🪨 Rough</option>
+          <option value="cabbing">💠 Cabbing</option>
+          <option value="finished">💎 Finished Gems</option>
+          <option value="crystals">🔮 Healing Crystals</option>
+          <option value="supplies">⚙️ Supplies</option>
+          <option value="merch">👕 Merch</option>
+          <option value="jewelry">💍 Jewellery</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-title" id="confirmTitle">Are you sure?</div>
+    <div style="font-size:13px;color:var(--text-dim);" id="confirmDesc"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════
+   DEFAULT DATA
+══════════════════════════════ */
+const DEFAULT_PRODUCTS = {
+  rough: [
+    { id:'r1', icon:'🔷', name:'Blue Sapphire Rough',  sub:'Lab grown · Corundum · ~5ct',  price:'$24.99' },
+    { id:'r2', icon:'🔴', name:'Ruby Rough',            sub:'Lab grown · Corundum · ~4ct',  price:'$18.50' },
+    { id:'r3', icon:'🟣', name:'Tanzanite Rough',       sub:'Natural · Tanzania · ~3ct',    price:'$42.00' },
+    { id:'r4', icon:'💠', name:'Blue Topaz Rough',      sub:'Natural · Brazil · ~8ct',      price:'$12.00' },
+    { id:'r5', icon:'🟪', name:'Amethyst Rough',        sub:'Natural · Uruguay · ~10ct',    price:'$8.99'  },
+    { id:'r6', icon:'💚', name:'Emerald Rough',         sub:'Natural · Colombia · ~2ct',    price:'$55.00' },
+  ],
+  cabbing: [
+    { id:'c1', icon:'🔵', name:'Labradorite Slab',     sub:'Natural · Madagascar · 4x6cm',  price:'$14.99' },
+    { id:'c2', icon:'🟢', name:'Malachite Slab',       sub:'Natural · Congo · 3x5cm',       price:'$22.00' },
+    { id:'c3', icon:'🔴', name:'Jasper Slab',          sub:'Natural · Various · 4x6cm',     price:'$9.99'  },
+    { id:'c4', icon:'🌈', name:'Opal Rough',           sub:'Natural · Australia · ~2ct',    price:'$45.00' },
+  ],
+  finished: [
+    { id:'f1', icon:'💎', name:'Cut Blue Sapphire',    sub:'Precision faceted · 2ct · Round',   price:'$89.00'  },
+    { id:'f2', icon:'❤️', name:'Cut Ruby',            sub:'Precision faceted · 1.5ct · Oval',  price:'$74.00'  },
+    { id:'f3', icon:'🔮', name:'Cut Tanzanite',        sub:'Precision faceted · 3ct · Cushion', price:'$130.00' },
+  ],
+  crystals: [
+    { id:'cr1', icon:'🔮', name:'Amethyst Cluster',   sub:'Natural · Uruguay · ~200g',    price:'$34.99' },
+    { id:'cr2', icon:'⚪', name:'Clear Quartz Point', sub:'Natural · Brazil · ~80g',      price:'$18.99' },
+    { id:'cr3', icon:'🩷', name:'Rose Quartz Sphere', sub:'Natural · Brazil · 60mm',      price:'$28.99' },
+  ],
+  supplies: [
+    { id:'s1', icon:'⚙️', name:'Sintered Diamond Lap 260', sub:'Corundum grade · 6"',     price:'$89.00' },
+    { id:'s2', icon:'⚙️', name:'Sintered Diamond Lap 600', sub:'Pre-polish · 6"',         price:'$94.00' },
+    { id:'s3', icon:'🕯️', name:'Dop Wax Kit',             sub:'Green & brown · 4 sticks',price:'$19.99' },
+    { id:'s4', icon:'🌿', name:'Cedarwood Gem Oil',        sub:'100ml · Loupe grade',      price:'$9.99'  },
+  ],
+  merch: [
+    { id:'m1', icon:'👕', name:'Galaxy Gems Tee',     sub:'Black · Unisex',          price:'$28.00' },
+    { id:'m2', icon:'🧢', name:'Faceter Cap',         sub:'Embroidered logo',        price:'$24.00' },
+    { id:'m3', icon:'☕', name:'Gem Studio Mug',      sub:'15oz · Dishwasher safe',  price:'$18.00' },
+  ],
+  jewelry: [
+    { id:'j1', icon:'💍', name:'Sapphire Solitaire Ring', sub:'Sterling silver · Size 7',  price:'$189.00' },
+    { id:'j2', icon:'📿', name:'Tanzanite Pendant',       sub:'18k gold fill · 16" chain', price:'$245.00' },
+    { id:'j3', icon:'💍', name:'Custom Commission',       sub:'Your stone · Your design',  price:'POA'     },
+  ]
+};
+
+const DEFAULT_CONTENT = {
+  heroTitle:    'Collaborate. Educate. Learn.\nAnd have lots of fun and excitement.',
+  heroSub:      'The complete companion for lapidary artists — from rough stone to finished gem.',
+  heroTagline:  '✦ Stoke the fire ✦',
+  pillar1Title: 'Collaborate',
+  pillar1Desc:  'Share cutting journals, lap sequences, stone notes, and finished cuts with faceters worldwide.',
+  pillar2Title: 'Educate',
+  pillar2Desc:  'Deep specs for 60+ gem species — RI, SG, cleavage planes, pleochroism, critical angles.',
+  pillar3Title: 'Learn & stoke the fire',
+  pillar3Desc:  'Technique lessons, orientation walkthroughs, lap sequencing deep-dives.',
+  pillar4Title: 'Have a blast',
+  pillar4Desc:  'Log your cuts, collect rare species, celebrate every milestone.',
+  ctaTitle:     'Your bench is waiting.',
+  ctaDesc:      'Join Galaxy Gems and get full access to the studio.',
+  footerSub:    'Your personal gem faceting studio · Built with ♦ for lapidary artists',
+};
+
+const DEPTS = {
+  rough:    { icon:'🪨', label:'Rough' },
+  cabbing:  { icon:'💠', label:'Cabbing' },
+  finished: { icon:'💎', label:'Finished Gems' },
+  crystals: { icon:'🔮', label:'Healing Crystals' },
+  supplies: { icon:'⚙️', label:'Supplies' },
+  merch:    { icon:'👕', label:'Merch' },
+  jewelry:  { icon:'💍', label:'Jewellery' },
+};
+
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+let products = {};
+let content  = {};
+let activity = [];
+let editingId = null;
+let activeDeptFilter = 'all';
+let confirmCallback = null;
+let adminPass = '';
+
+/* ══════════════════════════════
+   AUTH
+══════════════════════════════ */
+function doAdminLogin() {
+  adminPass = localStorage.getItem('gg_admin_pass') || 'admin123';
+  const val = document.getElementById('adminPass').value;
+  if (val === adminPass) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').classList.add('visible');
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').classList.add('show');
+  }
+}
+
+function adminLogout() {
+  document.getElementById('adminApp').classList.remove('visible');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminPass').value = '';
+}
+
+function changePassword() {
+  const curr = document.getElementById('currPass').value;
+  const nw   = document.getElementById('newPass').value;
+  const conf = document.getElementById('confPass').value;
+  const saved = localStorage.getItem('gg_admin_pass') || 'admin123';
+  if (curr !== saved) { toast('Current password incorrect', 'error'); return; }
+  if (!nw)            { toast('New password cannot be empty', 'error'); return; }
+  if (nw !== conf)    { toast('Passwords do not match', 'error'); return; }
+  localStorage.setItem('gg_admin_pass', nw);
+  adminPass = nw;
+  document.getElementById('currPass').value = '';
+  document.getElementById('newPass').value = '';
+  document.getElementById('confPass').value = '';
+  toast('Password updated! ✓', 'success');
+  logActivity('Password changed', 'gold');
+}
+
+/* ══════════════════════════════
+   INIT
+══════════════════════════════ */
+function initAdmin() {
+  products = JSON.parse(localStorage.getItem('gg_admin_products') || 'null') || deepClone(DEFAULT_PRODUCTS);
+  content  = JSON.parse(localStorage.getItem('gg_admin_content')  || 'null') || deepClone(DEFAULT_CONTENT);
+  activity = JSON.parse(localStorage.getItem('gg_admin_activity') || '[]');
+  renderDashboard();
+  renderProducts();
+  renderDepts();
+  renderHero();
+  renderPages();
+  renderActivity();
+}
+
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+/* ══════════════════════════════
+   PANELS
+══════════════════════════════ */
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  const titles = {
+    dashboard:'Dashboard', products:'Products', departments:'Departments',
+    hero:'Hero & Home', pages:'Page Content', activity:'Activity Log', settings:'Settings'
+  };
+  document.getElementById('topbarTitle').textContent = titles[id] || id;
+}
+
+/* ══════════════════════════════
+   DASHBOARD
+══════════════════════════════ */
+function renderDashboard() {
+  const total = Object.values(products).reduce((a,b) => a + b.length, 0);
+  const deptCount = Object.keys(DEPTS).length;
+  const contentKeys = Object.keys(content).length;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-num">${total}</div>
+      <div class="stat-label">Total Products</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${deptCount}</div>
+      <div class="stat-label">Departments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${contentKeys}</div>
+      <div class="stat-label">Content Fields</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${activity.length}</div>
+      <div class="stat-label">Activity Events</div>
+    </div>
+  `;
+  renderActivityWidget();
+}
+
+function renderActivityWidget() {
+  const el = document.getElementById('activityList');
+  if (!activity.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">No activity yet</div><div class="empty-state-desc">Changes you make will appear here</div></div>`;
+    return;
+  }
+  el.innerHTML = activity.slice(-5).reverse().map(a => `
+    <div class="activity-item">
+      <div class="activity-dot ${a.color}"></div>
+      <div class="activity-text">${a.text}</div>
+      <div class="activity-time">${a.time}</div>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════
+   PRODUCTS
+══════════════════════════════ */
+function renderProducts() {
+  // Dept tabs
+  const tabs = document.getElementById('deptTabs');
+  tabs.innerHTML = `<button class="dept-tab ${activeDeptFilter==='all'?'active':''}" onclick="filterDept('all')">All</button>` +
+    Object.entries(DEPTS).map(([k,v]) =>
+      `<button class="dept-tab ${activeDeptFilter===k?'active':''}" onclick="filterDept('${k}')">${v.icon} ${v.label}</button>`
+    ).join('');
+
+  // Count
+  const total = Object.values(products).reduce((a,b)=>a+b.length,0);
+  document.getElementById('prodCountLabel').textContent = `${total} products total`;
+
+  // Table
+  const body = document.getElementById('prodTableBody');
+  let rows = '';
+  let shown = 0;
+
+  Object.entries(products).forEach(([dept, items]) => {
+    if (activeDeptFilter !== 'all' && activeDeptFilter !== dept) return;
+    items.forEach(item => {
+      shown++;
+      rows += `
+        <div class="prod-row" id="row-${item.id}">
+          <div class="prod-icon">${item.icon}</div>
+          <div>
+            <div class="prod-name">${item.name}</div>
+          </div>
+          <div class="prod-sub">${item.sub}</div>
+          <div class="prod-price">${item.price}</div>
+          <div><span class="badge badge-gold">${DEPTS[dept]?.icon || ''} ${DEPTS[dept]?.label || dept}</span></div>
+          <div class="prod-actions">
+            <button class="prod-btn" onclick="openEdit('${dept}','${item.id}')">✏️ Edit</button>
+            <button class="prod-btn danger" onclick="deleteProduct('${dept}','${item.id}','${item.name}')">🗑️</button>
+          </div>
+        </div>
+      `;
+    });
+  });
+
+  body.innerHTML = shown ? rows : `<div class="empty-state"><div class="empty-state-icon">💎</div><div class="empty-state-title">No products in this department</div><div class="empty-state-desc">Add one above</div></div>`;
+}
+
+function filterDept(dept) {
+  activeDeptFilter = dept;
+  renderProducts();
+}
+
+function addOrUpdateProduct() {
+  const icon  = document.getElementById('pIcon').value.trim()  || '💎';
+  const name  = document.getElementById('pName').value.trim();
+  const sub   = document.getElementById('pSub').value.trim();
+  const price = document.getElementById('pPrice').value.trim();
+  const dept  = document.getElementById('pDept').value;
+
+  if (!name || !price) { toast('Name and price are required', 'error'); return; }
+
+  const id = 'p' + Date.now();
+  if (!products[dept]) products[dept] = [];
+  products[dept].push({ id, icon, name, sub, price });
+
+  saveProducts();
+  renderProducts();
+  renderDashboard();
+  clearProductForm();
+  toast(`✓ "${name}" added to ${DEPTS[dept].label}`, 'success');
+  logActivity(`Added product: ${name}`, 'green');
+}
+
+function clearProductForm() {
+  ['pIcon','pName','pSub','pPrice'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pDept').value = 'rough';
+  document.getElementById('addFormTitle').textContent = '➕ Add New Product';
+  document.getElementById('addProductBtn').textContent = '➕ Add Product';
+  editingId = null;
+}
+
+function openEdit(dept, id) {
+  const item = products[dept]?.find(p => p.id === id);
+  if (!item) return;
+  document.getElementById('eIcon').value  = item.icon;
+  document.getElementById('eName').value  = item.name;
+  document.getElementById('eSub').value   = item.sub;
+  document.getElementById('ePrice').value = item.price;
+  document.getElementById('eDept').value  = dept;
+  editingId = { dept, id };
+  document.getElementById('editModal').classList.add('open');
+}
+
+function saveEdit() {
+  if (!editingId) return;
+  const { dept, id } = editingId;
+  const newDept = document.getElementById('eDept').value;
+  const item = products[dept]?.find(p => p.id === id);
+  if (!item) return;
+
+  const updated = {
+    id: item.id,
+    icon:  document.getElementById('eIcon').value.trim()  || item.icon,
+    name:  document.getElementById('eName').value.trim()  || item.name,
+    sub:   document.getElementById('eSub').value.trim(),
+    price: document.getElementById('ePrice').value.trim() || item.price,
+  };
+
+  // Remove from old dept
+  products[dept] = products[dept].filter(p => p.id !== id);
+  // Add to new dept
+  if (!products[newDept]) products[newDept] = [];
+  products[newDept].push(updated);
+
+  saveProducts();
+  renderProducts();
+  renderDashboard();
+  closeModal();
+  toast(`✓ "${updated.name}" updated`, 'success');
+  logActivity(`Edited product: ${updated.name}`, 'gold');
+}
+
+function deleteProduct(dept, id, name) {
+  showConfirm(
+    `Delete "${name}"?`,
+    'This product will be permanently removed from the store.',
+    () => {
+      products[dept] = products[dept].filter(p => p.id !== id);
+      saveProducts();
+      renderProducts();
+      renderDashboard();
+      toast(`🗑️ "${name}" deleted`, 'error');
+      logActivity(`Deleted product: ${name}`, 'red');
+    }
+  );
+}
+
+/* ══════════════════════════════
+   DEPARTMENTS
+══════════════════════════════ */
+function renderDepts() {
+  const grid = document.getElementById('deptGrid');
+  grid.innerHTML = Object.entries(DEPTS).map(([key, dept]) => {
+    const count = products[key]?.length || 0;
+    return `
+      <div class="content-card">
+        <div class="content-card-title">${dept.icon} ${dept.label}</div>
+        <div style="font-size:28px;margin-bottom:8px;font-family:var(--font-display);color:var(--tz-bright);">${count}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">${count === 1 ? 'product' : 'products'}</div>
+        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="filterDept('${key}');showPanel('products',document.querySelectorAll('.sidebar-item')[2])">
+          Manage →
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ══════════════════════════════
+   CONTENT
+══════════════════════════════ */
+function renderHero() {
+  const fields = [
+    { key:'heroTitle',    label:'Hero Title',         rows:3 },
+    { key:'heroSub',      label:'Hero Subtitle',       rows:2 },
+    { key:'heroTagline',  label:'Hero Tagline',        rows:1 },
+    { key:'pillar1Title', label:'Pillar 1 — Title',    rows:1 },
+    { key:'pillar1Desc',  label:'Pillar 1 — Desc',     rows:3 },
+    { key:'pillar2Title', label:'Pillar 2 — Title',    rows:1 },
+    { key:'pillar2Desc',  label:'Pillar 2 — Desc',     rows:3 },
+    { key:'pillar3Title', label:'Pillar 3 — Title',    rows:1 },
+    { key:'pillar3Desc',  label:'Pillar 3 — Desc',     rows:3 },
+    { key:'pillar4Title', label:'Pillar 4 — Title',    rows:1 },
+    { key:'pillar4Desc',  label:'Pillar 4 — Desc',     rows:3 },
+  ];
+  document.getElementById('heroGrid').innerHTML = fields.map(f => `
+    <div class="content-card">
+      <div class="content-card-title">${f.label}</div>
+      <textarea class="content-textarea" id="cf-${f.key}" rows="${f.rows}">${content[f.key] || ''}</textarea>
+    </div>
+  `).join('');
+}
+
+function renderPages() {
+  const fields = [
+    { key:'ctaTitle',  label:'CTA Band — Title', rows:1 },
+    { key:'ctaDesc',   label:'CTA Band — Desc',  rows:3 },
+    { key:'footerSub', label:'Footer Tagline',   rows:1 },
+  ];
+  document.getElementById('pagesGrid').innerHTML = fields.map(f => `
+    <div class="content-card">
+      <div class="content-card-title">${f.label}</div>
+      <textarea class="content-textarea" id="cf-${f.key}" rows="${f.rows}">${content[f.key] || ''}</textarea>
+    </div>
+  `).join('');
+}
+
+function saveContent() {
+  Object.keys(DEFAULT_CONTENT).forEach(key => {
+    const el = document.getElementById('cf-' + key);
+    if (el) content[key] = el.value;
+  });
+  localStorage.setItem('gg_admin_content', JSON.stringify(content));
+  toast('✓ Content saved!', 'success');
+  logActivity('Content updated', 'gold');
+}
+
+function resetContent() {
+  showConfirm('Reset content to default?', 'All your content edits will be lost.', () => {
+    content = deepClone(DEFAULT_CONTENT);
+    localStorage.setItem('gg_admin_content', JSON.stringify(content));
+    renderHero();
+    renderPages();
+    toast('Content reset to default', 'success');
+  });
+}
+
+/* ══════════════════════════════
+   ACTIVITY
+══════════════════════════════ */
+function logActivity(text, color='green') {
+  const now = new Date();
+  const time = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  activity.push({ text, color, time });
+  localStorage.setItem('gg_admin_activity', JSON.stringify(activity));
+  renderActivityWidget();
+  renderActivity();
+  renderDashboard();
+}
+
+function renderActivity() {
+  const el = document.getElementById('fullActivityList');
+  if (!activity.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">No activity yet</div></div>`;
+    return;
+  }
+  el.innerHTML = [...activity].reverse().map(a => `
+    <div class="activity-item">
+      <div class="activity-dot ${a.color}"></div>
+      <div class="activity-text">${a.text}</div>
+      <div class="activity-time">${a.time}</div>
+    </div>
+  `).join('');
+}
+
+function clearActivity() {
+  activity = [];
+  localStorage.setItem('gg_admin_activity', '[]');
+  renderActivity();
+  renderDashboard();
+  toast('Activity log cleared');
+}
+
+/* ══════════════════════════════
+   SAVE / RESET
+══════════════════════════════ */
+function saveProducts() {
+  localStorage.setItem('gg_admin_products', JSON.stringify(products));
+  renderDepts();
+}
+
+function saveAll() {
+  saveProducts();
+  saveContent();
+  toast('✓ All changes saved!', 'success');
+  logActivity('Manual save — all data', 'green');
+}
+
+function confirmReset(what) {
+  const labels = { products:'all products', content:'all content', all:'everything' };
+  showConfirm(
+    `Reset ${labels[what]}?`,
+    'This cannot be undone. All data will return to defaults.',
+    () => {
+      if (what === 'products' || what === 'all') {
+        products = deepClone(DEFAULT_PRODUCTS);
+        localStorage.setItem('gg_admin_products', JSON.stringify(products));
+        renderProducts(); renderDepts(); renderDashboard();
+      }
+      if (what === 'content' || what === 'all') {
+        content = deepClone(DEFAULT_CONTENT);
+        localStorage.setItem('gg_admin_content', JSON.stringify(content));
+        renderHero(); renderPages();
+      }
+      toast(`✓ Reset complete`, 'success');
+      logActivity(`Reset: ${labels[what]}`, 'red');
+    }
+  );
+}
+
+/* ══════════════════════════════
+   MODALS
+══════════════════════════════ */
+function closeModal() {
+  document.getElementById('editModal').classList.remove('open');
+  editingId = null;
+}
+
+function showConfirm(title, desc, cb) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmDesc').textContent  = desc;
+  confirmCallback = cb;
+  document.getElementById('confirmOkBtn').onclick = () => { cb(); closeConfirm(); };
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('open');
+  confirmCallback = null;
+}
+
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = '', 2800);
+}
+
+/* ══════════════════════════════
+   KEYBOARD
+══════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeConfirm(); }
+});
+
+// Click overlay to close
+document.getElementById('editModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('editModal')) closeModal();
+});
+document.getElementById('confirmModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirmModal')) closeConfirm();
+});
+</script>
+</body>
+</html>
