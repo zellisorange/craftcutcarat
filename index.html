@@ -2681,8 +2681,9 @@ async function openProductModal(item){
 }
 function closeStorePage() {
   document.getElementById('gsFullpage').classList.remove('open');
-  document.body.style.overflow = '';
-  window.scrollTo(0,0);
+  document.getElementById('gsOverlay').classList.add('open');
+  document.getElementById('gsPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 function openAddGem(dept){
   const existing = document.getElementById('addGemModal');
