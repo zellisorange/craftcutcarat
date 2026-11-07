@@ -2715,14 +2715,20 @@ function saveGem(dept){
   openStorePage(dept);
   toast(`💎 ${name} added to the store!`);
 }
-
-function deleteGem(id){
+async function deleteGem(id){
   if(!confirm('Delete this gem from the store?')) return;
   const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
   const updated = products.filter(p => p.id !== id);
   localStorage.setItem('ccc_products', JSON.stringify(updated));
-  toast('Gem removed from store.');
+  toast('🗑 Deleting globally...');
   closeStorePage();
+  try {
+    await fetch('/.netlify/functions/save-product', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ deleteId: id, allProducts: updated })
+    });
+    toast('✅ Gem deleted globally!');
+  } catch(e) { toast('⚠️ Deleted locally only'); }
 }
 
 function gsAddCart(btn) {
