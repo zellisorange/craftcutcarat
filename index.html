@@ -2643,7 +2643,7 @@ async function stripeCheckout() {
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart })
+      body: JSON.stringify({ items: cart.map(i => ({ name: i.name, price: i.price, description: i.description || '', quantity: i.quantity })) })
     });
     const data = await res.json();
     if (data.url) {
@@ -2654,9 +2654,8 @@ async function stripeCheckout() {
       btn.disabled = false;
     }
   } catch(err) {
-    showToast('❌ Network error — please try again');
-    btn.textContent = '💳 Checkout with Stripe';
-    btn.disabled = false;
+    toast('❌ ' + err.message);
+    if (btn) { btn.textContent = '💳 Checkout with Stripe'; btn.disabled = false; }
   }
 }
 
