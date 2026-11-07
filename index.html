@@ -2646,10 +2646,7 @@ function openStorePage(dept) {
   `;
   document.getElementById('gsFullpage').classList.add('open');
   document.body.style.overflow = 'hidden';
-window.addEventListener('popstate', function(){
-  document.getElementById('gsFullpage').classList.remove('open');
-  document.body.style.overflow='';
-});
+
 }
 async function openProductModal(item){
   const videoSrc = item.id ? await videoDB.get(item.id) : '';
