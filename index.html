@@ -2620,16 +2620,28 @@ function openStorePage(dept) {
       ${isAdmin ? `<button onclick="openAddGem('${dept}')" style="margin-top:1rem;padding:10px 24px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;">+ Add Gem to This Department</button>` : ''}
     </div>
     <div class="gs-fp-grid">
-      ${allItems.map((item, idx) => `
+      ${allItems.map((item, idx) => {
+        const vidId = item.video ? getYtId(item.video) : null;
+        return `
         <div class="gs-fp-card" onclick="openProductModal(${JSON.stringify(item).replace(/"/g,'&quot;')})">
-          ${item.img ? `<img src="${item.img}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:4px;">` : `<div class="gs-fp-card-icon">${item.icon}</div>`}
+          ${vidId
+            ? `<div class="vid-thumb" data-vid="${vidId}" onclick="event.stopPropagation();loadVid(this)" style="position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;margin-bottom:4px;cursor:pointer;overflow:hidden;">
+                <img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;">
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;background:rgba(0,0,0,0.72);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                  <svg viewBox="0 0 24 24" width="22" height="22"><path fill="white" d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>`
+            : item.img
+              ? `<img src="${item.img}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:4px;">`
+              : `<div class="gs-fp-card-icon">${item.icon}</div>`
+          }
           <div class="gs-fp-card-name">${item.name}</div>
           <div class="gs-fp-card-sub">${item.sub}</div>
           <div class="gs-fp-card-price">${item.price}</div>
-                              <button class="gs-fp-card-btn" onclick="(function(btn){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;if(!p){alert('Price error');return;}addToCart('${item.name}',p,'${item.sub}');flyToCart('${item.icon||String.fromCodePoint(0x1F48E)}',btn);btn.textContent='✓ Added!';btn.style.background='rgba(80,200,120,0.18)';btn.style.borderColor='rgba(80,200,120,0.5)';btn.style.color='#6fcf97';setTimeout(()=>{btn.textContent='+ Add to Cart';btn.style.background='';btn.style.borderColor='';btn.style.color='';},1500);})(this)">+ Add to Cart</button>
-          ${isAdmin && item.custom ? `<button onclick="deleteGem('${item.id}')" style="width:100%;padding:6px;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.4);border-radius:var(--radius-sm);color:#F09595;font-size:11px;cursor:pointer;margin-top:4px;">🗑 Delete</button>` : ''}
-        </div>
-      `).join('')}
+          <button class="gs-fp-card-btn" onclick="event.stopPropagation();(function(btn){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;if(!p){alert('Price error');return;}addToCart('${item.name}',p,'${item.sub}');flyToCart('${item.icon||String.fromCodePoint(0x1F48E)}',btn);btn.textContent='✓ Added!';btn.style.background='rgba(80,200,120,0.18)';btn.style.borderColor='rgba(80,200,120,0.5)';btn.style.color='#6fcf97';setTimeout(()=>{btn.textContent='+ Add to Cart';btn.style.background='';btn.style.borderColor='';btn.style.color='';},1500);})(this)">+ Add to Cart</button>
+          ${isAdmin && item.custom ? `<button onclick="event.stopPropagation();deleteGem('${item.id}')" style="width:100%;padding:6px;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.4);border-radius:var(--radius-sm);color:#F09595;font-size:11px;cursor:pointer;margin-top:4px;">🗑 Delete</button>` : ''}
+        </div>`;
+      }).join('')}
     </div>
   `;
   document.getElementById('gsFullpage').classList.add('open');
@@ -2721,7 +2733,7 @@ async function deleteGem(id){
   const updated = products.filter(p => p.id !== id);
   localStorage.setItem('ccc_products', JSON.stringify(updated));
   toast('🗑 Deleting globally...');
-  openStorePage(adminCurrentDept||'sapphires');
+  openStorePage(adminCurrentDept||'finished');
   try {
     await fetch('/.netlify/functions/save-product', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -2923,6 +2935,27 @@ function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function getYtId(url) {
+  if (!url) return null;
+  const shorts = url.match(/shorts\/([^?]+)/);
+  if (shorts) return shorts[1];
+  const watch = url.match(/[?&]v=([^&]+)/);
+  if (watch) return watch[1];
+  const short = url.match(/youtu\.be\/([^?]+)/);
+  if (short) return short[1];
+  return null;
+}
+function loadVid(el) {
+  const id = el.dataset.vid;
+  const iframe = document.createElement('iframe');
+  iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1';
+  iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+  iframe.setAttribute('allowfullscreen', '');
+  iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px;';
+  el.innerHTML = '';
+  el.appendChild(iframe);
 }
 
 applyMode();
