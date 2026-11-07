@@ -2721,7 +2721,7 @@ async function deleteGem(id){
   const updated = products.filter(p => p.id !== id);
   localStorage.setItem('ccc_products', JSON.stringify(updated));
   toast('🗑 Deleting globally...');
-  closeStorePage();
+  openStorePage(adminCurrentDept||'sapphires');
   try {
     await fetch('/.netlify/functions/save-product', {
       method:'POST', headers:{'Content-Type':'application/json'},
