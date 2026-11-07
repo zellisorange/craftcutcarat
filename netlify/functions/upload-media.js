@@ -16,7 +16,7 @@ exports.handler = async (event) => {
     const { fileData, fileName, resourceType } = JSON.parse(event.body);
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
-    const apiKey = '257293111828874';
+    const apiKey = process.env.CLOUDINARY_API_KEY;
     const timestamp = Math.floor(Date.now() / 1000);
     const folder = 'craftcutcarat';
 
