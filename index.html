@@ -730,6 +730,15 @@
     }
     #toast.show { opacity: 1; transform: translateY(0); }
 
+    /* ── FLY TO CART ── */
+    .fly-gem {
+      position: fixed;
+      font-size: 22px;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+
    .hidden { display: none !important; }
 
     /* ══ ADMIN PANEL ══ */
@@ -1594,6 +1603,10 @@
   <div class="gs-fp-topbar">
     <button class="gs-fp-back" onclick="closeStorePage()">← Back</button>
     <div class="gs-fp-topbar-title" id="gsFpTitle">Store</div>
+    <button onclick="openCart()" style="position:relative;margin-left:auto;padding:7px 13px;border:0.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text-dim);font-size:13px;cursor:pointer;transition:all 0.15s;">
+      🛒 Cart
+      <span id="cartCount2" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--gold);color:#1A1640;border-radius:99px;font-size:10px;font-weight:700;padding:2px 6px;min-width:18px;text-align:center;">0</span>
+    </button>
   </div>
   <div class="gs-fp-content" id="gsFpContent"></div>
 </div>
@@ -2417,7 +2430,7 @@ function openStorePage(dept) {
           <div class="gs-fp-card-name">${item.name}</div>
           <div class="gs-fp-card-sub">${item.sub}</div>
           <div class="gs-fp-card-price">${item.price}</div>
-          <button class="gs-fp-card-btn" onclick="addToCart('${item.name}', ${parseFloat(item.price.replace(/[^0-9.]/g,''))}, '${item.sub}');this.textContent='✓ Added!';this.style.background='rgba(80,200,120,0.18)';this.style.borderColor='rgba(80,200,120,0.5)';this.style.color='#6fcf97';setTimeout(()=>{this.textContent='+ Add to Cart';this.style.background='';this.style.borderColor='';this.style.color='';},1500)">+ Add to Cart</button>
+                    <button class="gs-fp-card-btn" onclick="(function(btn){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;if(!p){alert('Price error');return;}addToCart('${item.name}',p,'${item.sub}');flyToCart('${item.icon || "💎"}',btn);btn.textContent='✓ Added!';btn.style.background='rgba(80,200,120,0.18)';btn.style.borderColor='rgba(80,200,120,0.5)';btn.style.color='#6fcf97';setTimeout(()=>{btn.textContent='+ Add to Cart';btn.style.background='';btn.style.borderColor='';btn.style.color='';},1500);})(this)">+ Add to Cart</button>
           ${isAdmin && item.custom ? `<button onclick="deleteGem('${item.id}')" style="width:100%;padding:6px;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.4);border-radius:var(--radius-sm);color:#F09595;font-size:11px;cursor:pointer;margin-top:4px;">🗑 Delete</button>` : ''}
         </div>
       `).join('')}
@@ -2520,6 +2533,26 @@ function closeCart() {
     drawer.style.display = 'none';
     document.getElementById('cartOverlay').style.display = 'none';
   }, 320);
+}
+
+function flyToCart(icon, startEl) {
+  const cartBtn = document.querySelector('[onclick="openCart()"]');
+  if (!cartBtn) return;
+  const start = startEl.getBoundingClientRect();
+  const end = cartBtn.getBoundingClientRect();
+  const gem = document.createElement('div');
+  gem.className = 'fly-gem';
+  gem.textContent = icon || '💎';
+  gem.style.cssText = `left:${start.left + start.width/2}px;top:${start.top + start.height/2}px;`;
+  document.body.appendChild(gem);
+  requestAnimationFrame(() => {
+    gem.style.transition = 'all 0.7s cubic-bezier(0.22,1,0.36,1)';
+    gem.style.left = (end.left + end.width/2) + 'px';
+    gem.style.top = (end.top + end.height/2) + 'px';
+    gem.style.opacity = '0';
+    gem.style.transform = 'scale(0.3)';
+  });
+  setTimeout(() => gem.remove(), 750);
 }
 
 function addToCart(name, price, description) {
