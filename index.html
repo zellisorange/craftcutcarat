@@ -2682,6 +2682,7 @@ async function openProductModal(item){
 function closeStorePage() {
   document.getElementById('gsFullpage').classList.remove('open');
   document.body.style.overflow = '';
+  if(window.location.hash === '#store') history.replaceState(null, '', ' ');
 }
 function openAddGem(dept){
   const existing = document.getElementById('addGemModal');
