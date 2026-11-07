@@ -2589,6 +2589,22 @@ function openStorePage(dept) {
   const customItems = getCustomItems(dept);
   const promotedNames = new Set(customItems.map(p=>p.name));
   const allItems = [...data.items.filter(i => !isHidden(dept, i.name) && !promotedNames.has(i.name)), ...customItems];
+
+  // Sync global products from Netlify Blobs into localStorage then re-render
+  fetch('/.netlify/functions/get-products').then(r=>r.json()).then(globalProds=>{
+    if(!globalProds||!globalProds.length) return;
+    const local = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+    let changed = false;
+    globalProds.forEach(gp=>{
+      const li = local.findIndex(lp=>lp.id===gp.id);
+      if(li>=0){ local[li]=gp; changed=true; }
+      else{ local.push(gp); changed=true; }
+    });
+    if(changed){
+      localStorage.setItem('ccc_products', JSON.stringify(local));
+      openStorePage(dept);
+    }
+  }).catch(()=>{});
   document.getElementById('gsFpTitle').textContent = data.icon + ' ' + data.title;
   document.getElementById('gsFpContent').innerHTML = `
     <div class="gs-fp-hero">
