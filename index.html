@@ -2570,7 +2570,8 @@ function openStorePage(dept) {
   closeStoreMenu();
   const isAdmin = currentUser && currentUser.isAdmin;
   const customItems = getCustomItems(dept);
-  const allItems = [...data.items.filter(i => !isHidden(dept, i.name)), ...customItems];
+  const promotedNames = new Set(customItems.map(p=>p.name));
+  const allItems = [...data.items.filter(i => !isHidden(dept, i.name) && !promotedNames.has(i.name)), ...customItems];
   document.getElementById('gsFpTitle').textContent = data.icon + ' ' + data.title;
   document.getElementById('gsFpContent').innerHTML = `
     <div class="gs-fp-hero">
