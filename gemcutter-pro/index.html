@@ -933,11 +933,7 @@ function renderOrtho(isCrown){
 
   if(!facets.length){drawEmpty(ctx,CX,CY,'Add a step to see your gem');return;}
 
-  // ── 2D geometry directly from step angles ──────────────────────
-  // For crown: steps with section=Crown, sorted by angle ascending
-  // For pavilion: steps with section=Pavilion, sorted by angle ascending
-  // Each step tier draws a ring at radius = tan(angle)*scaleF
-  // We draw wedge-slices between rings for each facet group
+  // ── Draw actual facet polygons matching the print diagram geometry ──
 
   function sRGBA(type,alpha){
     const m=STYPE[type];if(!m)return'rgba(80,140,255,'+alpha+')';
@@ -945,99 +941,101 @@ function renderOrtho(isCrown){
     return'rgba('+rv+','+gv+','+b+','+alpha+')';
   }
 
-  // Gather steps for this half
-  const targetSection = isCrown ? 'Crown' : 'Pavilion';
-  const halfSteps = steps.filter(s=>{
-    const meta=STYPE[s.type];
-    return meta && meta.section===targetSection;
-  });
+  // Build geometry matching _t3BuildGeomForGroup / printDiagram
+  const p1Step=steps.find(s=>STYPE[s.type]&&STYPE[s.type].grp===101);
+  const p2Step=steps.find(s=>STYPE[s.type]&&STYPE[s.type].grp===102);
+  const c1Step=steps.find(s=>STYPE[s.type]&&STYPE[s.type].grp===1);
+  const c2Step=steps.find(s=>STYPE[s.type]&&STYPE[s.type].grp===2);
+  const c3Step=steps.find(s=>STYPE[s.type]&&STYPE[s.type].grp===3);
 
-  if(!halfSteps.length){
-    drawEmpty(ctx,CX,CY,'No '+(isCrown?'crown':'pavilion')+' steps');return;
+  const pavAng =(p1Step?p1Step.angle:41)*Math.PI/180;
+  const pavAng2=(p2Step?p2Step.angle:41)*Math.PI/180;
+  const crnAng =(c1Step?c1Step.angle:35)*Math.PI/180;
+  const crnAng2=(c2Step?c2Step.angle:42)*Math.PI/180;
+  const crnAng3=(c3Step?c3Step.angle:21)*Math.PI/180;
+
+  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+  const rTable  = clamp(Math.tan(crnAng)/Math.tan(crnAng3),0.25,0.60);
+  const rStar   = clamp(Math.tan(crnAng)/Math.tan(crnAng2),0.55,0.85);
+  const rPavBrk = clamp(Math.tan(pavAng)/Math.tan(pavAng2),0.35,0.72);
+
+  const mainStep=steps.find(s=>STYPE[s.type]&&(STYPE[s.type].grp===1||STYPE[s.type].grp===101));
+  const SYM=mainStep?mainStep.indexes.length:8;
+  const GSEGS=SYM*2;
+
+  // point on a ring at fraction r, angle phi, rotated so index 1 is at top
+  function pt(r,phi){ return girdlePoint(phi-Math.PI/2, r, CX, CY, R); }
+
+  function fillPoly(pts, fillStyle, strokeStyle){
+    if(pts.length<2)return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.closePath();
+    if(fillStyle){ctx.fillStyle=fillStyle;ctx.fill();}
+    if(strokeStyle){ctx.strokeStyle=strokeStyle;ctx.lineWidth=0.8;ctx.stroke();}
   }
 
-  // Sort by angle: crown low→high (table center outward), pav low→high (culet outward)
-  halfSteps.sort((a,b)=>a.angle-b.angle);
-
-  // Build radius rings: angle=0 → r=0 (center/culet), angle=90 → r=R (girdle)
-  // r = sin(angle) maps nicely to 0..1 range
-  function angleToR(deg){ return Math.sin(deg*Math.PI/180)*R; }
-
-  // For crown: outermost ring = girdle (R), table = innermost ring
-  // For pavilion: outermost ring = girdle (R), culet = center (r=0)
-
-  // Build ring radii array: [0, r1, r2, ..., R]
-  const rings=[];
   if(isCrown){
-    // Find table step if exists
-    const tableStep=steps.find(s=>s.type==='T');
-    const tableR = tableStep ? angleToR(tableStep.angle) : R*0.35;
-    rings.push(tableR); // innermost = table edge
-  } else {
-    rings.push(0); // innermost = culet point
-  }
-  halfSteps.forEach(s=>rings.push(angleToR(s.angle)));
-  // Make sure girdle is last
-  if(rings[rings.length-1]<R*0.95) rings.push(R);
+    const tableVerts=[], starVerts=[], girdle=[];
+    for(let k=0;k<SYM;k++) tableVerts.push(pt(rTable,((2*k+1)/SYM)*Math.PI));
+    for(let k=0;k<SYM;k++) starVerts.push(pt(rStar,(2*k/SYM)*Math.PI));
+    for(let i=0;i<GSEGS;i++){const phi=(i/GSEGS)*2*Math.PI-Math.PI/2;const[gx,gy]=girdlePoint(phi,1.0,CX,CY,R);girdle.push([gx,gy]);}
 
-  // Draw bands from outermost inward (painter's algo)
-  for(let ri=rings.length-1;ri>=1;ri--){
-    const rOuter=rings[ri];
-    const rInner=rings[ri-1];
-    // Which step owns this band?
-    const stepIdx=isCrown ? (ri-1) : (ri-1);
-    const s=halfSteps[Math.min(stepIdx,halfSteps.length-1)];
-    if(!s) continue;
-
-    // Draw facet wedges for each index position in this step
-    const indices=s.indices||[];
-    if(!indices.length){
-      // No index info — draw full ring band
-      ctx.beginPath();
-      ctx.arc(CX,CY,rOuter,0,Math.PI*2);
-      ctx.arc(CX,CY,rInner,0,Math.PI*2,true);
-      ctx.closePath();
-      ctx.fillStyle=sRGBA(s.type,0.35);ctx.fill();
-      ctx.strokeStyle=sRGBA(s.type,0.8);ctx.lineWidth=0.8;ctx.stroke();
-    } else {
-      // Draw individual facet wedges
-      const n=indices.length;
-      const wedge=(2*Math.PI)/wheelSize;
-      indices.forEach(idx=>{
-        const phi=az(idx)-Math.PI/2;
-        const a0=phi-wedge*0.48;
-        const a1=phi+wedge*0.48;
-        ctx.beginPath();
-        ctx.arc(CX,CY,rOuter,a0,a1);
-        ctx.arc(CX,CY,rInner,a1,a0,true);
-        ctx.closePath();
-        ctx.fillStyle=sRGBA(s.type,0.45);ctx.fill();
-        ctx.strokeStyle=sRGBA(s.type,0.85);ctx.lineWidth=0.7;ctx.stroke();
-      });
+    // Upper girdle facets (UG) — grp 3
+    const ugCol=sRGBA('UG',0.55), ugStr=sRGBA('UG',0.9);
+    for(let k=0;k<SYM;k++){
+      const s=starVerts[k];
+      fillPoly([s, girdle[(2*k+GSEGS-1)%GSEGS], girdle[2*k%GSEGS]], ugCol, ugStr);
+      fillPoly([s, girdle[2*k%GSEGS], girdle[(2*k+1)%GSEGS]], ugCol, ugStr);
     }
+
+    // Crown main facets (C1) — grp 1
+    const c1Col=sRGBA('C1',0.55), c1Str=sRGBA('C1',0.9);
+    for(let k=0;k<SYM;k++)
+      fillPoly([tableVerts[k], girdle[(2*k+1)%GSEGS], tableVerts[(k+1)%SYM]], c1Col, c1Str);
+
+    // Star facets (S1/C3) — grp 2
+    const s1Col=sRGBA('S1',0.55), s1Str=sRGBA('S1',0.9);
+    for(let k=0;k<SYM;k++)
+      fillPoly([tableVerts[(k+SYM-1)%SYM], tableVerts[k], starVerts[k]], s1Col, s1Str);
+
+    // Table polygon — grp 0
+    const tCol=sRGBA('T',0.6), tStr=sRGBA('T',1.0);
+    fillPoly(tableVerts, tCol, tStr);
+
+  } else {
+    const pavBrk=[], girdle=[];
+    for(let k=0;k<SYM;k++) pavBrk.push(pt(rPavBrk,(2*k/SYM)*Math.PI));
+    for(let i=0;i<GSEGS;i++) girdle.push(pt(1,(i/GSEGS)*2*Math.PI));
+    const culet=[CX,CY];
+
+    // Lower girdle facets (P2) — grp 102
+    const lgCol=sRGBA('P2',0.55), lgStr=sRGBA('P2',0.9);
+    for(let k=0;k<SYM;k++){
+      const p=pavBrk[k];
+      fillPoly([p, girdle[2*k%GSEGS], girdle[(2*k+GSEGS-1)%GSEGS]], lgCol, lgStr);
+      fillPoly([p, girdle[(2*k+1)%GSEGS], girdle[2*k%GSEGS]], lgCol, lgStr);
+    }
+
+    // Pavilion main facets (P1) — grp 101
+    const p1Col=sRGBA('P1',0.55), p1Str=sRGBA('P1',0.9);
+    for(let k=0;k<SYM;k++){
+      fillPoly([girdle[(2*k+1)%GSEGS], pavBrk[k], culet], p1Col, p1Str);
+      fillPoly([girdle[(2*k+1)%GSEGS], culet, pavBrk[(k+1)%SYM]], p1Col, p1Str);
+    }
+
+    // Culet dot
+    ctx.beginPath();ctx.arc(CX,CY,3.5,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.90)';ctx.fill();
   }
 
   // Girdle ring overlay
   ctx.beginPath();
   for(let i=0;i<=128;i++){const phi=(i/128)*2*Math.PI-Math.PI/2;const[gx,gy]=girdlePoint(phi,1.0,CX,CY,R);i===0?ctx.moveTo(gx,gy):ctx.lineTo(gx,gy);}
   ctx.closePath();
-  ctx.strokeStyle=isLight?'rgba(100,70,0,.4)':'rgba(200,160,32,.35)';
+  ctx.strokeStyle=isLight?'rgba(100,70,0,.5)':'rgba(200,160,32,.5)';
   ctx.lineWidth=1.5;ctx.stroke();
-
-  // Culet dot for pavilion
-  if(!isCrown){
-    ctx.beginPath();ctx.arc(CX,CY,3.5,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,255,255,0.80)';ctx.fill();
-  }
-
-  // Table circle for crown
-  if(isCrown){
-    const tableStep=steps.find(s=>s.type==='T');
-    const tR=tableStep?angleToR(tableStep.angle):R*0.35;
-    ctx.beginPath();ctx.arc(CX,CY,tR,0,Math.PI*2);
-    ctx.strokeStyle=isLight?'rgba(50,80,200,.6)':'rgba(190,215,255,.6)';
-    ctx.lineWidth=1.5;ctx.stroke();
-  }
 
   // Index labels
   for(let i=1;i<=wheelSize;i+=wheelSize/8){
