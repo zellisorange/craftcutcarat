@@ -407,8 +407,15 @@
     }
     .gs-fp-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px,1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
+      gap: 12px;
+    }
+    @media (max-width: 480px) {
+      .gs-fp-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .gs-fp-card { padding: 1rem 0.75rem; }
+      .gs-fp-card-icon { font-size: 28px; }
+      .gs-fp-card-name { font-size: 12px; }
+      .gs-fp-card-price { font-size: 14px; }
     }
     .gs-fp-card {
       background: linear-gradient(145deg, rgba(40,34,110,0.95) 0%, rgba(22,18,74,0.98) 60%, rgba(30,24,88,0.95) 100%);
@@ -3160,6 +3167,7 @@ function closeGemCutter(){
 (function(){
   const canvas = document.getElementById('gemRain');
   if(!canvas) return;
+  if(window.innerWidth < 768){ canvas.style.display='none'; return; }
   const ctx = canvas.getContext('2d');
   const colors = ['#7F77DD','#5B4FCF','#A99FF0','#3C3489','#C9C4FF','#EF9F27'];
   let W, H, particles=[];
