@@ -3097,7 +3097,7 @@ async function saveAdminGem(){
   // Push to global Netlify Blobs
   try {
     const imageData = window._pendingImageData || '';
-    const videoData = window._pendingVideoData || '';
+    const videoData = videoDataUrl || window._pendingVideoData || '';
     window._pendingImageData = null;
     window._pendingVideoData = null;
     const gem = products.find(p=>p.id===(adminEditingId||productId)) || {};
