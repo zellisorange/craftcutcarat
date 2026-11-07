@@ -40,7 +40,7 @@
       --warn-text:    #FAC775;
       --radius:       12px;
       --radius-sm:    8px;
-      --nav-h:        60px;
+      --nav-h:        120px;
       --font-display: 'Cormorant Garamond', serif;
       --font-body:    'Inter', sans-serif;
     }
@@ -124,17 +124,18 @@
     }
     .nav-right { display: flex; align-items: center; gap: 8px; }
     .nav-btn {
-      padding: 7px 16px;
-      border: 0.5px solid var(--border-light);
+      padding: 10px 22px;
+      border: 1.5px solid var(--border-light);
       border-radius: var(--radius-sm);
       background: transparent;
       color: var(--text-dim);
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 500;
       transition: all 0.15s;
     }
     .nav-btn:hover { background: var(--card); color: var(--text); }
-    .nav-btn.primary { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-mid); }
-    .nav-btn.primary:hover { background: var(--tz-bright); }
+    .nav-btn.primary { background: var(--tz-mid); color: var(--tz-light); border-color: var(--tz-bright); font-weight: 600; letter-spacing: 0.03em; }
+    .nav-btn.primary:hover { background: var(--tz-bright); box-shadow: 0 0 14px rgba(127,119,221,0.5); }
     .user-chip {
       display: flex; align-items: center; gap: 8px;
       padding: 4px 12px 4px 4px;
@@ -151,13 +152,14 @@
     .user-name { font-size: 13px; color: var(--text); }
     .nav-ham {
       display: none;
-      padding: 8px 10px;
-      border: 0.5px solid var(--border-light);
+      padding: 10px 14px;
+      border: 1.5px solid var(--border-light);
       border-radius: var(--radius-sm);
       background: transparent;
       color: var(--text-dim);
-      font-size: 18px;
+      font-size: 22px;
       line-height: 1;
+      font-weight: 600;
     }
     .nav-drawer {
       display: none;
@@ -1513,12 +1515,14 @@
   </div>
 
   <div class="nav-right">
-    <button onclick="openCart()" style="position:relative;padding:7px 13px;border:0.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text-dim);font-size:13px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--card)'" onmouseout="this.style.background='transparent'">
-      🛒 Cart
-      <span id="cartCount" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--gold);color:#1A1640;border-radius:99px;font-size:10px;font-weight:700;padding:2px 6px;min-width:18px;text-align:center;">0</span>
-    </button>
-    <div id="guestNav" style="display:flex;gap:8px;align-items:center;">
-      <button class="nav-btn" onclick="openAuth('login')">Sign in</button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div id="guestNav" style="display:flex;gap:8px;align-items:center;">
+        <button class="nav-btn primary" onclick="openAuth('login')">Sign in</button>
+      </div>
+      <button onclick="openCart()" style="position:relative;padding:10px 22px;border:1.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text-dim);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--card)'" onmouseout="this.style.background='transparent'">
+        🛒 Cart
+        <span id="cartCount" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--gold);color:#1A1640;border-radius:99px;font-size:10px;font-weight:700;padding:2px 6px;min-width:18px;text-align:center;">0</span>
+      </button>
     </div>
     <div id="userNav" class="hidden" style="display:flex;align-items:center;gap:8px;">
       <div class="user-chip">
