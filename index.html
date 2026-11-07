@@ -2646,7 +2646,10 @@ function openStorePage(dept) {
   `;
   document.getElementById('gsFullpage').classList.add('open');
   document.body.style.overflow = 'hidden';
-  history.pushState({page:'store'}, '', '#store');
+window.addEventListener('popstate', function(){
+  document.getElementById('gsFullpage').classList.remove('open');
+  document.body.style.overflow='';
+});
 }
 async function openProductModal(item){
   const videoSrc = item.id ? await videoDB.get(item.id) : '';
@@ -2682,7 +2685,7 @@ async function openProductModal(item){
 function closeStorePage() {
   document.getElementById('gsFullpage').classList.remove('open');
   document.body.style.overflow = '';
-  if(window.location.hash === '#store') history.replaceState(null, '', ' ');
+  window.scrollTo(0,0);
 }
 function openAddGem(dept){
   const existing = document.getElementById('addGemModal');
@@ -2932,10 +2935,7 @@ function applyMode(){
     if(btn) btn.textContent = '🌑';
   }
 }
-window.addEventListener('popstate', function(){
-  document.getElementById('gsFullpage').classList.remove('open');
-  document.body.style.overflow='';
-});
+
 
 function toast(msg){
   const t=document.getElementById('toast');
@@ -3369,10 +3369,7 @@ function closeGemCutter(){
   draw();
   window.addEventListener('resize',()=>{resize();init();});
 })();
-window.onpopstate = function(){ 
-  document.getElementById('gsFullpage').classList.remove('open'); 
-  document.body.style.overflow=''; 
-};
+
 </script>
 
 </body>
