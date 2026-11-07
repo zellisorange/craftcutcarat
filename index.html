@@ -2536,23 +2536,26 @@ function closeCart() {
 }
 
 function flyToCart(icon, startEl) {
-  const cartBtn = document.querySelector('[onclick="openCart()"]');
+  const cartBtns = document.querySelectorAll('[onclick="openCart()"]');
+  const cartBtn = Array.from(cartBtns).find(b => b.getBoundingClientRect().width > 0);
   if (!cartBtn) return;
   const start = startEl.getBoundingClientRect();
   const end = cartBtn.getBoundingClientRect();
   const gem = document.createElement('div');
   gem.className = 'fly-gem';
   gem.textContent = icon || '💎';
-  gem.style.cssText = `left:${start.left + start.width/2}px;top:${start.top + start.height/2}px;`;
+  gem.style.cssText = `position:fixed;left:${start.left + start.width/2 - 11}px;top:${start.top + start.height/2 - 11}px;font-size:22px;pointer-events:none;z-index:99999;`;
   document.body.appendChild(gem);
   requestAnimationFrame(() => {
-    gem.style.transition = 'all 0.7s cubic-bezier(0.22,1,0.36,1)';
-    gem.style.left = (end.left + end.width/2) + 'px';
-    gem.style.top = (end.top + end.height/2) + 'px';
-    gem.style.opacity = '0';
-    gem.style.transform = 'scale(0.3)';
+    requestAnimationFrame(() => {
+      gem.style.transition = 'all 0.65s cubic-bezier(0.4,0,0.2,1)';
+      gem.style.left = (end.left + end.width/2 - 11) + 'px';
+      gem.style.top = (end.top + end.height/2 - 11) + 'px';
+      gem.style.opacity = '0';
+      gem.style.transform = 'scale(0.2)';
+    });
   });
-  setTimeout(() => gem.remove(), 750);
+  setTimeout(() => gem.remove(), 700);
 }
 
 function addToCart(name, price, description) {
