@@ -21,7 +21,6 @@ exports.handler = async (event) => {
     }));
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: 'https://craftcutcarat.com/?payment=success',
