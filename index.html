@@ -2930,6 +2930,12 @@ function applyMode(){
     if(btn) btn.textContent = '🌑';
   }
 }
+window.addEventListener('popstate', function(){
+  if(document.getElementById('gsFullpage').classList.contains('open')){
+    document.getElementById('gsFullpage').classList.remove('open');
+    document.body.style.overflow='';
+  }
+});
 
 function toast(msg){
   const t=document.getElementById('toast');
