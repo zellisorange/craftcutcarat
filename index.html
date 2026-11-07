@@ -3076,7 +3076,35 @@ async function saveAdminGem(){
   localStorage.setItem('ccc_products', JSON.stringify(products));
   closeAdminModal();
   adminShowDept(adminCurrentDept, null);
-  toast(`💎 ${name} saved!`);
+  toast(`⏳ Saving ${name}...`);
+
+  // Push to global Netlify Blobs
+  try {
+    const imageData = window._pendingImageData || '';
+    const videoData = window._pendingVideoData || '';
+    window._pendingImageData = null;
+    window._pendingVideoData = null;
+    const gem = products.find(p=>p.id===(adminEditingId||productId)) || {};
+    const resp = await fetch('/.netlify/functions/save-product', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ product: gem, imageData, videoData })
+    });
+    const result = await resp.json();
+    if(result.ok){
+      if(result.product.img) gem.img = result.product.img;
+      if(result.product.video) gem.video = result.product.video;
+      const all = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+      const i2 = all.findIndex(p=>p.id===gem.id);
+      if(i2>=0) all[i2]=gem; else all.push(gem);
+      localStorage.setItem('ccc_products', JSON.stringify(all));
+      toast(`💎 ${name} saved globally!`);
+    } else {
+      toast(`⚠️ Saved locally only`);
+    }
+  } catch(e) {
+    toast(`⚠️ Saved locally only (offline)`);
+  }
 }
 
 function adminDeleteGem(id, dept){
