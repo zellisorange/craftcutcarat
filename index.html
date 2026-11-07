@@ -54,6 +54,9 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
+    .page { background: transparent !important; }
+    .section { background: transparent !important; }
+    .hero { background: transparent !important; }
 
     a { color: inherit; text-decoration: none; }
     button { font-family: var(--font-body); cursor: pointer; }
@@ -812,7 +815,7 @@
     .admin-sidebar {
       width: 180px;
       flex-shrink: 0;
-      background: var(--space);
+      background: #0D0B1A;
       border-right: 0.5px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -1455,8 +1458,8 @@
       height: var(--s);
       background: radial-gradient(circle, var(--c) 0%, transparent 70%);
       border-radius: 50%;
-      opacity: 0.18;
-      filter: blur(60px);
+      opacity: 0.35;
+      filter: blur(40px);
       transform: translate(-50%, -50%);
       animation: auraFloat var(--dur) ease-in-out infinite alternate;
     }
@@ -1472,6 +1475,16 @@
 
 <!-- ══ BACKGROUND GEMS ══ -->
 <div id="bgCanvas" aria-hidden="true"></div>
+
+<!-- ══ BACKGROUND AURA ══ -->
+<div id="pageAura" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;">
+  <div class="aura-blob" style="--x:10%;--y:15%;--c:#5B4FCF;--s:700px;--dur:20s;"></div>
+  <div class="aura-blob" style="--x:80%;--y:25%;--c:#3C3489;--s:600px;--dur:26s;"></div>
+  <div class="aura-blob" style="--x:50%;--y:55%;--c:#7F77DD;--s:500px;--dur:22s;"></div>
+  <div class="aura-blob" style="--x:20%;--y:75%;--c:#2A1F6E;--s:650px;--dur:30s;"></div>
+  <div class="aura-blob" style="--x:90%;--y:70%;--c:#A99FF0;--s:400px;--dur:18s;"></div>
+  <div class="aura-blob" style="--x:35%;--y:90%;--c:#EF9F27;--s:300px;--dur:24s;"></div>
+</div>
 
 <!-- ══ ANNOUNCEMENT BAR ══ -->
 <div id="announcementBar">
@@ -1627,6 +1640,13 @@
 
 <!-- ══ FULL PAGE STORE ══ -->
 <div class="gs-fullpage" id="gsFullpage">
+<div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;">
+  <div class="aura-blob" style="--x:10%;--y:15%;--c:#5B4FCF;--s:700px;--dur:20s;"></div>
+  <div class="aura-blob" style="--x:80%;--y:25%;--c:#3C3489;--s:600px;--dur:26s;"></div>
+  <div class="aura-blob" style="--x:50%;--y:55%;--c:#7F77DD;--s:500px;--dur:22s;"></div>
+  <div class="aura-blob" style="--x:20%;--y:75%;--c:#2A1F6E;--s:650px;--dur:30s;"></div>
+  <div class="aura-blob" style="--x:90%;--y:70%;--c:#A99FF0;--s:400px;--dur:18s;"></div>
+</div>
   <div class="gs-fp-topbar">
     <button class="gs-fp-back" onclick="closeStorePage()">← Back</button>
     <div class="gs-fp-topbar-title" id="gsFpTitle">Store</div>
