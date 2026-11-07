@@ -1,5 +1,9 @@
 [build]
   functions = "netlify/functions"
 
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "CLOUDINARY_CLOUD_NAME,CLOUDINARY_API_KEY,STRIPE_PUBLISHABLE_KEY"
+  SECRETS_SCAN_OMIT_PATHS = "netlify/functions"
+
 [functions]
   node_bundler = "nft"
