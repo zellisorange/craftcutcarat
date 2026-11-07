@@ -2198,13 +2198,10 @@
     <div id="am_imgpreview" style="margin-top:8px;display:none;">
       <img id="am_imgpreview_img" style="width:100%;max-height:160px;object-fit:contain;border-radius:var(--radius-sm);border:0.5px solid var(--border);">
     </div>
-    <label class="field-label" style="margin-top:12px;">Gem Video (drag & drop or click · MP4)</label>
-    <div id="am_videodrop" ondragover="event.preventDefault();this.style.borderColor='var(--tz-bright)'" ondragleave="this.style.borderColor=''" ondrop="handleAdminDrop(event,'video')" onclick="document.getElementById('am_videofile').click()" style="margin-top:4px;border:1.5px dashed var(--border-light);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;transition:border-color 0.2s;">
-      🎬 Drop MP4 here or click to browse
-    </div>
-    <input type="file" id="am_videofile" accept="video/mp4,video/*" style="display:none;" onchange="handleAdminFilePick(this,'video')">
+    <label class="field-label" style="margin-top:12px;">Gem Video (YouTube URL)</label>
+    <input type="text" id="am_video" placeholder="https://www.youtube.com/watch?v=..." style="margin-top:4px;width:100%;box-sizing:border-box;background:var(--input-bg);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text-primary);font-size:14px;">
     <div id="am_videopreview" style="margin-top:8px;display:none;">
-      <video id="am_videopreview_vid" style="width:100%;max-height:160px;border-radius:var(--radius-sm);border:0.5px solid var(--border);" autoplay loop muted playsinline></video>
+      <iframe id="am_videopreview_vid" style="width:100%;height:160px;border-radius:var(--radius-sm);border:none;" allowfullscreen></iframe>
     </div>
 
 
@@ -2650,8 +2647,8 @@ async function openProductModal(item){
   m.innerHTML = `
     <div style="background:var(--surface);border:0.5px solid var(--border-light);border-radius:var(--radius);width:min(560px,95vw);max-height:90vh;overflow-y:auto;">
       <div style="position:relative;">
-        ${item.video ? `<video src="${item.video}" style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;" autoplay loop muted playsinline></video>` :
-          item.img ? `<img src="${item.img}" style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;">` :
+                ${item.video ? `<iframe src="${item.video.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/')}" style="width:100%;height:320px;border:none;border-radius:var(--radius) var(--radius) 0 0;" allowfullscreen></iframe>` :
+        item.img ? `<img src="${item.img}" style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;">` :
           `<div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--card);border-radius:var(--radius) var(--radius) 0 0;">${item.icon}</div>`}
         <button onclick="document.getElementById('productModal').remove()" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;backdrop-filter:blur(8px);">✕</button>
       </div>
@@ -3083,7 +3080,7 @@ async function saveAdminGem(){
   const status = document.getElementById('am_status').value;
   const img    = document.getElementById('am_img').value.trim();
   const desc   = document.getElementById('am_desc') ? document.getElementById('am_desc').value.trim() : '';
-    const video  = '';
+  const video  = document.getElementById('am_video')?.value.trim()||'';
   if(!name||!price){ toast('⚠️ Name and price are required!'); return; }
   const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
   if(adminEditingId){
