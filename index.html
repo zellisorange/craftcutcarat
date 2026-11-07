@@ -3369,6 +3369,10 @@ function closeGemCutter(){
   draw();
   window.addEventListener('resize',()=>{resize();init();});
 })();
+window.onpopstate = function(){ 
+  document.getElementById('gsFullpage').classList.remove('open'); 
+  document.body.style.overflow=''; 
+};
 </script>
 
 </body>
