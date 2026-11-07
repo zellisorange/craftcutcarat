@@ -2576,7 +2576,7 @@ function addToCart(name, price, description) {
     cart.push({ name, price, description, quantity: 1 });
   }
   updateCartCount();
-  showToast(`✅ ${name} added to cart`);
+  toast(`✅ ${name} added to cart`);
 }
 
 function removeFromCart(name) {
