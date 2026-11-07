@@ -2446,5 +2446,40 @@ function boot(){
 }
 boot();
 </script>
+<!-- ══ UNDER CONSTRUCTION TOAST ══ -->
+<div id="gcpToast" style="
+  position:fixed;
+  bottom:1.5rem;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:#EF9F27;
+  color:#1A1200;
+  padding:11px 22px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0.03em;
+  z-index:99999;
+  opacity:0;
+  transition:opacity 0.35s, transform 0.35s;
+  pointer-events:none;
+  white-space:nowrap;
+  box-shadow:0 4px 20px rgba(239,159,39,0.4);
+">⚠️ GemCutter Pro — Under Construction · More features coming soon</div>
+
+<script>
+(function(){
+  setTimeout(function(){
+    var t = document.getElementById('gcpToast');
+    t.style.opacity = '1';
+    t.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(function(){
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(20px)';
+    }, 4500);
+  }, 1500);
+})();
+</script>
+
 </body>
 </html>
