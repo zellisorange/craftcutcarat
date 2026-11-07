@@ -2569,6 +2569,7 @@ function openStoreMenu() {
   document.body.style.overflow = 'hidden';
 }
 function closeStoreMenu() {
+  if (document.getElementById('gsFullpage').classList.contains('open')) return;
   document.getElementById('gsOverlay').classList.remove('open');
   document.getElementById('gsPanel').classList.remove('open');
   document.body.style.overflow = '';
