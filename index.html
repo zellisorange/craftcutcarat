@@ -2189,17 +2189,26 @@
     </select>
     <label class="field-label">Description (shown in product modal)</label>
     <textarea class="field-input" id="am_desc" placeholder="A stunning precision faceted blue sapphire, cut to perfect meetpoints on the Ultra Tec VL Classic..." style="height:80px;resize:vertical;"></textarea>
-    <label class="field-label">Image URL (or upload below)</label>
-    <input class="field-input" id="am_img" placeholder="images/my-sapphire.jpg">
-    <input type="file" id="am_imgfile" accept="image/*" style="margin-top:8px;font-size:12px;color:var(--text-muted);" onchange="previewAdminImg(this)">
+    <label class="field-label">Image (drag & drop or click)</label>
+    <input class="field-input" id="am_img" placeholder="or paste URL directly">
+    <div id="am_imgdrop" ondragover="event.preventDefault();this.style.borderColor='var(--tz-bright)'" ondragleave="this.style.borderColor=''" ondrop="handleAdminDrop(event,'img')" onclick="document.getElementById('am_imgfile').click()" style="margin-top:8px;border:1.5px dashed var(--border-light);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;transition:border-color 0.2s;">
+      📷 Drop image here or click to browse
+    </div>
+    <input type="file" id="am_imgfile" accept="image/*" style="display:none;" onchange="handleAdminFilePick(this,'img')">
     <div id="am_imgpreview" style="margin-top:8px;display:none;">
       <img id="am_imgpreview_img" style="width:100%;max-height:160px;object-fit:contain;border-radius:var(--radius-sm);border:0.5px solid var(--border);">
     </div>
-    <label class="field-label" style="margin-top:12px;">Gem Video (MP4 · short clip)</label>
-    <input type="file" id="am_videofile" accept="video/mp4,video/*" style="font-size:12px;color:var(--text-muted);" onchange="previewAdminVideo(this)">
+    <label class="field-label" style="margin-top:12px;">Gem Video (drag & drop or click · MP4)</label>
+    <div id="am_videodrop" ondragover="event.preventDefault();this.style.borderColor='var(--tz-bright)'" ondragleave="this.style.borderColor=''" ondrop="handleAdminDrop(event,'video')" onclick="document.getElementById('am_videofile').click()" style="margin-top:4px;border:1.5px dashed var(--border-light);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;color:var(--text-muted);font-size:13px;transition:border-color 0.2s;">
+      🎬 Drop MP4 here or click to browse
+    </div>
+    <input type="file" id="am_videofile" accept="video/mp4,video/*" style="display:none;" onchange="handleAdminFilePick(this,'video')">
     <div id="am_videopreview" style="margin-top:8px;display:none;">
       <video id="am_videopreview_vid" style="width:100%;max-height:160px;border-radius:var(--radius-sm);border:0.5px solid var(--border);" autoplay loop muted playsinline></video>
     </div>
+
+
+
     <div style="display:flex;gap:8px;margin-top:1.25rem;">
       <button onclick="saveAdminGem()" style="flex:1;padding:12px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">💾 Save</button>
       <button onclick="closeAdminModal()" style="padding:12px 20px;background:transparent;color:var(--text-muted);border:0.5px solid var(--border-light);border-radius:var(--radius-sm);font-size:14px;cursor:pointer;">Cancel</button>
@@ -3131,28 +3140,61 @@ function adminDeleteGem(id, dept){
   toast('Gem deleted.');
 }
 
-function previewAdminImg(input){
-  const file = input.files[0];
+function previewAdminImg(input){ handleAdminFilePick(input,'img'); }
+function previewAdminVideo(input){ handleAdminFilePick(input,'video'); }
+
+function handleAdminDrop(event, type){
+  event.preventDefault();
+  document.getElementById('am_'+type+'drop').style.borderColor='';
+  const file = event.dataTransfer.files[0];
   if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('am_img').value = e.target.result;
-    document.getElementById('am_imgpreview_img').src = e.target.result;
-    document.getElementById('am_imgpreview').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+  uploadToCloudinary(file, type);
 }
 
-function previewAdminVideo(input){
+function handleAdminFilePick(input, type){
   const file = input.files[0];
   if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('am_videopreview_vid').src = e.target.result;
-    document.getElementById('am_videopreview').style.display = 'block';
-    document.getElementById('am_videopreview_vid').dataset.url = e.target.result;
-  };
-  reader.readAsDataURL(file);
+  uploadToCloudinary(file, type);
+}
+
+async function uploadToCloudinary(file, type){
+  const dropEl = document.getElementById('am_'+type+'drop');
+  if(dropEl) dropEl.textContent = '⏳ Uploading...';
+  toast('⏳ Uploading to cloud...');
+  try {
+    const reader = new FileReader();
+    const fileData = await new Promise((resolve, reject) => {
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const resp = await fetch('/.netlify/functions/upload-media', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ fileData, fileName: file.name, resourceType: type==='video'?'video':'image' })
+    });
+    const result = await resp.json();
+    if(result.ok && result.url){
+      if(type === 'img'){
+        document.getElementById('am_img').value = result.url;
+        document.getElementById('am_imgpreview_img').src = result.url;
+        document.getElementById('am_imgpreview').style.display = 'block';
+        if(dropEl) dropEl.textContent = '✅ Image uploaded!';
+      } else {
+        document.getElementById('am_videopreview_vid').src = result.url;
+        document.getElementById('am_videopreview').style.display = 'block';
+        document.getElementById('am_videopreview_vid').dataset.url = result.url;
+        if(dropEl) dropEl.textContent = '✅ Video uploaded!';
+      }
+      toast('✅ Uploaded to cloud!');
+    } else {
+      if(dropEl) dropEl.textContent = type==='video'?'🎬 Drop MP4 here or click to browse':'📷 Drop image here or click to browse';
+      toast('⚠️ Upload failed: '+(result.error||'unknown'));
+    }
+  } catch(e) {
+    if(dropEl) dropEl.textContent = type==='video'?'🎬 Drop MP4 here or click to browse':'📷 Drop image here or click to browse';
+    toast('⚠️ Upload error: '+e.message);
+  }
 }
 function adminEditImg(id){ adminEditGem(id); }
 
