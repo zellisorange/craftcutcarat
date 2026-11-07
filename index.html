@@ -2536,27 +2536,37 @@ function closeCart() {
 }
 
 function flyToCart(icon, startEl) {
-  const cartBtns = document.querySelectorAll('[onclick="openCart()"]');
-  const cartBtn = Array.from(cartBtns).find(b => b.getBoundingClientRect().width > 0);
+  var allBtns = document.querySelectorAll('button');
+  var cartBtn = null;
+  for (var i = 0; i < allBtns.length; i++) {
+    if (allBtns[i].textContent.indexOf('Cart') > -1 && allBtns[i].getBoundingClientRect().width > 0) {
+      cartBtn = allBtns[i];
+      break;
+    }
+  }
   if (!cartBtn) return;
-  const start = startEl.getBoundingClientRect();
-  const end = cartBtn.getBoundingClientRect();
-  const gem = document.createElement('div');
-  gem.className = 'fly-gem';
+  var start = startEl.getBoundingClientRect();
+  var end = cartBtn.getBoundingClientRect();
+  var gem = document.createElement('div');
   gem.textContent = icon || '💎';
-  gem.style.cssText = `position:fixed;left:${start.left + start.width/2 - 11}px;top:${start.top + start.height/2 - 11}px;font-size:22px;pointer-events:none;z-index:99999;`;
-  document.body.appendChild(gem);
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      gem.style.transition = 'all 0.65s cubic-bezier(0.4,0,0.2,1)';
-      gem.style.left = (end.left + end.width/2 - 11) + 'px';
-      gem.style.top = (end.top + end.height/2 - 11) + 'px';
-      gem.style.opacity = '0';
-      gem.style.transform = 'scale(0.2)';
-    });
-  });
-  setTimeout(() => gem.remove(), 700);
+  gem.style.position = 'fixed';
+  gem.style.left = (start.left + start.width/2 - 11) + 'px';
+  gem.style.top = (start.top + start.height/2 - 11) + 'px';
+  gem.style.fontSize = '22px';
+  gem.style.pointerEvents = 'none';
+  gem.style.zIndex = '99999';
+  gem.style.transition = 'none';
+  document.documentElement.appendChild(gem);
+  setTimeout(function() {
+    gem.style.transition = 'all 0.65s cubic-bezier(0.4,0,0.2,1)';
+    gem.style.left = (end.left + end.width/2 - 11) + 'px';
+    gem.style.top = (end.top + end.height/2 - 11) + 'px';
+    gem.style.opacity = '0';
+    gem.style.transform = 'scale(0.2)';
+  }, 30);
+  setTimeout(function() { gem.remove(); }, 750);
 }
+
 
 function addToCart(name, price, description) {
   const existing = cart.find(i => i.name === name);
@@ -2583,13 +2593,12 @@ function clearCart() {
 
 function updateCartCount() {
   const count = cart.reduce((t, i) => t + i.quantity, 0);
-  const badge = document.getElementById('cartCount');
-  if (count > 0) {
-    badge.style.display = 'block';
-    badge.textContent = count;
-  } else {
-    badge.style.display = 'none';
-  }
+  ['cartCount','cartCount2'].forEach(id => {
+    const badge = document.getElementById(id);
+    if (!badge) return;
+    if (count > 0) { badge.style.display = 'block'; badge.textContent = count; }
+    else { badge.style.display = 'none'; }
+  });
 }
 
 function renderCart() {
