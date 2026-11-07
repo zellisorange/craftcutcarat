@@ -2170,11 +2170,18 @@
       <option value="soldout">❌ Sold Out</option>
       <option value="low">⚠️ Low Stock</option>
     </select>
+    <label class="field-label">Description (shown in product modal)</label>
+    <textarea class="field-input" id="am_desc" placeholder="A stunning precision faceted blue sapphire, cut to perfect meetpoints on the Ultra Tec VL Classic..." style="height:80px;resize:vertical;"></textarea>
     <label class="field-label">Image URL (or upload below)</label>
     <input class="field-input" id="am_img" placeholder="images/my-sapphire.jpg">
     <input type="file" id="am_imgfile" accept="image/*" style="margin-top:8px;font-size:12px;color:var(--text-muted);" onchange="previewAdminImg(this)">
     <div id="am_imgpreview" style="margin-top:8px;display:none;">
       <img id="am_imgpreview_img" style="width:100%;max-height:160px;object-fit:contain;border-radius:var(--radius-sm);border:0.5px solid var(--border);">
+    </div>
+    <label class="field-label" style="margin-top:12px;">Gem Video (MP4 · short clip)</label>
+    <input type="file" id="am_videofile" accept="video/mp4,video/*" style="font-size:12px;color:var(--text-muted);" onchange="previewAdminVideo(this)">
+    <div id="am_videopreview" style="margin-top:8px;display:none;">
+      <video id="am_videopreview_vid" style="width:100%;max-height:160px;border-radius:var(--radius-sm);border:0.5px solid var(--border);" autoplay loop muted playsinline></video>
     </div>
     <div style="display:flex;gap:8px;margin-top:1.25rem;">
       <button onclick="saveAdminGem()" style="flex:1;padding:12px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">💾 Save</button>
@@ -2451,8 +2458,8 @@ const STORE_DATA = {
     icon: '💎', title: 'Finished Gems',
     subtitle: 'Precision faceted stones cut and polished to mirror finish',
     items: [
-      { icon:'💎', name:'Cut Blue Sapphire',     sub:'Precision faceted · 2ct · Round',   price:'$89.00'  },
-      { icon:'❤️', name:'Cut Ruby',             sub:'Precision faceted · 1.5ct · Oval',  price:'$74.00'  },
+    { icon:'💎', name:'Cut Blue Sapphire',     sub:'Precision faceted · 2ct · Round',   price:'$89.00', img:'', video:'' },
+    { icon:'❤️', name:'Cut Ruby',             sub:'Precision faceted · 1.5ct · Oval',  price:'$74.00'  },
       { icon:'🔮', name:'Cut Tanzanite',         sub:'Precision faceted · 3ct · Cushion', price:'$130.00' },
       { icon:'🧊', name:'Cut Blue Topaz',        sub:'Precision faceted · 4ct · Emerald', price:'$38.00'  },
       { icon:'💚', name:'Cut Emerald',           sub:'Precision faceted · 1ct · Emerald', price:'$165.00' },
@@ -2574,8 +2581,8 @@ function openStorePage(dept) {
     </div>
     <div class="gs-fp-grid">
       ${allItems.map((item, idx) => `
-        <div class="gs-fp-card">
-          <div class="gs-fp-card-icon">${item.icon}</div>
+        <div class="gs-fp-card" onclick="openProductModal(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+          ${item.img ? `<img src="${item.img}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:4px;">` : `<div class="gs-fp-card-icon">${item.icon}</div>`}
           <div class="gs-fp-card-name">${item.name}</div>
           <div class="gs-fp-card-sub">${item.sub}</div>
           <div class="gs-fp-card-price">${item.price}</div>
@@ -2587,6 +2594,37 @@ function openStorePage(dept) {
   `;
   document.getElementById('gsFullpage').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+async function openProductModal(item){
+  const videoSrc = item.id ? await videoDB.get(item.id) : '';
+  item.video = videoSrc;
+  const existing = document.getElementById('productModal');
+  if(existing) existing.remove();
+  const m = document.createElement('div');
+  m.id = 'productModal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(8,6,20,0.92);z-index:1100;display:flex;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(12px);';
+  m.onclick = e => { if(e.target===m) m.remove(); };
+  m.innerHTML = `
+    <div style="background:var(--surface);border:0.5px solid var(--border-light);border-radius:var(--radius);width:min(560px,95vw);max-height:90vh;overflow-y:auto;">
+      <div style="position:relative;">
+        ${item.video ? `<video src="${item.video}" style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;" autoplay loop muted playsinline></video>` :
+          item.img ? `<img src="${item.img}" style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;">` :
+          `<div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--card);border-radius:var(--radius) var(--radius) 0 0;">${item.icon}</div>`}
+        <button onclick="document.getElementById('productModal').remove()" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;backdrop-filter:blur(8px);">✕</button>
+      </div>
+      <div style="padding:1.75rem;">
+                <div style="font-family:var(--font-display);font-size:28px;color:var(--tz-bright);margin-bottom:6px;">${item.name}</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">${item.sub}</div>
+        ${item.desc ? `<p style="font-size:14px;color:var(--text-dim);line-height:1.75;margin-bottom:16px;">${item.desc}</p>` : ''}
+        <div style="font-size:26px;font-weight:600;color:var(--tz-bright);margin-bottom:1.5rem;">${item.price}</div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="(function(){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;addToCart('${item.name}',p,'${item.sub}');document.getElementById('productModal').remove();toast('Added to cart ✦');})()" style="flex:1;padding:13px;background:var(--tz-mid);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">🛒 Add to Cart</button>
+          ${item.etsy ? `<a href="${item.etsy}" target="_blank" style="padding:13px 18px;background:rgba(239,159,39,0.15);border:0.5px solid rgba(239,159,39,0.4);border-radius:var(--radius-sm);color:var(--gold);font-size:13px;text-decoration:none;display:flex;align-items:center;">Buy on Etsy →</a>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(m);
 }
 function closeStorePage() {
   document.getElementById('gsFullpage').classList.remove('open');
@@ -2951,7 +2989,35 @@ function adminEditGem(id){
   openAdminModal();
 }
 
-function saveAdminGem(){
+const videoDB = {
+  db: null,
+  open(){
+    return new Promise(res=>{
+      if(this.db){res(this.db);return;}
+      const r=indexedDB.open('ccc_videos',1);
+      r.onupgradeneeded=e=>e.target.result.createObjectStore('vids');
+      r.onsuccess=e=>{this.db=e.target.result;res(this.db);};
+    });
+  },
+  async save(id,dataUrl){
+    const db=await this.open();
+    return new Promise(res=>{
+      const tx=db.transaction('vids','readwrite');
+      tx.objectStore('vids').put(dataUrl,id);
+      tx.oncomplete=res;
+    });
+  },
+  async get(id){
+    const db=await this.open();
+    return new Promise(res=>{
+      const tx=db.transaction('vids','readonly');
+      const req=tx.objectStore('vids').get(id);
+      req.onsuccess=e=>res(e.target.result||'');
+    });
+  }
+};
+
+async function saveAdminGem(){
   const icon   = document.getElementById('am_icon').value.trim()||'💎';
   const name   = document.getElementById('am_name').value.trim();
   const sub    = document.getElementById('am_sub').value.trim();
@@ -2960,13 +3026,21 @@ function saveAdminGem(){
   const etsy   = document.getElementById('am_etsy').value.trim();
   const status = document.getElementById('am_status').value;
   const img    = document.getElementById('am_img').value.trim();
+  const desc   = document.getElementById('am_desc') ? document.getElementById('am_desc').value.trim() : '';
+    const video  = '';
   if(!name||!price){ toast('⚠️ Name and price are required!'); return; }
   const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
   if(adminEditingId){
     const idx = products.findIndex(p=>p.id===adminEditingId);
-    if(idx>-1) products[idx] = {...products[idx], icon,name,sub,price,sale,etsy,status,img,custom:true};
+    if(idx>-1) products[idx] = {...products[idx], icon,name,sub,desc,price,sale,etsy,status,img,video,custom:true};
   } else {
-    products.push({id:'ccc_'+Date.now(), dept:adminCurrentDept, icon,name,sub,price,sale,etsy,status,img,custom:true});
+    products.push({id:'ccc_'+Date.now(), dept:adminCurrentDept, icon,name,sub,desc,price,sale,etsy,status,img,video,custom:true});
+  }
+  const videoDataUrl = document.getElementById('am_videopreview_vid')?.dataset.url||'';
+  const productId = adminEditingId || 'ccc_'+Date.now();
+  if(videoDataUrl){
+    await videoDB.save(productId, videoDataUrl);
+    if(!adminEditingId) products[products.length-1].id = productId;
   }
   localStorage.setItem('ccc_products', JSON.stringify(products));
   closeAdminModal();
@@ -2994,6 +3068,17 @@ function previewAdminImg(input){
   reader.readAsDataURL(file);
 }
 
+function previewAdminVideo(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('am_videopreview_vid').src = e.target.result;
+    document.getElementById('am_videopreview').style.display = 'block';
+    document.getElementById('am_videopreview_vid').dataset.url = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 function adminEditImg(id){ adminEditGem(id); }
 
 function adminRestoreBuiltin(dept, name){
