@@ -2968,8 +2968,20 @@ function adminNewGem(dept){
 
 function adminEditGem(id){
   const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
-  const item = products.find(p=>p.id===id);
-  if(!item) return;
+  let item = products.find(p=>p.id===id);
+  if(!item){
+    // Auto-promote built-in gem to localStorage so it can be edited
+    for(const dept in STORE_DATA){
+      const found = STORE_DATA[dept].items.find(i=>'builtin_'+dept+'_'+i.name.replace(/\s/g,'_')===id);
+      if(found){
+        item = {id, dept, icon:found.icon, name:found.name, sub:found.sub, price:found.price, sale:'', etsy:'', status:'instock', img:'', desc:'', video:'', custom:true};
+        products.push(item);
+        localStorage.setItem('ccc_products', JSON.stringify(products));
+        break;
+      }
+    }
+    if(!item) return;
+  }
   adminEditingId = id;
   document.getElementById('adminModalTitle').textContent = '✏️ Edit Gem';
   document.getElementById('am_icon').value = item.icon||'💎';
