@@ -2609,7 +2609,9 @@ function openStorePage(dept) {
     });
     if(changed){
       localStorage.setItem('ccc_products', JSON.stringify(local));
-      openStorePage(dept);
+      if(document.getElementById('gsFullpage').classList.contains('open')){
+        openStorePage(dept);
+      }
     }
   }).catch(()=>{});
   document.getElementById('gsFpTitle').textContent = data.icon + ' ' + data.title;
