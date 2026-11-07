@@ -1,0 +1,24 @@
+{
+  "name": "galaxygems",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zellisorange/craftcutcarat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/zellisorange/craftcutcarat/issues"
+  },
+  "homepage": "https://github.com/zellisorange/craftcutcarat#readme",
+  "dependencies": {
+    "stripe": "^23.1.0"
+  }
+}

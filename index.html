@@ -402,21 +402,61 @@
       gap: 14px;
     }
     .gs-fp-card {
-      background: var(--card);
-      border: 0.5px solid var(--border);
+      background: linear-gradient(145deg, rgba(40,34,110,0.95) 0%, rgba(22,18,74,0.98) 60%, rgba(30,24,88,0.95) 100%);
+      border: 0.5px solid rgba(127,119,221,0.35);
       border-radius: var(--radius);
       padding: 1.5rem 1.25rem 1.25rem;
       display: flex;
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
-      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.3);
+      transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+    }
+    .gs-fp-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      pointer-events: none;
+    }
+    .gs-fp-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(105deg, transparent, rgba(255,255,255,0.04), transparent);
+      pointer-events: none;
+      transition: left 0.5s ease;
     }
     .gs-fp-card:hover {
-      border-color: rgba(127,119,221,0.55);
-      background: var(--card-hover);
-      transform: translateY(-3px);
+      background: linear-gradient(145deg, rgba(55,46,145,0.98) 0%, rgba(30,25,96,0.99) 60%, rgba(42,34,120,0.98) 100%);
+      border-color: rgba(127,119,221,0.7);
+      box-shadow: 0 12px 44px rgba(83,74,183,0.5), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.2);
+      transform: translateY(-6px) scale(1.025);
     }
+    .gs-fp-card:hover::after {
+      left: 150%;
+    }
+    body.light .gs-fp-card {
+      background: linear-gradient(145deg, rgba(220,216,250,0.9) 0%, rgba(200,196,240,0.95) 60%, rgba(210,206,245,0.9) 100%);
+      border-color: rgba(83,74,183,0.3);
+      box-shadow: 0 4px 20px rgba(83,74,183,0.15), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(83,74,183,0.1);
+    }
+    body.light .gs-fp-card:hover {
+      background: linear-gradient(145deg, rgba(200,196,240,0.95) 0%, rgba(180,174,230,0.98) 60%, rgba(190,185,236,0.95) 100%);
+      border-color: rgba(83,74,183,0.55);
+      box-shadow: 0 12px 40px rgba(83,74,183,0.25), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(83,74,183,0.15);
+      transform: translateY(-6px) scale(1.025);
+    }
+
+
     .gs-fp-card-icon { font-size: 32px; text-align: center; }
     .gs-fp-card-name { font-size: 13px; font-weight: 500; color: var(--text); text-align: center; line-height: 1.3; }
     .gs-fp-card-sub { font-size: 11px; color: var(--text-muted); text-align: center; }
@@ -981,6 +1021,207 @@
     }
     .mode-toggle:hover { background: var(--card); color: var(--text); }
 
+    /* ── ANNOUNCEMENT BAR ── */
+    #announcementBar {
+      background: linear-gradient(90deg, #1A1640 0%, #2A2460 50%, #1A1640 100%);
+      border-bottom: 0.5px solid var(--border-light);
+      padding: 7px 2rem;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      position: relative;
+      z-index: 201;
+      overflow: hidden;
+    }
+    #announcementBar .ann-scroll {
+      display: inline-flex;
+      align-items: center;
+      gap: 2.5rem;
+      animation: annScroll 28s linear infinite;
+      white-space: nowrap;
+    }
+    #announcementBar .ann-gem {
+      color: var(--gold);
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #announcementBar .ann-gem:hover { color: var(--tz-bright); text-decoration: underline; }
+    @keyframes annScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    body.light #announcementBar {
+      background: linear-gradient(90deg, #E0DEFA 0%, #D0CCF5 50%, #E0DEFA 100%);
+    }
+
+    /* ── PRICE PER CARAT PAGE ── */
+    .ppc-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--space);
+      z-index: 700;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .ppc-page.open { display: flex; }
+    .ppc-topbar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 2rem;
+      height: 60px;
+      background: rgba(13,11,26,0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .ppc-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 13px;
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .ppc-back:hover { background: var(--card); color: var(--text); }
+    .ppc-topbar-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--text);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+    .ppc-content {
+      flex: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 3rem 2rem 6rem;
+    }
+    .ppc-hero {
+      text-align: center;
+      padding: 1rem 0 2.5rem;
+    }
+    .ppc-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px,6vw,60px);
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.05;
+      margin-bottom: 0.6rem;
+    }
+    .ppc-hero-title em { font-style: italic; color: var(--tz-bright); }
+    .ppc-hero-sub {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 500px;
+      margin: 0 auto 1rem;
+      line-height: 1.75;
+    }
+    .ppc-guarantee {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239,159,39,0.12);
+      border: 0.5px solid rgba(239,159,39,0.4);
+      border-radius: 99px;
+      padding: 6px 18px;
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .ppc-table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .ppc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .ppc-table thead th {
+      background: var(--deep);
+      color: var(--text-dim);
+      font-weight: 500;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 0.5px solid var(--border-light);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+    .ppc-table tbody tr {
+      border-bottom: 0.5px solid var(--border);
+      transition: background 0.15s;
+      cursor: default;
+    }
+    .ppc-table tbody tr:last-child { border-bottom: none; }
+    .ppc-table tbody tr:hover { background: rgba(83,74,183,0.09); }
+    .ppc-table tbody tr:nth-child(odd) { background: rgba(22,18,74,0.5); }
+    .ppc-table tbody tr:nth-child(odd):hover { background: rgba(83,74,183,0.09); }
+    .ppc-table td {
+      padding: 12px 16px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    .ppc-stone-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .ppc-type-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+    .ppc-type-badge.lab {
+      background: rgba(83,74,183,0.2);
+      border: 0.5px solid rgba(127,119,221,0.35);
+      color: var(--tz-bright);
+    }
+    .ppc-type-badge.natural {
+      background: rgba(29,158,117,0.15);
+      border: 0.5px solid rgba(29,158,117,0.35);
+      color: #5BC9A5;
+    }
+    .ppc-market { color: var(--text-muted); font-size: 12px; }
+    .ppc-ccc-price {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--tz-bright);
+    }
+    .ppc-note { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+    .ppc-source {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+    body.light .ppc-table tbody tr:nth-child(odd) { background: rgba(224,222,250,0.6); }
+    body.light .ppc-table thead th { background: var(--card); }
+
     /* ── GEM STORE BUTTON ── */
     .gem-store-btn {
       display: flex;
@@ -1198,6 +1439,42 @@
 <!-- ══ BACKGROUND GEMS ══ -->
 <div id="bgCanvas" aria-hidden="true"></div>
 
+<!-- ══ ANNOUNCEMENT BAR ══ -->
+<div id="announcementBar">
+  <span class="ann-scroll">
+    <span>✦ &nbsp; All stones precision faceted by hand &nbsp; · &nbsp; Cambridge, Ontario, Canada</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Blue Sapphire — $35 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Ruby — $35 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Tanzanite — $50 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Emerald — $40 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Padparadscha — $45 CAD/ct</span>
+    <span>·</span>
+    <span>✦ &nbsp; Craft Cut Guarantee — Mirror polish · Precision meetpoints</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">View full price list →</span>
+    <span>&nbsp; &nbsp; &nbsp; &nbsp; </span>
+    <!-- duplicate for seamless loop -->
+    <span>✦ &nbsp; All stones precision faceted by hand &nbsp; · &nbsp; Cambridge, Ontario, Canada</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Blue Sapphire — $35 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Ruby — $35 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Tanzanite — $50 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Emerald — $40 CAD/ct</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">💎 Padparadscha — $45 CAD/ct</span>
+    <span>·</span>
+    <span>✦ &nbsp; Craft Cut Guarantee — Mirror polish · Precision meetpoints</span>
+    <span>·</span>
+    <span class="ann-gem" onclick="openPricePage()">View full price list →</span>
+  </span>
+</div>
+
 <!-- ══ NAV ══ -->
 <nav id="nav">
   <button class="gs-ham-btn" onclick="openStoreMenu()" aria-label="Open Gem Store">
@@ -1219,12 +1496,16 @@
     <button class="nav-link" onclick="openStorePage('jewelry')">💍 Jewellery</button>
     <button class="nav-link" onclick="openStoreMenu()">🛒 All</button>
     <button class="nav-link" onclick="location.href='#ourstory'">Our Story</button>
+    <button class="nav-link" onclick="openPricePage()" style="color:var(--gold);border:0.5px solid rgba(239,159,39,0.3);">💰 Price Guide</button>
   </div>
 
   <div class="nav-right">
+    <button onclick="openCart()" style="position:relative;padding:7px 13px;border:0.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text-dim);font-size:13px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--card)'" onmouseout="this.style.background='transparent'">
+      🛒 Cart
+      <span id="cartCount" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--gold);color:#1A1640;border-radius:99px;font-size:10px;font-weight:700;padding:2px 6px;min-width:18px;text-align:center;">0</span>
+    </button>
     <div id="guestNav" style="display:flex;gap:8px;align-items:center;">
       <button class="nav-btn" onclick="openAuth('login')">Sign in</button>
-      <a href="https://www.etsy.com/shop/craftcutcarat" target="_blank" style="display:flex;align-items:center;gap:6px;padding:7px 16px;background:var(--gold);color:#1A1640;border-radius:var(--radius-sm);font-size:13px;font-weight:600;letter-spacing:0.02em;text-decoration:none;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">🛒 Buy on Etsy</a>
     </div>
     <div id="userNav" class="hidden" style="display:flex;align-items:center;gap:8px;">
       <div class="user-chip">
@@ -1326,6 +1607,7 @@
   <button class="nav-link" onclick="openStorePage('jewelry')">💍 Jewellery</button>
   <button class="nav-link" onclick="openStoreMenu()">🛒 All Departments</button>
   <button class="nav-link" onclick="location.href='#ourstory'">Our Story</button>
+  <button class="nav-link" onclick="openPricePage();toggleDrawer();" style="color:var(--gold);">💰 Price Guide</button>
   <div style="height:0.5px;background:var(--border);margin:8px 0;"></div>
   <a href="https://www.etsy.com/shop/craftcutcarat" target="_blank" style="display:block;padding:7px 13px;background:var(--gold);color:#1A1640;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-align:center;text-decoration:none;margin-bottom:6px;">🛒 Buy on Etsy</a>
   <button class="nav-link" onclick="openAuth('login')">Sign in</button>
@@ -1333,6 +1615,143 @@
 </div>
 
 
+
+<!-- ══ PRICE PER CARAT PAGE ══ -->
+<div class="ppc-page" id="ppcPage">
+  <div class="ppc-topbar">
+    <button class="ppc-back" onclick="closePricePage()">← Back</button>
+    <div class="ppc-topbar-title">💰 Price Per Carat Guide</div>
+  </div>
+  <div class="ppc-content">
+    <div class="ppc-hero">
+      <h1 class="ppc-hero-title">Every stone.<br><em>Transparent pricing.</em></h1>
+      <p class="ppc-hero-sub">All prices in CAD per carat. Compared against retail market rates. Every stone precision faceted by hand on the Ultra Tec VL Classic — Cambridge, Ontario, Canada.</p>
+      <span class="ppc-guarantee">✦ &nbsp; Craft Cut Guarantee &nbsp; · &nbsp; Mirror Polish &nbsp; · &nbsp; Precision Meetpoints &nbsp; ✦</span>
+    </div>
+
+    <div class="ppc-table-wrap">
+      <table class="ppc-table">
+        <thead>
+          <tr>
+            <th>Stone</th>
+            <th>Type</th>
+            <th>Market Low (USD/ct)</th>
+            <th>Market High (USD/ct)</th>
+            <th>CCC Price (CAD/ct)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="ppc-stone-name">💎 Blue Sapphire</div></td>
+            <td><span class="ppc-type-badge lab">Lab Grown</span></td>
+            <td class="ppc-market">$25</td>
+            <td class="ppc-market">$150</td>
+            <td class="ppc-ccc-price">$35</td>
+            <td class="ppc-note">Mohs 9 · Alpha Brilliant cut · deep cornflower blue</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">❤️ Ruby</div></td>
+            <td><span class="ppc-type-badge lab">Lab Grown</span></td>
+            <td class="ppc-market">$25</td>
+            <td class="ppc-market">$100</td>
+            <td class="ppc-ccc-price">$35</td>
+            <td class="ppc-note">Mohs 9 · pigeon blood red · brilliant cut</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">🌸 Padparadscha</div></td>
+            <td><span class="ppc-type-badge lab">Lab Grown</span></td>
+            <td class="ppc-market">$50</td>
+            <td class="ppc-market">$200</td>
+            <td class="ppc-ccc-price">$45</td>
+            <td class="ppc-note">Rare orange-pink sunset · Mohs 9 · highest demand</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">🩷 Pink Sapphire</div></td>
+            <td><span class="ppc-type-badge lab">Lab Grown</span></td>
+            <td class="ppc-market">$30</td>
+            <td class="ppc-market">$120</td>
+            <td class="ppc-ccc-price">$35</td>
+            <td class="ppc-note">Mohs 9 · vivid pink · currently in production line</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">⚪ White Sapphire</div></td>
+            <td><span class="ppc-type-badge lab">Lab Grown</span></td>
+            <td class="ppc-market">$20</td>
+            <td class="ppc-market">$80</td>
+            <td class="ppc-ccc-price">$25</td>
+            <td class="ppc-note">Mohs 9 · diamond alternative · 22.6ct flagship cut</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">💠 Blue Topaz</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$6</td>
+            <td class="ppc-market">$50</td>
+            <td class="ppc-ccc-price">$18</td>
+            <td class="ppc-note">Mohs 8 · 10.20ct in inventory · irradiated blue</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">🤍 White Topaz</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$3</td>
+            <td class="ppc-market">$25</td>
+            <td class="ppc-ccc-price">$15</td>
+            <td class="ppc-note">Mohs 8 · ~3ct natural · Alpha Brilliant in progress</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">🔮 Tanzanite</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$100</td>
+            <td class="ppc-market">$500</td>
+            <td class="ppc-ccc-price">$50</td>
+            <td class="ppc-note">Mohs 6.5 · trichroic · very rare · 3ct in inventory</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">🟢 Fluorite</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$30</td>
+            <td class="ppc-market">$100</td>
+            <td class="ppc-ccc-price">$12</td>
+            <td class="ppc-note">Mohs 4 · 129ct green block · delicate cleavage</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">💙 Neon Apatite</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$15</td>
+            <td class="ppc-market">$40</td>
+            <td class="ppc-ccc-price">$18</td>
+            <td class="ppc-note">Mohs 5 · Paraiba-nano crystal · 157ct in inventory</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">🔵 Kyanite</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$10</td>
+            <td class="ppc-market">$30</td>
+            <td class="ppc-ccc-price">$12</td>
+            <td class="ppc-note">Mohs 4–7 · anisotropic hardness · 103ct blue</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">🟠 Sunstone</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$15</td>
+            <td class="ppc-market">$50</td>
+            <td class="ppc-ccc-price">$20</td>
+            <td class="ppc-note">Mohs 6 · aventurescence · 50ct orange in inventory</td>
+          </tr>
+          <tr>
+            <td><div class="ppc-stone-name">💚 Emerald</div></td>
+            <td><span class="ppc-type-badge natural">Natural</span></td>
+            <td class="ppc-market">$50</td>
+            <td class="ppc-market">$500</td>
+            <td class="ppc-ccc-price">$40</td>
+            <td class="ppc-note">Mohs 7.5–8 · 5.55ct in inventory · delicate cut</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="ppc-source">Market range sources: GemSelect · Pala International · multicolour.com Price Index · farmonaut.com (Nov 2026). All CCC prices in CAD.</p>
+  </div>
+</div>
 
 <!-- ══ PAGE ══ -->
 <div class="page">
@@ -1487,14 +1906,32 @@
     <button class="footer-link" onclick="openStorePage('supplies')">Supplies</button>
     <button class="footer-link" onclick="location.href='#ourstory'">Our Story</button>
     <button class="footer-link" onclick="openStoreMenu()">All Departments</button>
+    <button class="footer-link" onclick="openPricePage()" style="color:var(--gold);">💰 Price Guide</button>
   </div>
   <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;">
     <a href="https://www.instagram.com/craft_cut_carat" target="_blank" style="font-size:12px;color:var(--text-muted);padding:6px 14px;border:0.5px solid var(--border);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.color='var(--tz-bright)';this.style.borderColor='var(--tz-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">📸 Instagram</a>
     <a href="https://www.tiktok.com/@craft_cut_carat" target="_blank" style="font-size:12px;color:var(--text-muted);padding:6px 14px;border:0.5px solid var(--border);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.color='var(--tz-bright)';this.style.borderColor='var(--tz-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">🎵 TikTok</a>
     <a href="https://www.youtube.com/@craft_cut_carat" target="_blank" style="font-size:12px;color:var(--text-muted);padding:6px 14px;border:0.5px solid var(--border);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.color='var(--tz-bright)';this.style.borderColor='var(--tz-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">▶️ YouTube</a>
-    <a href="https://www.etsy.com/shop/craftcutcarat" target="_blank" style="font-size:12px;color:var(--gold);padding:6px 14px;border:0.5px solid var(--gold);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">🛒 Etsy Shop</a>
   </div>
 </footer>
+
+<!-- ══ CART DRAWER ══ -->
+<div id="cartOverlay" onclick="closeCart()" style="display:none;position:fixed;inset:0;background:rgba(8,6,20,0.78);z-index:800;backdrop-filter:blur(5px);"></div>
+<div id="cartDrawer" style="display:none;position:fixed;top:0;right:0;bottom:0;width:min(420px,92vw);background:var(--deep);border-left:0.5px solid var(--border-light);z-index:801;flex-direction:column;transform:translateX(100%);transition:transform 0.32s cubic-bezier(0.22,1,0.36,1);">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:0.5px solid var(--border);flex-shrink:0;">
+    <div style="font-family:var(--font-display);font-size:22px;color:var(--text);">🛒 Your Cart</div>
+    <button onclick="closeCart()" style="width:32px;height:32px;border:0.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text-muted);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+  </div>
+  <div id="cartItems" style="flex:1;overflow-y:auto;padding:1rem 1.5rem;display:flex;flex-direction:column;gap:10px;"></div>
+  <div style="padding:1.25rem 1.5rem;border-top:0.5px solid var(--border);flex-shrink:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <span style="font-size:14px;color:var(--text-muted);">Total</span>
+      <span id="cartTotal" style="font-size:20px;font-weight:700;color:var(--tz-bright);">$0.00 CAD</span>
+    </div>
+    <button onclick="stripeCheckout()" style="width:100%;padding:14px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">💳 Checkout with Stripe</button>
+    <button onclick="clearCart()" style="width:100%;margin-top:8px;padding:10px;background:transparent;color:var(--text-muted);border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;">Clear cart</button>
+  </div>
+</div>
 
 <!-- ══ AUTH MODAL ══ -->
 <div class="overlay" id="authOverlay" onclick="closeAuth(event)">
@@ -1980,7 +2417,7 @@ function openStorePage(dept) {
           <div class="gs-fp-card-name">${item.name}</div>
           <div class="gs-fp-card-sub">${item.sub}</div>
           <div class="gs-fp-card-price">${item.price}</div>
-          <button class="gs-fp-card-btn" onclick="gsAddCart(this)">+ Add to Cart</button>
+          <button class="gs-fp-card-btn" onclick="addToCart('${item.name}', ${parseFloat(item.price.replace(/[^0-9.]/g,''))}, '${item.sub}');this.textContent='✓ Added!';this.style.background='rgba(80,200,120,0.18)';this.style.borderColor='rgba(80,200,120,0.5)';this.style.color='#6fcf97';setTimeout(()=>{this.textContent='+ Add to Cart';this.style.background='';this.style.borderColor='';this.style.color='';},1500)">+ Add to Cart</button>
           ${isAdmin && item.custom ? `<button onclick="deleteGem('${item.id}')" style="width:100%;padding:6px;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.4);border-radius:var(--radius-sm);color:#F09595;font-size:11px;cursor:pointer;margin-top:4px;">🗑 Delete</button>` : ''}
         </div>
       `).join('')}
@@ -2063,6 +2500,130 @@ function gsAddCart(btn) {
   toast(`🛒 ${gsCart} item${gsCart>1?'s':''} in cart!`);
 }
 
+
+/* ══ PRICE PER CARAT PAGE ══ */
+// ══ CART ══
+let cart = [];
+
+function openCart() {
+  document.getElementById('cartOverlay').style.display = 'block';
+  const drawer = document.getElementById('cartDrawer');
+  drawer.style.display = 'flex';
+  setTimeout(() => drawer.style.transform = 'translateX(0)', 10);
+  renderCart();
+}
+
+function closeCart() {
+  const drawer = document.getElementById('cartDrawer');
+  drawer.style.transform = 'translateX(100%)';
+  setTimeout(() => {
+    drawer.style.display = 'none';
+    document.getElementById('cartOverlay').style.display = 'none';
+  }, 320);
+}
+
+function addToCart(name, price, description) {
+  const existing = cart.find(i => i.name === name);
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({ name, price, description, quantity: 1 });
+  }
+  updateCartCount();
+  showToast(`✅ ${name} added to cart`);
+}
+
+function removeFromCart(name) {
+  cart = cart.filter(i => i.name !== name);
+  updateCartCount();
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  updateCartCount();
+  renderCart();
+}
+
+function updateCartCount() {
+  const count = cart.reduce((t, i) => t + i.quantity, 0);
+  const badge = document.getElementById('cartCount');
+  if (count > 0) {
+    badge.style.display = 'block';
+    badge.textContent = count;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  const total = cart.reduce((t, i) => t + i.price * i.quantity, 0);
+  document.getElementById('cartTotal').textContent = '$' + total.toFixed(2) + ' CAD';
+  if (cart.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:3rem 0;font-size:14px;">Your cart is empty</div>';
+    return;
+  }
+  container.innerHTML = cart.map(item => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-sm);">
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:500;color:var(--text);">${item.name}</div>
+        <div style="font-size:12px;color:var(--text-muted);">${item.description}</div>
+        <div style="font-size:13px;color:var(--tz-bright);font-weight:600;margin-top:4px;">$${(item.price * item.quantity).toFixed(2)} CAD</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button onclick="changeQty('${item.name}',-1)" style="width:26px;height:26px;border:0.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text);cursor:pointer;">−</button>
+        <span style="font-size:13px;color:var(--text);min-width:16px;text-align:center;">${item.quantity}</span>
+        <button onclick="changeQty('${item.name}',1)" style="width:26px;height:26px;border:0.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text);cursor:pointer;">+</button>
+        <button onclick="removeFromCart('${item.name}')" style="width:26px;height:26px;border:0.5px solid rgba(226,75,74,0.3);border-radius:var(--radius-sm);background:transparent;color:#F09595;cursor:pointer;font-size:14px;">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function changeQty(name, delta) {
+  const item = cart.find(i => i.name === name);
+  if (!item) return;
+  item.quantity += delta;
+  if (item.quantity <= 0) removeFromCart(name);
+  else renderCart();
+  updateCartCount();
+}
+
+async function stripeCheckout() {
+  if (cart.length === 0) return showToast('Your cart is empty!');
+  const btn = document.querySelector('#cartDrawer button[onclick="stripeCheckout()"]');
+  btn.textContent = '⏳ Processing...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      showToast('❌ Checkout error — please try again');
+      btn.textContent = '💳 Checkout with Stripe';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    showToast('❌ Network error — please try again');
+    btn.textContent = '💳 Checkout with Stripe';
+    btn.disabled = false;
+  }
+}
+
+function openPricePage() {
+  document.getElementById('ppcPage').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePricePage() {
+  document.getElementById('ppcPage').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
 function toggleMode(){
   const isLight = document.body.classList.toggle('light');
