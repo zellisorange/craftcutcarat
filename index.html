@@ -2430,7 +2430,7 @@ function openStorePage(dept) {
           <div class="gs-fp-card-name">${item.name}</div>
           <div class="gs-fp-card-sub">${item.sub}</div>
           <div class="gs-fp-card-price">${item.price}</div>
-                    <button class="gs-fp-card-btn" onclick="(function(btn){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;if(!p){alert('Price error');return;}addToCart('${item.name}',p,'${item.sub}');flyToCart('${item.icon || "💎"}',btn);btn.textContent='✓ Added!';btn.style.background='rgba(80,200,120,0.18)';btn.style.borderColor='rgba(80,200,120,0.5)';btn.style.color='#6fcf97';setTimeout(()=>{btn.textContent='+ Add to Cart';btn.style.background='';btn.style.borderColor='';btn.style.color='';},1500);})(this)">+ Add to Cart</button>
+                              <button class="gs-fp-card-btn" onclick="(function(btn){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;if(!p){alert('Price error');return;}addToCart('${item.name}',p,'${item.sub}');flyToCart('${item.icon||String.fromCodePoint(0x1F48E)}',btn);btn.textContent='✓ Added!';btn.style.background='rgba(80,200,120,0.18)';btn.style.borderColor='rgba(80,200,120,0.5)';btn.style.color='#6fcf97';setTimeout(()=>{btn.textContent='+ Add to Cart';btn.style.background='';btn.style.borderColor='';btn.style.color='';},1500);})(this)">+ Add to Cart</button>
           ${isAdmin && item.custom ? `<button onclick="deleteGem('${item.id}')" style="width:100%;padding:6px;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.4);border-radius:var(--radius-sm);color:#F09595;font-size:11px;cursor:pointer;margin-top:4px;">🗑 Delete</button>` : ''}
         </div>
       `).join('')}
