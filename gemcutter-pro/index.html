@@ -372,7 +372,7 @@ body.light .toggle::after{transform:translateX(13px);background:var(--accent)}
     <div class="form-row" id="idxRow">
       <label>Index</label>
       <input class="idx-in" type="text" id="stepIdx" placeholder="03, 09, 15… or 03-96/6"
-        oninput="previewIdx()" onkeydown="if(event.key==='Enter')addStep()">
+        autocomplete="off" oninput="previewIdx()" onkeydown="if(event.key==='Enter')addStep()">
     </div>
     <div class="idx-hint" id="idxRow2">Tip: <b>03-96/6</b> = every 6th · <b>03,09,15</b> = manual list</div>
     <div class="idx-preview" id="idxPreview"></div>
