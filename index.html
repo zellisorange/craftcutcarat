@@ -1941,7 +1941,7 @@
       <span style="font-size:14px;color:var(--text-muted);">Total</span>
       <span id="cartTotal" style="font-size:20px;font-weight:700;color:var(--tz-bright);">$0.00 CAD</span>
     </div>
-    <button onclick="stripeCheckout()" style="width:100%;padding:14px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">💳 Checkout with Stripe</button>
+    <button id="stripeBtn" onclick="stripeCheckout()" style="width:100%;padding:14px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">💳 Checkout with Stripe</button>
     <button onclick="clearCart()" style="width:100%;margin-top:8px;padding:10px;background:transparent;color:var(--text-muted);border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;">Clear cart</button>
   </div>
 </div>
@@ -2636,10 +2636,9 @@ function changeQty(name, delta) {
 }
 
 async function stripeCheckout() {
-  if (cart.length === 0) return showToast('Your cart is empty!');
-  const btn = document.querySelector('#cartDrawer button[onclick="stripeCheckout()"]');
-  btn.textContent = '⏳ Processing...';
-  btn.disabled = true;
+  if (cart.length === 0) { toast('Your cart is empty!'); return; }
+  const btn = document.getElementById('stripeBtn');
+  if (btn) { btn.textContent = '⏳ Processing...'; btn.disabled = true; }
   try {
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
