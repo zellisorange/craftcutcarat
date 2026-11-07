@@ -2907,8 +2907,9 @@ function adminShowDept(dept, btn){
   const data = STORE_DATA[dept];
   const custom = JSON.parse(localStorage.getItem('ccc_products')||'[]').filter(p=>p.dept===dept);
   const hidden = getHidden();
+  const promotedNames = new Set(custom.map(p=>p.name));
   const allItems = [
-    ...data.items.map(i=>({...i, custom:false, hidden:hidden.includes(dept+'::'+i.name)})),
+    ...data.items.filter(i=>!promotedNames.has(i.name)).map(i=>({...i, custom:false, hidden:hidden.includes(dept+'::'+i.name)})),
     ...custom
   ];
   document.getElementById('adminMain').innerHTML = `
