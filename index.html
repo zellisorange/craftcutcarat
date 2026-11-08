@@ -2161,6 +2161,8 @@
       <button class="admin-sidebar-btn" onclick="adminShowDept('supplies',this)">⚙️ Supplies</button>
       <button class="admin-sidebar-btn" onclick="adminShowDept('merch',this)">👕 Merch</button>
       <button class="admin-sidebar-btn" onclick="adminShowDept('jewelry',this)">💍 Jewellery</button>
+      <div class="admin-sidebar-label" style="margin-top:1rem;">Tools</div>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('pricecalc',this)">💰 Price Calculator</button>
     </div>
 
     <!-- MAIN CONTENT -->
@@ -3005,6 +3007,72 @@ function adminShowDept(dept, btn){
   adminCurrentDept = dept;
   document.querySelectorAll('.admin-sidebar-btn').forEach(b => b.classList.remove('active'));
   if(btn) btn.classList.add('active');
+
+  if(dept === 'pricecalc'){
+    document.getElementById('adminMain').innerHTML = `
+      <div class="admin-section-header">
+        <div class="admin-section-title">💰 Carat Price Calculator</div>
+      </div>
+      <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;max-width:600px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem;">
+          <div>
+            <label class="field-label">Stone Type</label>
+            <select class="field-input" id="pc_stone">
+              <option value="blue_sapphire_lab">Blue Sapphire (Lab)</option>
+              <option value="ruby_lab">Ruby (Lab)</option>
+              <option value="padparadscha_lab">Padparadscha (Lab)</option>
+              <option value="pink_sapphire_lab">Pink Sapphire (Lab)</option>
+              <option value="white_sapphire_lab">White Sapphire (Lab)</option>
+              <option value="tanzanite_nat">Tanzanite (Natural)</option>
+              <option value="emerald_nat">Emerald (Natural)</option>
+              <option value="blue_topaz_nat">Blue Topaz (Natural)</option>
+              <option value="white_topaz_nat">White Topaz (Natural)</option>
+              <option value="fluorite_nat">Fluorite (Natural)</option>
+              <option value="apatite_nat">Neon Apatite (Natural)</option>
+              <option value="kyanite_nat">Kyanite (Natural)</option>
+              <option value="sunstone_nat">Sunstone (Natural)</option>
+              <option value="amethyst_nat">Amethyst (Natural)</option>
+              <option value="aquamarine_nat">Aquamarine (Natural)</option>
+              <option value="spinel_nat">Spinel (Natural)</option>
+              <option value="garnet_nat">Garnet (Natural)</option>
+              <option value="peridot_nat">Peridot (Natural)</option>
+              <option value="tourmaline_nat">Tourmaline (Natural)</option>
+              <option value="zircon_nat">Zircon (Natural)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Quality / Grade</label>
+            <select class="field-input" id="pc_grade">
+              <option value="commercial">Commercial</option>
+              <option value="good" selected>Good</option>
+              <option value="fine">Fine</option>
+              <option value="gem">Gem Quality</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Weight (carats)</label>
+            <input class="field-input" id="pc_weight" type="number" min="0.01" step="0.01" placeholder="1.50">
+          </div>
+          <div>
+            <label class="field-label">Rough Cost (CAD $)</label>
+            <input class="field-input" id="pc_rough" type="number" min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div>
+            <label class="field-label">Labour Rate ($/hr)</label>
+            <input class="field-input" id="pc_rate" type="number" min="0" step="1" placeholder="35">
+          </div>
+          <div>
+            <label class="field-label">Hours to Cut</label>
+            <input class="field-input" id="pc_hours" type="number" min="0" step="0.5" placeholder="2.0">
+          </div>
+        </div>
+        <button onclick="calcPrice()" style="width:100%;padding:12px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:1rem;">💰 Calculate Price</button>
+        <div id="calcResult"></div>
+      </div>
+    `;
+    return;
+  }
+
   const data = STORE_DATA[dept];
   const custom = JSON.parse(localStorage.getItem('ccc_products')||'[]').filter(p=>p.dept===dept);
   const hidden = getHidden();
@@ -3301,6 +3369,77 @@ function adminPromoteBuiltin(dept, name){
   products.push(newItem);
   localStorage.setItem('ccc_products', JSON.stringify(products));
   adminEditGem(newItem.id);
+}
+
+/* ══ PRICE CALCULATOR ══ */
+function calcPrice(){
+  const BASE = {
+    blue_sapphire_lab:  { commercial:18, good:28, fine:38, gem:55 },
+    ruby_lab:           { commercial:16, good:26, fine:36, gem:50 },
+    padparadscha_lab:   { commercial:28, good:40, fine:55, gem:75 },
+    pink_sapphire_lab:  { commercial:18, good:28, fine:38, gem:52 },
+    white_sapphire_lab: { commercial:12, good:20, fine:30, gem:42 },
+    tanzanite_nat:      { commercial:30, good:48, fine:68, gem:95 },
+    emerald_nat:        { commercial:22, good:38, fine:58, gem:85 },
+    blue_topaz_nat:     { commercial:8,  good:14, fine:22, gem:32 },
+    white_topaz_nat:    { commercial:6,  good:12, fine:18, gem:26 },
+    fluorite_nat:       { commercial:5,  good:9,  fine:14, gem:20 },
+    apatite_nat:        { commercial:8,  good:14, fine:20, gem:28 },
+    kyanite_nat:        { commercial:6,  good:11, fine:16, gem:24 },
+    sunstone_nat:       { commercial:10, good:17, fine:25, gem:36 },
+    amethyst_nat:       { commercial:5,  good:9,  fine:15, gem:22 },
+    aquamarine_nat:     { commercial:14, good:24, fine:36, gem:52 },
+    spinel_nat:         { commercial:20, good:34, fine:52, gem:78 },
+    garnet_nat:         { commercial:8,  good:15, fine:24, gem:36 },
+    peridot_nat:        { commercial:6,  good:11, fine:18, gem:28 },
+    tourmaline_nat:     { commercial:14, good:24, fine:38, gem:58 },
+    zircon_nat:         { commercial:12, good:20, fine:32, gem:48 },
+  };
+  const stone  = document.getElementById('pc_stone').value;
+  const grade  = document.getElementById('pc_grade').value;
+  const weight = parseFloat(document.getElementById('pc_weight').value) || 0;
+  const rough  = parseFloat(document.getElementById('pc_rough').value)  || 0;
+  const rate   = parseFloat(document.getElementById('pc_rate').value)   || 35;
+  const hours  = parseFloat(document.getElementById('pc_hours').value)  || 0;
+  if(!weight){ document.getElementById('calcResult').innerHTML='<p style="color:#F09595;font-size:13px;">⚠️ Enter a carat weight to calculate.</p>'; return; }
+  const basePerCt   = BASE[stone][grade];
+  const marketVal   = +(basePerCt * weight).toFixed(2);
+  const labourCost  = +(rate * hours).toFixed(2);
+  const totalCostIn = +(rough + labourCost).toFixed(2);
+  const suggested   = +(marketVal * 2.5).toFixed(2);
+  const grossMargin = totalCostIn > 0 ? Math.round(((suggested - totalCostIn) / suggested) * 100) : 100;
+  const marginColor = grossMargin >= 60 ? '#6fcf97' : grossMargin >= 35 ? '#EF9F27' : '#F09595';
+  document.getElementById('calcResult').innerHTML = `
+    <div style="border-top:0.5px solid var(--border);padding-top:1rem;margin-top:0.5rem;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);margin-bottom:0.75rem;">Results</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:var(--deep);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Base $/ct</div>
+          <div style="font-size:20px;font-weight:700;color:var(--tz-bright);">$${basePerCt}</div>
+        </div>
+        <div style="background:var(--deep);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Stone Market Value</div>
+          <div style="font-size:20px;font-weight:700;color:var(--tz-bright);">$${marketVal}</div>
+        </div>
+        <div style="background:var(--deep);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Labour Cost</div>
+          <div style="font-size:20px;font-weight:700;color:var(--text);">$${labourCost}</div>
+        </div>
+        <div style="background:var(--deep);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Total Cost In</div>
+          <div style="font-size:20px;font-weight:700;color:var(--text);">$${totalCostIn}</div>
+        </div>
+        <div style="background:rgba(83,74,183,0.15);border:0.5px solid var(--tz-mid);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Suggested Retail</div>
+          <div style="font-size:22px;font-weight:700;color:var(--gold);">$${suggested}</div>
+        </div>
+        <div style="background:rgba(83,74,183,0.15);border:0.5px solid var(--tz-mid);border-radius:var(--radius-sm);padding:12px;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Gross Margin</div>
+          <div style="font-size:22px;font-weight:700;color:${marginColor};">${grossMargin}%</div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 /* ══ GEMCUTTER PRO ══ */
