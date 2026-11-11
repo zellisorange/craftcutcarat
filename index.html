@@ -1533,6 +1533,30 @@
       .admin-listing-actions { width: 100%; justify-content: flex-end; }
       .admin-modal-box { padding: 1.25rem; }
     }
+    /* Sign-in popup above store pages */
+    #authOverlay { z-index: 1300; }
+
+    /* Favorite heart button */
+    .fav-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 0.5px solid rgba(127,119,221,0.5);
+      background: rgba(13,11,26,0.7);
+      color: var(--gold);
+      font-size: 17px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .fav-btn:hover { transform: scale(1.12); background: rgba(83,74,183,0.8); }
   </style>
 </head>
 <body>
@@ -2740,6 +2764,7 @@ function openStorePage(dept) {
         const vidId = item.video ? getYtId(item.video) : null;
         return `
         <div class="gs-fp-card" onclick="openProductModal(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+          <button class="fav-btn" aria-label="Save to favorites" onclick="event.stopPropagation();toggleFavorite(${JSON.stringify(item).replace(/"/g,'&quot;')}, this)">${isFavorite(item.name) ? '⭐' : '☆'}</button>
           ${vidId
             ? `<div class="vid-thumb" data-vid="${vidId}" onclick="event.stopPropagation();loadVid(this)" style="position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;margin-bottom:4px;cursor:pointer;overflow:hidden;">
                 <img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover;">
@@ -3024,6 +3049,38 @@ async function stripeCheckout() {
     toast('❌ ' + err.message);
     if (btn) { btn.textContent = '💳 Checkout with Stripe'; btn.disabled = false; }
   }
+}
+
+/* ══ SAVED ITEMS (favorites, saved for later, wishlists) ══ */
+function savedKey(kind) {
+  if (!currentUser || !currentUser.email) return null;
+  return 'ccc_' + kind + '_' + currentUser.email.toLowerCase();
+}
+function savedGet(kind) {
+  var k = savedKey(kind);
+  if (!k) return [];
+  try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch (e) { return []; }
+}
+function savedSet(kind, list) {
+  var k = savedKey(kind);
+  if (k) localStorage.setItem(k, JSON.stringify(list));
+}
+function isFavorite(name) {
+  return savedGet('favs').some(function (f) { return f.name === name; });
+}
+function toggleFavorite(item, btn) {
+  if (!currentUser) { toast('Sign in to save favorites ✦'); openAuth('login'); return; }
+  var favs = savedGet('favs');
+  var idx = favs.findIndex(function (f) { return f.name === item.name; });
+  if (idx >= 0) {
+    favs.splice(idx, 1);
+    toast('Removed from favorites');
+  } else {
+    favs.push({ name: item.name, icon: item.icon || '💎', sub: item.sub || '', price: item.price, img: item.img || '' });
+    toast('⭐ Saved to favorites');
+  }
+  savedSet('favs', favs);
+  if (btn) btn.textContent = idx >= 0 ? '☆' : '⭐';
 }
 
 function openPolicyPage(tab) {
