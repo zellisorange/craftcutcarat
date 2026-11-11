@@ -2057,7 +2057,10 @@
     <button class="footer-link" onclick="openStorePage('supplies')">Supplies</button>
     <button class="footer-link" onclick="location.href='#ourstory'">Our Story</button>
     <button class="footer-link" onclick="openStoreMenu()">All Departments</button>
-    <button class="footer-link" onclick="openPricePage()" style="color:var(--gold);">💰 Price Guide</button>
+<button class="footer-link" onclick="openPricePage()" style="color:var(--gold);">💰 Price Guide</button>
+    <button class="footer-link" onclick="openPolicyPage('User')">📄 User Agreement</button>
+    <button class="footer-link" onclick="openPolicyPage('Return')">↩️ Return Policy</button>
+    <button class="footer-link" onclick="openPolicyPage('Warranty')">🛡️ Warranty &amp; Insurance</button>
   </div>
   <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;">
     <a href="https://www.instagram.com/craft_cut_carat" target="_blank" style="font-size:12px;color:var(--text-muted);padding:6px 14px;border:0.5px solid var(--border);border-radius:99px;transition:all 0.15s;" onmouseover="this.style.color='var(--tz-bright)';this.style.borderColor='var(--tz-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">📸 Instagram</a>
@@ -2243,6 +2246,57 @@
 </div>
 
 <!-- ══ TOAST ══ -->
+<!-- ══ POLICIES PAGE ══ -->
+<div class="ppc-page" id="policyPage">
+  <div class="ppc-topbar">
+    <button class="ppc-back" onclick="closePolicyPage()">← Back</button>
+    <div class="ppc-topbar-title">📜 Policies</div>
+  </div>
+  <div class="ppc-content">
+    <div class="ppc-hero">
+      <h1 class="ppc-hero-title">Our <em>promises.</em></h1>
+      <p class="ppc-hero-sub">Clear terms for every stone that leaves the Craft Cut Carat bench.</p>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;">
+      <button class="gs-tab active" id="polTabUser" onclick="switchPolicy('User')">📄 User Agreement</button>
+      <button class="gs-tab" id="polTabReturn" onclick="switchPolicy('Return')">↩️ Return Policy</button>
+      <button class="gs-tab" id="polTabWarranty" onclick="switchPolicy('Warranty')">🛡️ Warranty &amp; Insurance</button>
+    </div>
+
+    <div id="polUser" style="font-size:14px;color:var(--text-dim);line-height:1.8;max-width:760px;margin:0 auto;">
+      <h2 class="section-title" style="font-size:30px;">User Agreement</h2>
+      <p><strong style="color:var(--text);">1. Acceptance.</strong> By using craftcutcarat.com, creating an account, or placing an order, you agree to these terms.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">2. Your account.</strong> You are responsible for keeping your login details private and for activity on your account. You must provide accurate information.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">3. Orders and pricing.</strong> All prices are in Canadian dollars (CAD) unless stated. We may correct pricing errors, and an order is confirmed only once payment is accepted.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">4. Product descriptions.</strong> Every gemstone is natural or lab grown as stated in its listing. Colour may look different on your screen than in person, and natural stones vary.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">5. Reviews and content.</strong> Reviews you submit may be edited or removed at our discretion, and are published only after approval.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">6. Ownership.</strong> All photos, videos, text and designs on this site belong to Craft Cut Carat and may not be copied without permission.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">7. Limitation of liability.</strong> To the extent allowed by law, Craft Cut Carat is not liable for indirect or consequential losses arising from use of the site or products.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">8. Governing law.</strong> These terms are governed by the laws of Ontario, Canada.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">9. Contact.</strong> Questions? Reach us through the site or on Instagram @craft_cut_carat.</p>
+    </div>
+
+    <div id="polReturn" class="hidden" style="font-size:14px;color:var(--text-dim);line-height:1.8;max-width:760px;margin:0 auto;">
+      <h2 class="section-title" style="font-size:30px;">Return Policy</h2>
+      <p><strong style="color:var(--text);">14-day returns.</strong> If you are not happy with a stock item, contact us within 14 days of delivery to arrange a return.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">Condition.</strong> Stones must be returned unset, unaltered, and in the same condition and packaging they arrived in.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">Not returnable.</strong> Custom commissions, re-cuts, and special orders cut to your request are final sale. Rough stones, supplies, and merch that have been used are also final sale.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">Return shipping.</strong> You cover return shipping, unless the item arrived damaged, defective, or not as described. In that case we cover it.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">Refunds.</strong> Once we receive and inspect your return, we refund the original payment method within 5 to 10 business days. Original shipping is not refunded unless the return is our error.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">How to start a return.</strong> Contact us with your order details and photos. Please do not ship anything back before we confirm.</p>
+    </div>
+
+    <div id="polWarranty" class="hidden" style="font-size:14px;color:var(--text-dim);line-height:1.8;max-width:760px;margin:0 auto;">
+      <h2 class="section-title" style="font-size:30px;">Warranty &amp; Insurance</h2>
+      <p><strong style="color:var(--text);">Craft Cut Guarantee.</strong> Every finished stone is hand cut and polished on an Ultra Tec VL Classic. We guarantee it against cutting and polishing defects present on arrival, such as scratches, chips, or poor meetpoints.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">30-day coverage.</strong> Report a defect within 30 days of delivery with clear photos. We will re-cut, replace, or refund the stone at our choice.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">Not covered.</strong> Damage from setting or mounting, impact, heat, chemicals or ultrasonic cleaning, normal wear, and natural inclusions or features that are part of the stone.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">Shipping insurance.</strong> Orders are shipped with tracking and insured for their value. If a package is lost or damaged in transit, contact us within 7 days of the expected delivery date and we will file the claim and replace or refund your order.</p>
+      <p style="margin-top:12px;"><strong style="color:var(--text);">Extended protection.</strong> Optional purchase protection for higher-value stones is coming soon.</p>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- ══ SCRIPTS ══ -->
@@ -2942,6 +2996,23 @@ async function stripeCheckout() {
   }
 }
 
+function openPolicyPage(tab) {
+  document.getElementById('policyPage').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchPolicy(tab || 'User');
+}
+function closePolicyPage() {
+  document.getElementById('policyPage').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function switchPolicy(tab) {
+  ['User','Return','Warranty'].forEach(function(t){
+    document.getElementById('pol'+t).classList.toggle('hidden', t !== tab);
+    document.getElementById('polTab'+t).classList.toggle('active', t === tab);
+  });
+  var pg = document.getElementById('policyPage');
+  if (pg) pg.scrollTop = 0;
+}
 function openPricePage() {
   document.getElementById('ppcPage').classList.add('open');
   document.body.style.overflow = 'hidden';
