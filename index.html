@@ -1496,6 +1496,13 @@
 
 #accountOverlay.open { display:flex !important; }
 
+    /* Sign In visible on ALL screens (overrides older hide rules) */
+    #guestNav.hidden { display: none !important; }
+    #guestNav:not(.hidden) { display: flex !important; }
+    #guestNav:not(.hidden) button { display: inline-block !important; }
+    @media (max-width: 768px) {
+      #guestNav .nav-btn { padding: 8px 14px; font-size: 13px; }
+    }
   </style>
 </head>
 <body>
