@@ -13,7 +13,7 @@ exports.handler = async (event) => {
         currency: 'cad',
         product_data: {
           name: item.name,
-          description: item.description || '',
+          description: item.description || undefined,
         },
         unit_amount: Math.round(item.price * 100),
       },
