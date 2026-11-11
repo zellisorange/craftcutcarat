@@ -164,12 +164,14 @@
       position: fixed;
       top: var(--nav-h);
       left: 0; right: 0;
+      bottom: 0;
       background: var(--deep);
       border-bottom: 0.5px solid var(--border);
       padding: 1rem 1.5rem;
       flex-direction: column;
       gap: 4px;
       z-index: 199;
+      overflow-y: auto;
     }
     .nav-drawer.open { display: flex; }
   @media (max-width: 768px) {
