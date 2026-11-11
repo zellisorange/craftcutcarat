@@ -3918,13 +3918,18 @@ function changeQty(name, delta) {
 
 async function stripeCheckout() {
   if (cart.length === 0) { toast('Your cart is empty!'); return; }
+  try {
+    localStorage.setItem('ccc_pending_care', JSON.stringify(
+      cart.filter(i => i.care && careEligible(i.name)).map(i => ({ name: i.name, plan: i.care, qty: i.quantity }))
+    ));
+  } catch (e) {}
   const btn = document.getElementById('stripeBtn');
   if (btn) { btn.textContent = '⏳ Processing...'; btn.disabled = true; }
   try {
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart.map(i => ({ name: i.name, price: i.price, description: i.description || '', quantity: i.quantity })) })
+      body: JSON.stringify({ items: cart.map(i => ({ name: i.name, price: i.price, description: i.description || '', quantity: i.quantity, care: careEligible(i.name) ? (i.care || '') : '' })) })
     });
     const data = await res.json();
     if (data.url) {
