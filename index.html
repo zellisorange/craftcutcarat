@@ -2353,6 +2353,10 @@
     <div id="am_imgpreview" style="margin-top:8px;display:none;">
       <img id="am_imgpreview_img" style="width:100%;max-height:160px;object-fit:contain;border-radius:var(--radius-sm);border:0.5px solid var(--border);">
     </div>
+    <label class="field-label" style="margin-top:12px;">More photos (add as many as you like)</label>
+    <div id="am_extrathumbs" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;"></div>
+    <button type="button" onclick="document.getElementById('am_extrafile').click()" style="margin-top:8px;padding:10px 14px;background:transparent;border:1.5px dashed var(--border-light);border-radius:var(--radius-sm);color:var(--text-muted);font-size:13px;cursor:pointer;width:100%;">➕ Add more photos</button>
+    <input type="file" id="am_extrafile" accept="image/*" multiple style="display:none;" onchange="adminAddExtraPhotos(this)">
     <label class="field-label" style="margin-top:12px;">Gem Video (YouTube URL)</label>
     <input type="text" id="am_video" placeholder="https://www.youtube.com/watch?v=..." style="margin-top:4px;width:100%;box-sizing:border-box;background:var(--input-bg);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text-primary);font-size:14px;">
     <div id="am_videopreview" style="margin-top:8px;display:none;">
@@ -3827,6 +3831,38 @@ function pmLoadReviews(item) {
       if (el) el.innerHTML = 'Reviews could not be loaded right now.';
     });
 }
+function pmPhotos(item){
+  const list = [];
+  if(item.img) list.push(item.img);
+  if(Array.isArray(item.imgs)) item.imgs.forEach(function(u){ if(u && list.indexOf(u) === -1) list.push(u); });
+  return list;
+}
+function pmSwap(src, el){
+  const big = document.getElementById('pmBigImg');
+  if(big) big.src = src;
+  document.querySelectorAll('.pm-thumb').forEach(function(t){ t.style.borderColor = 'transparent'; });
+  if(el) el.style.borderColor = 'var(--tz-bright)';
+}
+function pmMediaHTML(item){
+  const photos = pmPhotos(item);
+  let html = '';
+  if(photos.length){
+    html += '<img id="pmBigImg" src="'+photos[0]+'" style="width:100%;max-height:360px;object-fit:cover;display:block;border-radius:var(--radius) var(--radius) 0 0;">';
+    if(photos.length > 1){
+      html += '<div style="display:flex;gap:8px;padding:10px 12px;overflow-x:auto;background:var(--card);">' + photos.map(function(u,i){
+        return '<img class="pm-thumb" src="'+u+'" onclick="pmSwap(this.src,this)" style="width:64px;height:64px;flex:0 0 auto;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid '+(i===0?'var(--tz-bright)':'transparent')+';">';
+      }).join('') + '</div>';
+    }
+  }
+  if(item.video){
+    const radius = photos.length ? '0' : 'var(--radius) var(--radius) 0 0';
+    html += '<div style="position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:'+radius+';"><iframe src="https://www.youtube-nocookie.com/embed/'+getYtId(item.video)+'?rel=0&modestbranding=1&showinfo=0&enablejsapi=1" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>';
+  }
+  if(!html){
+    html = '<div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--card);border-radius:var(--radius) var(--radius) 0 0;">'+(item.icon||'💎')+'</div>';
+  }
+  return html;
+}
 async function openProductModal(item){
   await openProductModalBase(item);
   pmAddReviews(item);
@@ -3843,9 +3879,7 @@ async function openProductModalBase(item){
   m.innerHTML = `
     <div style="background:var(--surface);border:0.5px solid var(--border-light);border-radius:var(--radius);width:min(560px,95vw);max-height:90vh;overflow-y:auto;">
       <div style="position:relative;">
-        ${item.video ? `<div style="position:relative;width:100%;padding-bottom:56.25%;height:0;border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;"><iframe src="https://www.youtube-nocookie.com/embed/${getYtId(item.video)}?rel=0&modestbranding=1&showinfo=0&enablejsapi=1" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>` :
-        item.img ? `<img src="${item.img}" style="width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0;">` :
-          `<div style="width:100%;height:220px;display:flex;align-items:center;justify-content:center;font-size:80px;background:var(--card);border-radius:var(--radius) var(--radius) 0 0;">${item.icon}</div>`}
+        ${pmMediaHTML(item)}
         <button onclick="document.getElementById('productModal').remove()" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.5);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;backdrop-filter:blur(8px);">✕</button>
       </div>
       <div style="padding:1.75rem;">
@@ -4760,6 +4794,8 @@ function adminNewGem(dept){
   document.getElementById('am_status').value = 'instock';
   document.getElementById('am_img').value = '';
   document.getElementById('am_imgpreview').style.display = 'none';
+  window._extraImgs = [];
+  adminRenderExtraThumbs();
   openAdminModal();
 }
 
@@ -4790,6 +4826,8 @@ function adminEditGem(id){
   document.getElementById('am_status').value = item.status||'instock';
   document.getElementById('am_img').value = item.img||'';
   document.getElementById('am_video').value = item.video||'';
+  window._extraImgs = Array.isArray(item.imgs) ? item.imgs.slice() : [];
+  adminRenderExtraThumbs();
   if(item.img){
     document.getElementById('am_imgpreview').style.display='block';
     document.getElementById('am_imgpreview_img').src=item.img;
@@ -4840,11 +4878,12 @@ async function saveAdminGem(){
   const video  = document.getElementById('am_video')?.value.trim()||'';
   if(!name||!price){ toast('⚠️ Name and price are required!'); return; }
   const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
+  const imgs = (window._extraImgs || []).slice();
   if(adminEditingId){
     const idx = products.findIndex(p=>p.id===adminEditingId);
-    if(idx>-1) products[idx] = {...products[idx], icon,name,sub,desc,price,sale,etsy,status,img,video,custom:true};
+    if(idx>-1) products[idx] = {...products[idx], icon,name,sub,desc,price,sale,etsy,status,img,imgs,video,custom:true};
   } else {
-    products.push({id:(document.getElementById('am_canada')?.checked ? 'CAONL_' : 'ccc_')+Date.now(), dept:adminCurrentDept, icon,name,sub,desc,price,sale,etsy,status,img,video,custom:true});
+    products.push({id:(document.getElementById('am_canada')?.checked ? 'CAONL_' : 'ccc_')+Date.now(), dept:adminCurrentDept, icon,name,sub,desc,price,sale,etsy,status,img,imgs,video,custom:true});
   }
   const videoDataUrl = document.getElementById('am_videopreview_vid')?.dataset.url||'';
   const productId = adminEditingId || products[products.length-1].id;
@@ -4904,6 +4943,60 @@ async function adminDeleteGem(id, dept){
   }
 }
 
+window._extraImgs = [];
+function adminRenderExtraThumbs(){
+  const box = document.getElementById('am_extrathumbs');
+  if(!box) return;
+  box.innerHTML = (window._extraImgs||[]).map(function(u,i){
+    return '<div style="position:relative;width:72px;height:72px;"><img src="'+u+'" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:0.5px solid var(--border);"><button type="button" onclick="adminRemoveExtraPhoto('+i+')" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#c0392b;color:#fff;font-size:12px;cursor:pointer;">✕</button></div>';
+  }).join('');
+}
+function adminRemoveExtraPhoto(i){
+  window._extraImgs.splice(i,1);
+  adminRenderExtraThumbs();
+}
+async function adminAddExtraPhotos(input){
+  const files = Array.from(input.files || []);
+  input.value = '';
+  for(let n=0; n<files.length; n++){
+    toast('⏳ Uploading photo '+(n+1)+' of '+files.length+'...');
+    try {
+      const fileData = await new Promise(function(resolve, reject){
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = function(e){
+          const im = new Image();
+          im.onerror = reject;
+          im.onload = function(){
+            const scale = Math.min(1, 1600 / Math.max(im.width, im.height));
+            const c = document.createElement('canvas');
+            c.width = Math.round(im.width * scale);
+            c.height = Math.round(im.height * scale);
+            c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+            resolve(c.toDataURL('image/jpeg', 0.85));
+          };
+          im.src = e.target.result;
+        };
+        reader.readAsDataURL(files[n]);
+      });
+      const resp = await fetch('/.netlify/functions/upload-media', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ fileData, fileName: files[n].name, resourceType:'image' })
+      });
+      const result = await resp.json();
+      if(result.ok && result.url){
+        window._extraImgs.push(result.url);
+        adminRenderExtraThumbs();
+      } else {
+        toast('⚠️ Photo failed: '+(result.error||'unknown'));
+      }
+    } catch(e) {
+      toast('⚠️ Photo error: '+e.message);
+    }
+  }
+  toast('Done adding photos');
+}
 function previewAdminImg(input){ handleAdminFilePick(input,'img'); }
 function previewAdminVideo(input){ handleAdminFilePick(input,'video'); }
 
