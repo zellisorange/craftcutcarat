@@ -768,8 +768,9 @@
 
    .hidden { display: none !important; }
    #guestNav.hidden { display: flex !important; }
-   @media (max-width: 768px) {
+   @media only screen and (max-width: 1024px) {
      #guestNav { display: none !important; }
+     #guestNav * { display: none !important; }
    }
 
     /* ══ ADMIN PANEL ══ */
