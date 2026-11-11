@@ -3171,6 +3171,43 @@ function pwSave() {
   toast('🛡️ Purchase registered ✦');
   acctShow('warranties');
 }
+(function pwHandleCheckoutReturn() {
+  var status = new URLSearchParams(window.location.search).get('payment');
+  if (status === 'cancelled') {
+    try { localStorage.removeItem('ccc_pending_care'); } catch (e) {}
+    return;
+  }
+  if (status !== 'success') return;
+  var tries = 0;
+  var timer = setInterval(function () {
+    tries++;
+    if (!(typeof currentUser !== 'undefined' && currentUser && currentUser.email)) {
+      if (tries > 40) clearInterval(timer);
+      return;
+    }
+    clearInterval(timer);
+    var pending = [];
+    try { pending = JSON.parse(localStorage.getItem('ccc_pending_care') || '[]'); } catch (e) {}
+    if (!pending.length) return;
+    var list = savedGet('warranties');
+    var today = new Date().toISOString().slice(0, 10);
+    pending.forEach(function (p) {
+      for (var n = 0; n < (p.qty || 1); n++) {
+        list.push({
+          id: 'pw_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+          product: p.name,
+          deliveryDate: today,
+          orderNo: '',
+          plan: p.plan,
+          auto: true
+        });
+      }
+    });
+    savedSet('warranties', list);
+    try { localStorage.removeItem('ccc_pending_care'); } catch (e) {}
+    toast('🛡️ Extended Care added to My Warranties ✦');
+  }, 250);
+})();
 function pwDelete(i) {
   if (!confirm('Remove this registered purchase?')) return;
   var list = savedGet('warranties');
