@@ -3120,6 +3120,11 @@ ACCT_TABS.warranties = function () {
       <div style="font-size:13px;color:#6B6499;margin-top:6px;line-height:1.7;">
         Delivered ${acctEsc(w.deliveryDate)} · Covered until ${pwEnd(w).toLocaleDateString()}${w.orderNo ? ' · Order ' + acctEsc(w.orderNo) : ''}
       </div>
+         ${w.plan && PW_PLANS[w.plan]
+        ? '<div style="margin-top:10px;font-size:13px;color:#3C3489;font-weight:600;">✨ ' + PW_PLANS[w.plan].label + ' active</div>'
+        : (left >= 0
+          ? '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><button class="acct-btn" onclick="pwBuyPlan(' + i + ',\'1yr\')">Add 1 year · $90</button><button class="acct-btn" onclick="pwBuyPlan(' + i + ',\'3yr\')">Add 3 years · $250</button></div>'
+          : '')}
       <button class="acct-btn danger" style="margin-top:10px;" onclick="pwDelete(${i})">Remove</button>
     </div>`;
   }).join('') : '<div class="acct-empty">No registered purchases yet. Add one below to track your coverage.</div>';
