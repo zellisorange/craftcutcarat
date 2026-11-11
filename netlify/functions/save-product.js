@@ -22,6 +22,10 @@ exports.handler = async (event) => {
     'Content-Type': 'application/json'
   };
 
+  if (!process.env.REVIEW_ADMIN_TOKEN || (event.headers['x-admin-token'] || '') !== process.env.REVIEW_ADMIN_TOKEN) {
+    return { statusCode: 401, headers, body: JSON.stringify({ ok: false, error: 'Not authorized' }) };
+  }
+
   try {
     const body = JSON.parse(event.body);
     const { product, imageData, videoData, deleteId, allProducts } = body;

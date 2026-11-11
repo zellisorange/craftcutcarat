@@ -3913,10 +3913,11 @@ async function deleteGem(id, dept){
     openStorePage(targetDept);
   }
   try {
-    await fetch('/.netlify/functions/save-product', {
-      method:'POST', headers:{'Content-Type':'application/json'},
+    const delResp = await fetch('/.netlify/functions/save-product', {
+      method:'POST', headers:{'Content-Type':'application/json','x-admin-token':adminRvToken(false)},
       body: JSON.stringify({ deleteId: id, allProducts: updated })
     });
+    if(delResp.status === 401){ sessionStorage.removeItem('ccc_rv_token'); toast('⚠️ Wrong admin token. Deleted locally only.'); return; }
     toast('✅ Gem deleted globally!');
   } catch(e) { toast('⚠️ Deleted locally only'); }
 }
@@ -4854,9 +4855,10 @@ async function saveAdminGem(){
     const gem = products.find(p=>p.id===(adminEditingId||productId)) || {};
     const resp = await fetch('/.netlify/functions/save-product', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type':'application/json','x-admin-token':adminRvToken(false)},
       body: JSON.stringify({ product: gem, imageData, videoData })
     });
+    if(resp.status === 401){ sessionStorage.removeItem('ccc_rv_token'); }
     const result = await resp.json();
     if(result.ok){
       if(result.product.img) gem.img = result.product.img;
