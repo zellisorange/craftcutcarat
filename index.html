@@ -1574,8 +1574,7 @@
 
 <div class="nav-right">
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:center;">
-      <div id="guestNav" style="display:flex;gap:8px;align-items:center;">
-        <button class="nav-btn primary" onclick="openAuth('login')">Sign in</button>
+      <div id="guestNav" style="display:none;">
       </div>
       <button onclick="openCart()" style="position:relative;padding:10px 22px;border:1.5px solid var(--border-light);border-radius:var(--radius-sm);background:transparent;color:var(--text-dim);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--card)'" onmouseout="this.style.background='transparent'">
         🛒 Cart
@@ -1742,6 +1741,7 @@
   <button class="nav-link" onclick="openStoreMenu()">🛒 All Departments</button>
   <button class="nav-link" onclick="location.href='#ourstory'">Our Story</button>
   <button class="nav-link" onclick="openPricePage();toggleDrawer();" style="color:var(--gold);">💰 Price Guide</button>
+  <button class="nav-link" onclick="openAuth('login');toggleDrawer();">🔐 Sign In</button>
   <div style="height:0.5px;background:var(--border);margin:8px 0;"></div>
   <a href="https://www.etsy.com/shop/craftcutcarat" target="_blank" style="display:block;padding:7px 13px;background:var(--gold);color:#1A1640;border-radius:var(--radius-sm);font-size:13px;font-weight:600;text-align:center;text-decoration:none;margin-bottom:6px;">🛒 Buy on Etsy</a>
   <button class="nav-link" onclick="openAuth('login')">Sign in</button>
