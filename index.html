@@ -2289,6 +2289,7 @@
       <div class="admin-sidebar-label" style="margin-top:1rem;">Moderation</div>
             <button class="admin-sidebar-btn" onclick="adminShowReviews(this)">✍️ Reviews</button>
       <button class="admin-sidebar-btn" onclick="adminShowWarranties(this)">🛡️ Customer Warranties</button>
+      <button class="admin-sidebar-btn" onclick="adminShowReceipts(this)">🧾 Sales Receipts</button>
       <div class="admin-sidebar-label" style="margin-top:1rem;">Tools</div>
       <button class="admin-sidebar-btn" onclick="adminShowDept('pricecalc',this)">💰 Price Calculator</button>
     </div>
@@ -4572,6 +4573,146 @@ function adminWSave(idx) {
       }
     })
     .catch(function () { toast('⚠️ Could not save'); });
+}
+/* ══ ADMIN: SALES RECEIPTS ══ */
+var adminRSort = 'newest';
+var adminRFilter = 'all';
+var adminRQuery = '';
+function adminRMoney(n, cur) {
+  return '$' + Number(n || 0).toFixed(2) + (cur && cur !== 'CAD' ? ' ' + cur : '');
+}
+function adminShowReceipts(btn) {
+  document.querySelectorAll('.admin-sidebar-btn').forEach(function (b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var main = document.getElementById('adminMain');
+  var token = adminRvToken(false);
+  if (!token) {
+    main.innerHTML = '<div class="admin-section-title">🧾 Sales Receipts</div><p style="color:var(--text-muted);font-size:13px;margin:12px 0;">A token is needed to view sales.</p><button class="admin-add-btn" onclick="adminShowReceipts(null)">Enter token</button>';
+    return;
+  }
+  main.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Loading every sale from Stripe…</p>';
+  fetch('/.netlify/functions/list-receipts', { headers: { 'x-admin-token': token } })
+    .then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); })
+    .then(function (res) {
+      if (res.status === 401) {
+        sessionStorage.removeItem('ccc_rv_token');
+        main.innerHTML = '<div class="admin-section-title">🧾 Sales Receipts</div><p style="color:#F09595;font-size:13px;margin:12px 0;">That token was not accepted.</p><button class="admin-add-btn" onclick="adminRvToken(true);adminShowReceipts(null)">Try again</button>';
+        return;
+      }
+      if (!res.d || !res.d.receipts) {
+        main.innerHTML = '<div class="admin-section-title">🧾 Sales Receipts</div><p style="color:#F09595;font-size:13px;margin:12px 0;">' + acctEsc((res.d && res.d.error) || 'Could not load sales') + '</p>';
+        return;
+      }
+      window._adminReceipts = res.d.receipts;
+      window._adminReceiptsTruncated = !!res.d.truncated;
+      adminRRender();
+    })
+    .catch(function () {
+      main.innerHTML = '<p style="color:#F09595;font-size:13px;">Could not load sales.</p>';
+    });
+}
+function adminRSetFilter(f) { adminRFilter = f; adminRRender(); }
+function adminRSetSort(s) { adminRSort = s; adminRRender(); }
+function adminRSetQuery(q) { adminRQuery = q; adminRRenderList(); }
+function adminRMatches(r, filter) {
+  var now = Date.now();
+  if (filter === 'recent') return now - r.createdAt < 30 * 86400000;
+  if (filter === 'year') return r.createdAt >= new Date(new Date().getFullYear(), 0, 1).getTime();
+  if (filter === 'old') return now - r.createdAt > 5 * 365.25 * 86400000;
+  if (filter === 'refunded') return r.refunded > 0;
+  return true;
+}
+function adminRFiltered() {
+  var q = adminRQuery.trim().toLowerCase();
+  var items = (window._adminReceipts || []).filter(function (r) {
+    if (!adminRMatches(r, adminRFilter)) return false;
+    if (q) {
+      var hay = [r.customerName, r.email, r.phone, r.id, Number(r.total).toFixed(2), r.items.map(function (i) { return i.name; }).join(' ')].join(' ').toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  items.sort(function (a, b) {
+    if (adminRSort === 'az') return (a.customerName || a.email).toLowerCase().localeCompare((b.customerName || b.email).toLowerCase());
+    if (adminRSort === 'oldest') return a.createdAt - b.createdAt;
+    if (adminRSort === 'biggest') return b.total - a.total;
+    return b.createdAt - a.createdAt;
+  });
+  return items;
+}
+function adminRRender() {
+  var main = document.getElementById('adminMain');
+  var all = window._adminReceipts || [];
+  function pill(label, on, js) {
+    return '<button onclick="' + js + '" style="padding:6px 14px;border-radius:99px;border:0.5px solid ' + (on ? 'var(--tz-bright)' : 'var(--border)') + ';background:' + (on ? 'rgba(83,74,183,0.25)' : 'transparent') + ';color:var(--text);font-size:12px;cursor:pointer;">' + label + '</button>';
+  }
+  var filters = [['all', 'All'], ['recent', 'Last 30 days'], ['year', 'This year'], ['old', 'Older than 5 years'], ['refunded', 'Refunded']].map(function (f) {
+    var n = all.filter(function (r) { return adminRMatches(r, f[0]); }).length;
+    return pill(f[1] + ' (' + n + ')', adminRFilter === f[0], "adminRSetFilter('" + f[0] + "')");
+  }).join('');
+  var sorts = [['newest', 'Newest'], ['oldest', 'Oldest'], ['az', 'A to Z'], ['biggest', 'Biggest sale']].map(function (s) {
+    return pill(s[1], adminRSort === s[0], "adminRSetSort('" + s[0] + "')");
+  }).join('');
+  main.innerHTML = '<div class="admin-section-header"><div class="admin-section-title">🧾 Sales Receipts</div><button class="admin-add-btn" onclick="adminRDownload()">⬇️ Download CSV</button></div>' +
+    '<p style="color:var(--text-muted);font-size:12px;margin:0 0 12px;">Every paid order from your store, pulled from Stripe. This list updates by itself.</p>' +
+    (window._adminReceiptsTruncated ? '<p style="color:var(--gold);font-size:12px;margin:0 0 12px;">⚠️ Too many sales to load in one go, so the oldest ones are not shown yet. Tell Claude and we will extend this.</p>' : '') +
+    '<input id="rSearch" value="' + acctEsc(adminRQuery) + '" oninput="adminRSetQuery(this.value)" placeholder="Search by customer, email, stone, order number or amount…" style="width:100%;padding:10px 12px;margin-bottom:12px;border-radius:8px;border:0.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">' + filters + '</div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"><span style="font-size:12px;color:var(--text-muted);align-self:center;">Sort:</span>' + sorts + '</div>' +
+    '<div id="rSummary" style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;"></div>' +
+    '<div id="rList"></div>';
+  adminRRenderList();
+}
+function adminRRenderList() {
+  var el = document.getElementById('rList');
+  if (!el) return;
+  var items = adminRFiltered();
+  var gross = 0, refunded = 0;
+  items.forEach(function (r) { gross += r.total; refunded += r.refunded; });
+  var sum = document.getElementById('rSummary');
+  if (sum) sum.textContent = items.length + ' sale' + (items.length === 1 ? '' : 's') + ' · ' + adminRMoney(gross) + ' total' + (refunded > 0 ? ' · ' + adminRMoney(refunded) + ' refunded · ' + adminRMoney(gross - refunded) + ' net' : '');
+  el.innerHTML = items.length ? items.map(function (r) {
+    var who = r.customerName || r.email || 'Unknown customer';
+    var lines = r.items.map(function (i) {
+      return '<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--text-dim);"><span>' + acctEsc(i.name) + (i.qty > 1 ? ' ×' + i.qty : '') + '</span><span>' + adminRMoney(i.amount) + '</span></div>';
+    }).join('');
+    var refundBadge = r.refunded > 0 ? ' <span class="status-badge soldout">' + (r.refunded >= r.total ? 'Refunded' : 'Partly refunded') + '</span>' : '';
+    var recBtn = r.receiptUrl ? '<button class="admin-action-btn sale" data-url="' + acctEsc(r.receiptUrl) + '" onclick="window.open(this.getAttribute(\'data-url\'),\'_blank\')">🧾 Open Stripe receipt</button>' : '<span style="font-size:12px;color:var(--text-muted);">No receipt link available</span>';
+    return '<div class="admin-listing" style="flex-direction:column;align-items:stretch;gap:8px;">' +
+      '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;"><div class="admin-listing-name">' + acctEsc(who) + refundBadge + '</div><div style="font-weight:700;color:var(--tz-bright);">' + adminRMoney(r.total, r.currency) + '</div></div>' +
+      '<div class="admin-listing-sub">' + new Date(r.createdAt).toLocaleString() + (r.email ? ' · ' + acctEsc(r.email) : '') + (r.phone ? ' · ' + acctEsc(r.phone) : '') + ' · Order …' + acctEsc(String(r.id).slice(-8)) + '</div>' +
+      lines +
+      '<div class="admin-listing-sub">Subtotal ' + adminRMoney(r.subtotal) + ' · Tax ' + adminRMoney(r.tax) + ' · Shipping ' + adminRMoney(r.shipping) + (r.refunded > 0 ? ' · Refunded ' + adminRMoney(r.refunded) : '') + '</div>' +
+      (r.address ? '<div class="admin-listing-sub">📦 ' + acctEsc(r.shipTo ? r.shipTo + ', ' : '') + acctEsc(r.address) + '</div>' : '') +
+      '<div class="admin-listing-actions" style="flex-wrap:wrap;">' + recBtn + '</div></div>';
+  }).join('') : '<p style="color:var(--text-muted);font-size:13px;margin-top:12px;">No sales match.</p>';
+}
+function adminRDownload() {
+  var items = adminRFiltered();
+  if (!items.length) { toast('Nothing to download'); return; }
+  function cell(v) {
+    var s = String(v == null ? '' : v);
+    if (/^[=+\-@]/.test(s)) s = "'" + s;
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  var head = ['Date', 'Order ID', 'Customer', 'Email', 'Phone', 'Items', 'Subtotal', 'Tax', 'Shipping', 'Total', 'Currency', 'Refunded', 'Ship to', 'Receipt link'];
+  var lines = [head.map(cell).join(',')];
+  items.forEach(function (r) {
+    lines.push([
+      new Date(r.createdAt).toLocaleDateString('en-CA'), r.id, r.customerName, r.email, r.phone,
+      r.items.map(function (i) { return i.name + ' x' + i.qty; }).join('; '),
+      r.subtotal.toFixed(2), r.tax.toFixed(2), r.shipping.toFixed(2), r.total.toFixed(2), r.currency,
+      r.refunded.toFixed(2), (r.shipTo ? r.shipTo + ', ' : '') + r.address, r.receiptUrl
+    ].map(cell).join(','));
+  });
+  var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'craft-cut-carat-sales-' + new Date().toLocaleDateString('en-CA') + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('⬇️ CSV downloaded');
 }
 function adminNewGem(dept){
   adminEditingId = null;
