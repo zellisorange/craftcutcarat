@@ -2563,14 +2563,22 @@ function switchAuth(mode){
   document.getElementById('authErr').classList.remove('show');
 }
 function showErr(msg){ const e=document.getElementById('authErr'); e.textContent=msg; e.classList.add('show'); }
-function doLogin(){
+async function doLogin(){
   const email=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPass').value;
   if(!email||!pass){ showErr('Please fill in all fields.'); return; }
-  if(pass==='Maylamoo400$'){
-    loginUser({name:'Admin', email, isAdmin:true});
-    return;
+  if(pass!=='gems'){
+    try {
+      const r = await fetch('/.netlify/functions/admin-login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email: email, password: pass }) });
+      const d = await r.json();
+      if(d.ok && d.token){
+        sessionStorage.setItem('ccc_rv_token', d.token);
+        loginUser({name:'Admin', email, isAdmin:true});
+        return;
+      }
+    } catch(e) {}
   }
+
   if(pass!=='gems'){ showErr('Incorrect password. Demo password is: gems'); return; }
   const name=email.split('@')[0];
   loginUser({name:name.charAt(0).toUpperCase()+name.slice(1), email, isAdmin:false});
