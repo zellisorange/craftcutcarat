@@ -2196,6 +2196,7 @@
       <span style="font-size:14px;color:var(--text-muted);">Total</span>
       <span id="cartTotal" style="font-size:20px;font-weight:700;color:var(--tz-bright);">$0.00 CAD</span>
     </div>
+    <div id="cartShipNote" style="display:none;font-size:12px;line-height:1.5;color:var(--text-muted);margin:-0.5rem 0 1rem;"></div>
     <button id="stripeBtn" onclick="stripeCheckout()" style="width:100%;padding:14px;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">💳 Checkout with Stripe</button>
     <button onclick="clearCart()" style="width:100%;margin-top:8px;padding:10px;background:transparent;color:var(--text-muted);border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;">Clear cart</button>
   </div>
@@ -4041,6 +4042,18 @@ function renderCart() {
   const container = document.getElementById('cartItems');
   const total = cart.reduce((t, i) => t + i.price * i.quantity + careCost(i), 0);
   document.getElementById('cartTotal').textContent = '$' + total.toFixed(2) + ' CAD';
+  const shipNote = document.getElementById('cartShipNote');
+  if (shipNote) {
+    const goods = cart.reduce((t, i) => t + i.price * i.quantity, 0);
+    if (cart.length === 0) {
+      shipNote.style.display = 'none';
+    } else {
+      shipNote.style.display = 'block';
+      shipNote.textContent = goods <= 100
+        ? 'Shipping is added at checkout. Canada Post Xpresspost, tracked, with up to $100 coverage included.'
+        : 'Shipping is added at checkout. For orders over $100 we will confirm insured shipping with you before your order ships.';
+    }
+  }
   if (cart.length === 0) {
     container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:3rem 0;font-size:14px;">Your cart is empty</div>';
     return;
