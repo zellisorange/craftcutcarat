@@ -1557,6 +1557,43 @@
       transition: transform 0.15s, background 0.15s;
     }
     .fav-btn:hover { transform: scale(1.12); background: rgba(83,74,183,0.8); }
+    /* ══ ACCOUNT PAGE (white) ══ */
+    .acct-page { display:none; position:fixed; inset:0; z-index:950; background:#ffffff; color:#1A1640; overflow-y:auto; font-family:var(--font-body); }
+    .acct-page.open { display:block; }
+    .acct-top { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:14px; height:60px; padding:0 1.5rem; background:#ffffff; border-bottom:1px solid #E0DEFA; }
+    .acct-back { padding:7px 14px; border:1px solid #CFCBF0; border-radius:8px; background:#fff; color:#3C3489; font-size:13px; cursor:pointer; }
+    .acct-back:hover { background:#F5F4FF; }
+    .acct-title { font-family:var(--font-display); font-size:24px; color:#1A1640; }
+    .acct-layout { display:flex; max-width:1100px; margin:0 auto; padding:1.5rem; gap:2rem; align-items:flex-start; }
+    .acct-side { width:230px; flex-shrink:0; display:flex; flex-direction:column; gap:4px; position:sticky; top:84px; }
+    .acct-tab { text-align:left; padding:11px 14px; border:none; border-radius:8px; background:transparent; color:#3C3489; font-size:14px; cursor:pointer; }
+    .acct-tab:hover { background:#F5F4FF; }
+    .acct-tab.active { background:#EEEDFE; font-weight:600; }
+    .acct-main { flex:1; min-width:0; }
+    .acct-h { font-family:var(--font-display); font-size:30px; font-weight:500; margin-bottom:4px; color:#1A1640; }
+    .acct-sub { font-size:13px; color:#6B6499; margin-bottom:1.25rem; }
+    .acct-card { background:#ffffff; border:1px solid #E0DEFA; border-radius:12px; padding:1.25rem; margin-bottom:12px; }
+    .acct-label { display:block; font-size:12px; color:#6B6499; margin:12px 0 5px; }
+    .acct-input { width:100%; padding:10px 12px; border:1px solid #CFCBF0; border-radius:8px; font-size:14px; font-family:var(--font-body); color:#1A1640; background:#ffffff; outline:none; }
+    .acct-input:focus { border-color:#534AB7; }
+    .acct-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .acct-btn { padding:10px 18px; border:none; border-radius:8px; background:#534AB7; color:#ffffff; font-size:14px; font-weight:500; cursor:pointer; margin-top:14px; }
+    .acct-btn:hover { background:#3C3489; }
+    .acct-btn.ghost { background:transparent; color:#3C3489; border:1px solid #CFCBF0; }
+    .acct-btn.danger { background:#ffffff; color:#C0243B; border:1px solid #F0B7BF; }
+    .acct-badge { display:inline-block; padding:2px 10px; border-radius:99px; font-size:11px; font-weight:600; }
+    .acct-badge.pending { background:#FFF4E0; color:#8B5E00; }
+    .acct-badge.approved { background:#E3F6EC; color:#1B7A4B; }
+    .acct-badge.rejected { background:#FDE7EA; color:#C0243B; }
+    .acct-empty { color:#6B6499; font-size:14px; padding:1.5rem; text-align:center; border:1px dashed #CFCBF0; border-radius:12px; }
+    .acct-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; }
+    .acct-check { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#1A1640; margin-top:12px; cursor:pointer; }
+    @media (max-width:768px) {
+      .acct-layout { flex-direction:column; padding:1rem; gap:1rem; }
+      .acct-side { width:100%; flex-direction:row; overflow-x:auto; position:static; }
+      .acct-tab { white-space:nowrap; flex-shrink:0; }
+      .acct-row { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
@@ -2351,6 +2388,28 @@
   </div>
 </div>
 
+<!-- ══ MY ACCOUNT PAGE ══ -->
+<div class="acct-page" id="acctPage">
+  <div class="acct-top">
+    <button class="acct-back" onclick="closeAcctPage()">← Back to shop</button>
+    <div class="acct-title">👤 My Account</div>
+    <button class="acct-back" style="margin-left:auto;" onclick="logout();closeAcctPage();">Sign out</button>
+  </div>
+  <div class="acct-layout">
+    <div class="acct-side" id="acctSide">
+      <button class="acct-tab active" data-tab="profile" onclick="acctShow('profile')">👤 Profile</button>
+      <button class="acct-tab" data-tab="contact" onclick="acctShow('contact')">📍 Contact &amp; Address</button>
+      <button class="acct-tab" data-tab="cards" onclick="acctShow('cards')">💳 Payment Cards</button>
+      <button class="acct-tab" data-tab="favorites" onclick="acctShow('favorites')">⭐ Favorites</button>
+      <button class="acct-tab" data-tab="wishlists" onclick="acctShow('wishlists')">🎁 Wishlists</button>
+      <button class="acct-tab" data-tab="reviews" onclick="acctShow('reviews')">✍️ My Reviews</button>
+      <button class="acct-tab" data-tab="warranties" onclick="acctShow('warranties')">🛡️ My Warranties</button>
+      <button class="acct-tab" data-tab="security" onclick="acctShow('security')">🔒 Password &amp; Security</button>
+    </div>
+    <div class="acct-main" id="acctMain"></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <!-- ══ SCRIPTS ══ -->
@@ -2497,7 +2556,96 @@ function logout(){
   applyAuth();
   toast('Signed out. See you at the bench.');
 }
-function openAccount(){
+/* ══ MY ACCOUNT PAGE ══ */
+var ACCT_TABS = {};
+function acctEsc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+function profGet() {
+  if (!currentUser || !currentUser.email) return {};
+  try { return JSON.parse(localStorage.getItem('ccc_profile_' + currentUser.email.toLowerCase()) || '{}'); } catch (e) { return {}; }
+}
+function profSet(p) {
+  if (currentUser && currentUser.email) localStorage.setItem('ccc_profile_' + currentUser.email.toLowerCase(), JSON.stringify(p));
+}
+function openAcctPage(tab) {
+  document.getElementById('acctPage').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  acctShow(tab || 'profile');
+}
+function closeAcctPage() {
+  document.getElementById('acctPage').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function acctShow(tab) {
+  document.querySelectorAll('#acctSide .acct-tab').forEach(function (b) {
+    b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+  });
+  var fn = ACCT_TABS[tab];
+  document.getElementById('acctMain').innerHTML = fn
+    ? fn()
+    : '<div class="acct-h">Coming soon</div><div class="acct-sub">This section is being built.</div>';
+  document.getElementById('acctPage').scrollTop = 0;
+}
+function acctTypeChange() {
+  var t = document.querySelector('input[name="acctType"]:checked');
+  document.getElementById('acctBizFields').style.display = (t && t.value === 'business') ? 'block' : 'none';
+}
+ACCT_TABS.profile = function () {
+  var p = profGet();
+  var u = currentUser || {};
+  var type = p.accountType || '';
+  return `
+    <div class="acct-h">Profile</div>
+    <div class="acct-sub">Your details and preferences.</div>
+    ${type ? '' : `<div class="acct-card" style="background:#F5F4FF;"><strong>Welcome! Let's finish setting up your account.</strong><br><span style="font-size:13px;color:#6B6499;">Tell us how you'll be using Craft Cut Carat.</span></div>`}
+    <div class="acct-card">
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px;">Is this a business or personal account?</div>
+      <label class="acct-check"><input type="radio" name="acctType" value="personal" ${type === 'personal' ? 'checked' : ''} onchange="acctTypeChange()"> Personal</label>
+      <label class="acct-check"><input type="radio" name="acctType" value="business" ${type === 'business' ? 'checked' : ''} onchange="acctTypeChange()"> Business (jeweller, retailer, reseller)</label>
+      <div id="acctBizFields" style="display:${type === 'business' ? 'block' : 'none'};">
+        <label class="acct-label">Business name</label>
+        <input class="acct-input" id="pf_biz" value="${acctEsc(p.bizName)}">
+        <label class="acct-label">GST/HST number (optional)</label>
+        <input class="acct-input" id="pf_tax" value="${acctEsc(p.taxId)}">
+      </div>
+    </div>
+    <div class="acct-card">
+      <label class="acct-label" style="margin-top:0;">Display name</label>
+      <input class="acct-input" id="pf_name" value="${acctEsc(u.name)}">
+      <label class="acct-label">Email (your sign-in)</label>
+      <input class="acct-input" value="${acctEsc(u.email)}" disabled style="background:#F5F4FF;">
+    </div>
+    <div class="acct-card">
+      <div style="font-size:14px;font-weight:600;">Email communications</div>
+      <label class="acct-check"><input type="checkbox" id="pf_optin" ${p.emailOptIn ? 'checked' : ''}> Yes, email me about new stones, restocks and sales. You can change this any time.</label>
+    </div>
+    <button class="acct-btn" onclick="acctSaveProfile()">Save profile</button>
+  `;
+};
+function acctSaveProfile() {
+  var typeEl = document.querySelector('input[name="acctType"]:checked');
+  if (!typeEl) { toast('Please choose Personal or Business'); return; }
+  var name = document.getElementById('pf_name').value.trim();
+  if (!name) { toast('Please enter a display name'); return; }
+  var p = profGet();
+  p.accountType = typeEl.value;
+  p.bizName = document.getElementById('pf_biz').value.trim();
+  p.taxId = document.getElementById('pf_tax').value.trim();
+  if (p.accountType === 'business' && !p.bizName) { toast('Please enter your business name'); return; }
+  p.emailOptIn = document.getElementById('pf_optin').checked;
+  profSet(p);
+  currentUser.name = name;
+  localStorage.setItem('gg_user', JSON.stringify(currentUser));
+  applyAuth();
+  toast('Profile saved ✦');
+  acctShow('profile');
+}
+function openAccount() {
+  if (!currentUser) { openAuth('login'); return; }
+  openAcctPage();
+}
+function openAccountOld(){
   if(!currentUser){ openAuth('login'); return; }
   document.getElementById('accountOverlay').classList.add('open');
   document.getElementById('accName').value = currentUser.name;
