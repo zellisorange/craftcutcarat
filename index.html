@@ -4886,12 +4886,22 @@ async function saveAdminGem(){
   }
 }
 
-function adminDeleteGem(id, dept){
+async function adminDeleteGem(id, dept){
   if(!confirm('Delete this gem?')) return;
   const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
   localStorage.setItem('ccc_products', JSON.stringify(products.filter(p=>p.id!==id)));
   adminShowDept(dept, null);
-  toast('Gem deleted.');
+  try {
+    const resp = await fetch('/.netlify/functions/save-product', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-token':adminRvToken(false)},
+      body: JSON.stringify({ deleteId: id })
+    });
+    const data = await resp.json();
+    toast(data.ok ? 'Gem deleted.' : '⚠️ Removed locally, server said: ' + (data.error || 'failed'));
+  } catch(e) {
+    toast('⚠️ Removed locally only (offline)');
+  }
 }
 
 function previewAdminImg(input){ handleAdminFilePick(input,'img'); }

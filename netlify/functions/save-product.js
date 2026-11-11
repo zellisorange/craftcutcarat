@@ -30,9 +30,15 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     const { product, imageData, videoData, deleteId, allProducts } = body;
 
-    if (deleteId && allProducts) {
+    if (deleteId) {
       const store2 = getStore({ name: 'galaxy-gems-products', siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_ACCESS_TOKEN, consistency: 'strong' });
-      await store2.set('products.json', JSON.stringify(allProducts));
+      let current = [];
+      try {
+        const existing2 = await store2.get('products.json', { type: 'text' });
+        if (existing2) current = JSON.parse(existing2);
+      } catch(e) {}
+      const remaining = current.filter(function(p){ return p.id !== deleteId; });
+      await store2.set('products.json', JSON.stringify(remaining));
       return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
     }
 
