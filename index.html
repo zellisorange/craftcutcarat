@@ -176,6 +176,8 @@
       .nav-links { display: none; }
       .story-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
       .calc-grid { grid-template-columns: 1fr; gap: 10px; margin-bottom: 1rem; }
+      .nav-right { justify-content: center; padding: 4px 0; }
+      #guestNav { flex-direction: row; gap: 6px; }
     }
   .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
   .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
@@ -1565,7 +1567,7 @@
   </div>
 
   <div class="nav-right">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:center;"></div>
       <div id="guestNav" style="display:flex;gap:8px;align-items:center;">
         <button class="nav-btn primary" onclick="openAuth('login')">Sign in</button>
       </div>
