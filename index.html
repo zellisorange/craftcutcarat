@@ -3031,12 +3031,72 @@ function acctRenderReviews(list) {
 }
 /* ══ MY WARRANTIES ══ */
 var WARRANTY_DAYS = 30;
+var PW_PLANS = {
+  '1yr': { label: 'Extended Care: 1 Year', price: 90, days: 365 },
+  '3yr': { label: 'Extended Care: 3 Years', price: 250, days: 1095 }
+};
 function pwEnd(w) {
   var p = String(w.deliveryDate || '').split('-');
   var d = new Date(+p[0], (+p[1] || 1) - 1, +p[2] || 1);
-  d.setDate(d.getDate() + WARRANTY_DAYS);
+  var days = (w.plan && PW_PLANS[w.plan]) ? PW_PLANS[w.plan].days : WARRANTY_DAYS;
+  d.setDate(d.getDate() + days);
   return d;
 }
+function pwBuyPlan(i, plan) {
+  var w = savedGet('warranties')[i];
+  if (!w || !PW_PLANS[plan]) return;
+  toast('Opening secure checkout…');
+  fetch('/.netlify/functions/create-warranty-checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      plan: plan,
+      warrantyId: w.id,
+      product: w.product,
+      deliveryDate: w.deliveryDate,
+      orderNo: w.orderNo,
+      email: currentUser && currentUser.email
+    })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.url) { window.location.href = d.url; }
+      else { toast('Could not start checkout: ' + (d.error || 'please try again')); }
+    })
+    .catch(function () { toast('Could not start checkout. Please try again.'); });
+}
+(function pwHandleReturn() {
+  var sid = new URLSearchParams(window.location.search).get('warranty_session');
+  if (!sid) return;
+  var tries = 0;
+  var timer = setInterval(function () {
+    tries++;
+    if (!(typeof currentUser !== 'undefined' && currentUser && currentUser.email)) {
+      if (tries > 40) clearInterval(timer);
+      return;
+    }
+    clearInterval(timer);
+    fetch('/.netlify/functions/verify-warranty?session=' + encodeURIComponent(sid))
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || !d.ok) { toast('We could not confirm that payment yet.'); return; }
+        var list = savedGet('warranties');
+        var w = list.find(function (x) { return x.id === d.warrantyId; });
+        if (!w) { toast('Payment received. Please contact us so we can link it to your purchase.'); return; }
+        if (w.sessionId !== sid) {
+          w.plan = d.plan;
+          w.sessionId = sid;
+          w.paidAt = d.paidAt;
+          savedSet('warranties', list);
+        }
+        history.replaceState(null, '', window.location.pathname);
+        toast('🛡️ Extended Care activated ✦');
+        openAccount();
+        setTimeout(function () { acctShow('warranties'); }, 300);
+      })
+      .catch(function () { toast('Could not confirm your payment. Please refresh.'); });
+  }, 250);
+})();
 function pwDaysLeft(w) {
   var today = new Date();
   today.setHours(0, 0, 0, 0);
