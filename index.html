@@ -2713,7 +2713,11 @@ ACCT_TABS.cards = function () {
   }).join('');
   return `
     <div class="acct-h">Payment Cards</div>
-    <div class="acct-sub">Quick-reference cards for your account. For your safety we never store full card numbers or security codes. Payment is entered securely at Stripe checkout.</div>
+      <div class="acct-sub">Quick-reference cards for your account. For your safety we never store full card numbers or security codes. Payment is entered securely at Stripe checkout.</div>
+    <div class="acct-card" style="background:#F5F4FF;">
+      <div style="font-size:14px;font-weight:600;">⚡ Express checkout</div>
+      <div style="font-size:13px;color:#3C3489;margin-top:4px;line-height:1.6;">Skip typing your card. At checkout you can pay with the cards already saved in <strong>Google Pay</strong>, <strong>Apple Pay</strong>, or <strong>Link</strong> when your device supports it. Nothing extra to set up here.</div>
+    </div>
     ${list}
     <div class="acct-card">
       <div style="font-size:14px;font-weight:600;">${acctCardEditing >= 0 ? 'Edit card' : 'Add a new card'}</div>
