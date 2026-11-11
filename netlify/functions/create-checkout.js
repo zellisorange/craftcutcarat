@@ -20,26 +20,6 @@ exports.handler = async (event) => {
       quantity: item.quantity || 1,
     }));
 
-    const CARE = {
-      '1yr': { label: '1 Year', amount: 9000 },
-      '3yr': { label: '3 Years', amount: 25000 },
-    };
-    items.forEach(item => {
-      const c = CARE[item.care];
-      if (!c) return;
-      line_items.push({
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: 'Extended Care ' + c.label + ': ' + item.name,
-            description: 'Repair-and-return service plan',
-          },
-          unit_amount: c.amount,
-        },
-        quantity: item.quantity || 1,
-      });
-    });
-
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: 'payment',
