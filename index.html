@@ -4926,10 +4926,24 @@ async function uploadToCloudinary(file, type){
   if(dropEl) dropEl.textContent = '⏳ Uploading...';
   toast('⏳ Uploading to cloud...');
   try {
-    const reader = new FileReader();
     const fileData = await new Promise((resolve, reject) => {
-      reader.onload = e => resolve(e.target.result);
+      const reader = new FileReader();
       reader.onerror = reject;
+      reader.onload = e => {
+        if (type === 'video') return resolve(e.target.result);
+        const im = new Image();
+        im.onerror = reject;
+        im.onload = () => {
+          const max = 1600;
+          const scale = Math.min(1, max / Math.max(im.width, im.height));
+          const c = document.createElement('canvas');
+          c.width = Math.round(im.width * scale);
+          c.height = Math.round(im.height * scale);
+          c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+          resolve(c.toDataURL('image/jpeg', 0.85));
+        };
+        im.src = e.target.result;
+      };
       reader.readAsDataURL(file);
     });
     const resp = await fetch('/.netlify/functions/upload-media', {
