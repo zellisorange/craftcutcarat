@@ -2331,6 +2331,9 @@
     <input class="field-input" id="am_sale" placeholder="$39.00">
     <label class="field-label">Etsy Listing URL</label>
     <input class="field-input" id="am_etsy" placeholder="https://etsy.com/listing/...">
+    <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--text-primary);cursor:pointer;">
+      <input type="checkbox" id="am_canada"> Canada only (ships within Canada, e.g. mammoth ivory)
+    </label>
     <label class="field-label">Notify Me Email (for sold out)</label>
     <input class="field-input" id="am_notify" placeholder="leave blank">
     <label class="field-label">Status</label>
@@ -3005,7 +3008,7 @@ function wlAddToCart(id, idx) {
   if (!it) return;
   var p = parseFloat(String(it.price).replace(/[^0-9.]/g, '')) || 0;
   if (!p) { toast('This item needs a price, so it can\'t be added to the cart'); return; }
-  addToCart(it.name, p, it.sub);
+  addToCart(it.name, p, it.sub, it.id || '');
 }
 ACCT_TABS.reviews = function () {
   var email = currentUser && currentUser.email;
@@ -3654,7 +3657,7 @@ function openStorePage(dept) {
           <div class="gs-fp-card-name">${item.name}</div>
           <div class="gs-fp-card-sub">${item.sub}</div>
           <div class="gs-fp-card-price">${item.price}</div>
-          <button class="gs-fp-card-btn" onclick="event.stopPropagation();(function(btn){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;if(!p){alert('Price error');return;}addToCart('${item.name}',p,'${item.sub}');flyToCart('${item.icon||String.fromCodePoint(0x1F48E)}',btn);btn.textContent='✓ Added!';btn.style.background='rgba(80,200,120,0.18)';btn.style.borderColor='rgba(80,200,120,0.5)';btn.style.color='#6fcf97';setTimeout(()=>{btn.textContent='+ Add to Cart';btn.style.background='';btn.style.borderColor='';btn.style.color='';},1500);})(this)">+ Add to Cart</button>
+          <button class="gs-fp-card-btn" onclick="event.stopPropagation();(function(btn){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;if(!p){alert('Price error');return;}addToCart('${item.name}',p,'${item.sub}','${item.id||''}');flyToCart('${item.icon||String.fromCodePoint(0x1F48E)}',btn);btn.textContent='✓ Added!';btn.style.background='rgba(80,200,120,0.18)';btn.style.borderColor='rgba(80,200,120,0.5)';btn.style.color='#6fcf97';setTimeout(()=>{btn.textContent='+ Add to Cart';btn.style.background='';btn.style.borderColor='';btn.style.color='';},1500);})(this)">+ Add to Cart</button>
          ${isAdmin && item.custom ? `<button onclick="event.stopPropagation();deleteGem('${item.id}','${dept}')" style="width:100%;padding:6px;background:rgba(226,75,74,0.15);border:0.5px solid rgba(226,75,74,0.4);border-radius:var(--radius-sm);color:#F09595;font-size:11px;cursor:pointer;margin-top:4px;">🗑 Delete</button>` : ''}
         </div>`;
       }).join('')}
@@ -3852,7 +3855,7 @@ async function openProductModalBase(item){
         ${item.desc ? `<p style="font-size:14px;color:var(--text-dim);line-height:1.75;margin-bottom:16px;">${item.desc}</p>` : ''}
         <div style="font-size:26px;font-weight:600;color:var(--tz-bright);margin-bottom:1.5rem;">${item.price}</div>
         <div style="display:flex;gap:10px;">
-          <button onclick="(function(){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;addToCart('${item.name}',p,'${item.sub}');document.getElementById('productModal').remove();toast('Added to cart ✦');})()" style="flex:1;padding:13px;background:var(--tz-mid);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">🛒 Add to Cart</button>
+          <button onclick="(function(){var p=parseFloat('${item.price}'.replace(/[^0-9.]/g,''))||0;addToCart('${item.name}',p,'${item.sub}','${item.id||''}');document.getElementById('productModal').remove();toast('Added to cart ✦');})()" style="flex:1;padding:13px;background:var(--tz-mid);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">🛒 Add to Cart</button>
           ${item.etsy ? `<a href="${item.etsy}" target="_blank" style="padding:13px 18px;background:rgba(239,159,39,0.15);border:0.5px solid rgba(239,159,39,0.4);border-radius:var(--radius-sm);color:var(--gold);font-size:13px;text-decoration:none;display:flex;align-items:center;">Buy on Etsy →</a>` : ''}
         </div>
       </div>
@@ -4001,12 +4004,12 @@ function flyToCart(icon, startEl) {
 }
 
 
-function addToCart(name, price, description) {
+function addToCart(name, price, description, id) {
   const existing = cart.find(i => i.name === name);
   if (existing) {
     existing.quantity++;
   } else {
-    cart.push({ name, price, description, quantity: 1 });
+    cart.push({ name, price, description, id: id || '', quantity: 1 });
   }
   updateCartCount();
   toast(`✅ ${name} added to cart`);
@@ -4113,7 +4116,7 @@ async function stripeCheckout() {
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart.map(i => ({ name: i.name, price: i.price, description: i.description || '', quantity: i.quantity, care: careEligible(i.name) ? (i.care || '') : '' })) })
+      body: JSON.stringify({ items: cart.map(i => ({ id: i.id || '', name: i.name, price: i.price, description: i.description || '', quantity: i.quantity, care: careEligible(i.name) ? (i.care || '') : '' })) })
     });
     const data = await res.json();
     if (data.url) {
@@ -4842,13 +4845,12 @@ async function saveAdminGem(){
     const idx = products.findIndex(p=>p.id===adminEditingId);
     if(idx>-1) products[idx] = {...products[idx], icon,name,sub,desc,price,sale,etsy,status,img,video,custom:true};
   } else {
-    products.push({id:'ccc_'+Date.now(), dept:adminCurrentDept, icon,name,sub,desc,price,sale,etsy,status,img,video,custom:true});
+    products.push({id:(document.getElementById('am_canada')?.checked ? 'CAONL_' : 'ccc_')+Date.now(), dept:adminCurrentDept, icon,name,sub,desc,price,sale,etsy,status,img,video,custom:true});
   }
   const videoDataUrl = document.getElementById('am_videopreview_vid')?.dataset.url||'';
-  const productId = adminEditingId || 'ccc_'+Date.now();
+  const productId = adminEditingId || products[products.length-1].id;
   if(videoDataUrl){
     await videoDB.save(productId, videoDataUrl);
-    if(!adminEditingId) products[products.length-1].id = productId;
   }
   localStorage.setItem('ccc_products', JSON.stringify(products));
   closeAdminModal();
