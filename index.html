@@ -3125,6 +3125,7 @@ ACCT_TABS.warranties = function () {
         : (left >= 0
           ? '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><button class="acct-btn" onclick="pwBuyPlan(' + i + ',\'1yr\')">Add 1 year · $90</button><button class="acct-btn" onclick="pwBuyPlan(' + i + ',\'3yr\')">Add 3 years · $250</button></div>'
           : '')}
+      ${left >= 0 ? '<button class="acct-btn" style="margin-top:10px;margin-right:8px;" onclick="pwOpenClaim(' + i + ')">🛠️ File a claim</button>' : ''}
       <button class="acct-btn danger" style="margin-top:10px;" onclick="pwDelete(${i})">Remove</button>
     </div>`;
   }).join('') : '<div class="acct-empty">No registered purchases yet. Add one below to track your coverage.</div>';
@@ -3208,6 +3209,119 @@ function pwSave() {
     toast('🛡️ Extended Care added to My Warranties ✦');
   }, 250);
 })();
+/* ══ FILE A CLAIM ══ */
+var pcPhotos = [];
+var pcWarrantyIdx = -1;
+function pcResize(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var img = new Image();
+    img.onload = function () {
+      var max = 1000, w = img.width, h = img.height;
+      if (w > max || h > max) {
+        if (w > h) { h = Math.round(h * max / w); w = max; }
+        else { w = Math.round(w * max / h); h = max; }
+      }
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(c.toDataURL('image/jpeg', 0.8));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function pwOpenClaim(i) {
+  var w = savedGet('warranties')[i];
+  if (!w) return;
+  pcWarrantyIdx = i;
+  pcPhotos = [];
+  var covered = (w.plan && PW_PLANS[w.plan]) ? PW_PLANS[w.plan].label : 'Craft Cut Guarantee (30 days)';
+  var main = document.getElementById('acctMain');
+  main.innerHTML = `
+    <div class="acct-h">File a claim</div>
+    <div class="acct-sub">Tell us what happened and we will help you get it sorted.</div>
+    <div class="acct-card">
+      <div style="font-weight:600;">🛡️ ${acctEsc(w.product)}</div>
+      <div style="font-size:13px;color:#6B6499;margin-top:4px;">Coverage: ${acctEsc(covered)} · Covered until ${pwEnd(w).toLocaleDateString()}</div>
+    </div>
+    <div class="acct-card">
+      <label class="acct-label">What is wrong with the stone?</label>
+      <textarea class="acct-input" id="pc_desc" rows="5" maxlength="2000" placeholder="Describe the problem: when you noticed it, what happened..."></textarea>
+      <label class="acct-label">Photos (up to 3)</label>
+      <input type="file" id="pc_files" accept="image/*" multiple style="display:none" onchange="pcPick(this)">
+      <button class="acct-btn" type="button" onclick="document.getElementById('pc_files').click()">📷 Add photos</button>
+      <div id="pc_prev" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;"></div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="acct-btn" id="pc_submit" onclick="pcSubmit()">Send claim</button>
+        <button class="acct-btn danger" onclick="acctShow('warranties')">Cancel</button>
+      </div>
+    </div>`;
+}
+function pcRenderPrev() {
+  var el = document.getElementById('pc_prev');
+  if (!el) return;
+  el.innerHTML = pcPhotos.map(function (u, n) {
+    return '<div style="position:relative;"><img src="' + acctEsc(u) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;"><button onclick="pcRemove(' + n + ')" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:none;background:#C0243B;color:#fff;cursor:pointer;font-size:12px;">✕</button></div>';
+  }).join('');
+}
+function pcRemove(n) {
+  pcPhotos.splice(n, 1);
+  pcRenderPrev();
+}
+function pcPick(input) {
+  var files = Array.prototype.slice.call(input.files || []);
+  input.value = '';
+  var room = 3 - pcPhotos.length;
+  if (room <= 0) { toast('You can add up to 3 photos'); return; }
+  files = files.slice(0, room);
+  toast('Uploading photos…');
+  files.forEach(function (f) {
+    pcResize(f, function (dataUrl) {
+      fetch('/.netlify/functions/upload-media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileData: dataUrl, fileName: 'claim-' + Date.now() + '.jpg', resourceType: 'image' })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d && d.ok && d.url && pcPhotos.length < 3) { pcPhotos.push(d.url); pcRenderPrev(); }
+          else { toast('A photo could not be uploaded'); }
+        })
+        .catch(function () { toast('A photo could not be uploaded'); });
+    });
+  });
+}
+function pcSubmit() {
+  var w = savedGet('warranties')[pcWarrantyIdx];
+  var desc = document.getElementById('pc_desc').value.trim();
+  if (!w) return;
+  if (desc.length < 10) { toast('Please describe the problem (at least 10 characters)'); return; }
+  var btn = document.getElementById('pc_submit');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  var u = currentUser || {};
+  fetch('/.netlify/functions/submit-claim', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      warrantyId: w.id,
+      product: w.product,
+      orderNo: w.orderNo,
+      coverage: w.plan ? 'extended' : 'guarantee',
+      userEmail: u.email,
+      userName: u.name || '',
+      description: desc,
+      photos: pcPhotos
+    })
+  })
+    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+    .then(function (x) {
+      if (x.ok && x.d.ok) { toast('✅ Claim sent. We will be in touch soon ✦'); acctShow('warranties'); }
+      else { toast(x.d.error || 'Could not send the claim'); btn.disabled = false; btn.textContent = 'Send claim'; }
+    })
+    .catch(function () { toast('Could not send the claim. Please try again.'); btn.disabled = false; btn.textContent = 'Send claim'; });
+}
 function pwDelete(i) {
   if (!confirm('Remove this registered purchase?')) return;
   var list = savedGet('warranties');
