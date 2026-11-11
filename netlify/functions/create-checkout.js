@@ -42,7 +42,12 @@ exports.handler = async (event) => {
 
     const session = await stripe.checkout.sessions.create({
       line_items,
-      mode: 'payment',
+        mode: 'payment',
+      shipping_options: [
+        { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: 1500, currency: 'cad' }, display_name: 'Canada Post Xpresspost - Canada (tracked, $100 coverage included)' } },
+        { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: 2500, currency: 'cad' }, display_name: 'Canada Post Xpresspost USA (tracked, $100 coverage included)' } },
+        { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: 4000, currency: 'cad' }, display_name: 'Canada Post International - UK and Australia (tracked, $100 coverage included)' } },
+      ],
       success_url: 'https://craftcutcarat.com/?payment=success',
       cancel_url: 'https://craftcutcarat.com/?payment=cancelled',
       shipping_address_collection: {
