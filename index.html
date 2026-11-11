@@ -3029,6 +3029,90 @@ function acctRenderReviews(list) {
     : '<div class="acct-empty">You haven\'t written any reviews yet. Open any stone in the shop and tap <strong>Write a review</strong>.</div>';
   main.innerHTML = `<div class="acct-h">My Reviews</div><div class="acct-sub">Everything you have reviewed, including reviews still waiting for approval.</div>${body}`;
 }
+/* ══ MY WARRANTIES ══ */
+var WARRANTY_DAYS = 30;
+function pwEnd(w) {
+  var p = String(w.deliveryDate || '').split('-');
+  var d = new Date(+p[0], (+p[1] || 1) - 1, +p[2] || 1);
+  d.setDate(d.getDate() + WARRANTY_DAYS);
+  return d;
+}
+function pwDaysLeft(w) {
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.ceil((pwEnd(w) - today) / 86400000);
+}
+ACCT_TABS.warranties = function () {
+  var list = savedGet('warranties');
+  var names = (STORE_DATA.finished.items || []).map(function (i) { return i.name; })
+    .concat(getCustomItems('finished').map(function (i) { return i.name; }));
+  var opts = names.map(function (n) { return '<option value="' + acctEsc(n) + '">'; }).join('');
+  var todayStr = new Date().toISOString().slice(0, 10);
+  var cards = list.length ? list.map(function (w, i) {
+    var left = pwDaysLeft(w);
+    var badge = left < 0 ? 'rejected' : (left <= 7 ? 'pending' : 'approved');
+    var label = left < 0 ? 'Expired' : (left === 0 ? 'Expires today' : left + ' day' + (left === 1 ? '' : 's') + ' left');
+    return `<div class="acct-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+        <div style="font-weight:600;">🛡️ ${acctEsc(w.product)}</div>
+        <span class="acct-badge ${badge}">${label}</span>
+      </div>
+      <div style="font-size:13px;color:#6B6499;margin-top:6px;line-height:1.7;">
+        Delivered ${acctEsc(w.deliveryDate)} · Covered until ${pwEnd(w).toLocaleDateString()}${w.orderNo ? ' · Order ' + acctEsc(w.orderNo) : ''}
+      </div>
+      <button class="acct-btn danger" style="margin-top:10px;" onclick="pwDelete(${i})">Remove</button>
+    </div>`;
+  }).join('') : '<div class="acct-empty">No registered purchases yet. Add one below to track your coverage.</div>';
+  return `
+    <div class="acct-h">My Warranties</div>
+    <div class="acct-sub">Every finished stone comes with the Craft Cut Guarantee.</div>
+    <div class="acct-card" style="background:#F5F4FF;">
+      <div style="font-size:14px;font-weight:600;">🛡️ Craft Cut Guarantee: ${WARRANTY_DAYS} days from delivery</div>
+      <div style="font-size:13px;color:#3C3489;margin-top:4px;line-height:1.7;">Covers cutting and polishing defects present on arrival. <a href="#" onclick="closeAcctPage();openPolicyPage('Warranty');return false;" style="color:#534AB7;text-decoration:underline;">Read the full terms</a></div>
+    </div>
+    ${cards}
+    <div class="acct-card">
+      <div style="font-size:14px;font-weight:600;">Register a purchase</div>
+      <label class="acct-label">Stone</label>
+      <input class="acct-input" id="pw_product" list="pw_names" placeholder="Start typing, e.g. Cut Blue Sapphire">
+      <datalist id="pw_names">${opts}</datalist>
+      <div class="acct-row">
+        <div>
+          <label class="acct-label">Delivery date</label>
+          <input class="acct-input" id="pw_date" type="date" max="${todayStr}" value="${todayStr}">
+        </div>
+        <div>
+          <label class="acct-label">Order number (optional)</label>
+          <input class="acct-input" id="pw_order" placeholder="From your Stripe receipt">
+        </div>
+      </div>
+      <button class="acct-btn" onclick="pwSave()">Register purchase</button>
+    </div>
+  `;
+};
+function pwSave() {
+  var product = document.getElementById('pw_product').value.trim();
+  var date = document.getElementById('pw_date').value;
+  if (!product) { toast('Enter the stone you bought'); return; }
+  if (!date) { toast('Choose the delivery date'); return; }
+  var list = savedGet('warranties');
+  list.push({
+    id: 'pw_' + Date.now(),
+    product: product,
+    deliveryDate: date,
+    orderNo: document.getElementById('pw_order').value.trim()
+  });
+  savedSet('warranties', list);
+  toast('🛡️ Purchase registered ✦');
+  acctShow('warranties');
+}
+function pwDelete(i) {
+  if (!confirm('Remove this registered purchase?')) return;
+  var list = savedGet('warranties');
+  list.splice(i, 1);
+  savedSet('warranties', list);
+  acctShow('warranties');
+}
 function acctSaveProfile() {
   var typeEl = document.querySelector('input[name="acctType"]:checked');
   if (!typeEl) { toast('Please choose Personal or Business'); return; }
