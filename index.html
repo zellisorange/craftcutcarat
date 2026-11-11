@@ -2623,6 +2623,174 @@ ACCT_TABS.profile = function () {
     <button class="acct-btn" onclick="acctSaveProfile()">Save profile</button>
   `;
 };
+ACCT_TABS.contact = function () {
+  var p = profGet();
+  var c = p.contact || {};
+  var u = currentUser || {};
+  var countries = ['Canada', 'United States', 'United Kingdom', 'Australia', 'Germany', 'France', 'Other'];
+  var countryOpts = countries.map(function (n) {
+    return '<option value="' + n + '"' + ((c.country || 'Canada') === n ? ' selected' : '') + '>' + n + '</option>';
+  }).join('');
+  return `
+    <div class="acct-h">Contact &amp; Address</div>
+    <div class="acct-sub">Where we reach you and where we ship your stones.</div>
+    <div class="acct-card">
+      <div style="font-size:14px;font-weight:600;">Contact info</div>
+      <label class="acct-label">Phone number</label>
+      <input class="acct-input" id="ct_phone" type="tel" placeholder="(519) 555-0123" value="${acctEsc(c.phone)}">
+      <label class="acct-label">Contact email</label>
+      <input class="acct-input" id="ct_email" type="email" placeholder="${acctEsc(u.email)}" value="${acctEsc(c.email)}">
+      <div style="font-size:12px;color:#6B6499;margin-top:6px;">Leave blank to use your sign-in email.</div>
+    </div>
+    <div class="acct-card">
+      <div style="font-size:14px;font-weight:600;">Mailing address</div>
+      <label class="acct-label">Full name</label>
+      <input class="acct-input" id="ct_fullname" value="${acctEsc(c.fullName)}">
+      <label class="acct-label">Street address</label>
+      <input class="acct-input" id="ct_street" value="${acctEsc(c.street)}">
+      <label class="acct-label">Apartment / unit (optional)</label>
+      <input class="acct-input" id="ct_unit" value="${acctEsc(c.unit)}">
+      <div class="acct-row">
+        <div>
+          <label class="acct-label">City</label>
+          <input class="acct-input" id="ct_city" value="${acctEsc(c.city)}">
+        </div>
+        <div>
+          <label class="acct-label">Province / State</label>
+          <input class="acct-input" id="ct_region" value="${acctEsc(c.region)}">
+        </div>
+      </div>
+      <div class="acct-row">
+        <div>
+          <label class="acct-label">Postal / ZIP code</label>
+          <input class="acct-input" id="ct_postal" value="${acctEsc(c.postal)}">
+        </div>
+        <div>
+          <label class="acct-label">Country</label>
+          <select class="acct-input" id="ct_country">${countryOpts}</select>
+        </div>
+      </div>
+    </div>
+    <button class="acct-btn" onclick="acctSaveContact()">Save contact &amp; address</button>
+  `;
+};
+function acctSaveContact() {
+  var p = profGet();
+  p.contact = {
+    phone: document.getElementById('ct_phone').value.trim(),
+    email: document.getElementById('ct_email').value.trim(),
+    fullName: document.getElementById('ct_fullname').value.trim(),
+    street: document.getElementById('ct_street').value.trim(),
+    unit: document.getElementById('ct_unit').value.trim(),
+    city: document.getElementById('ct_city').value.trim(),
+    region: document.getElementById('ct_region').value.trim(),
+    postal: document.getElementById('ct_postal').value.trim(),
+    country: document.getElementById('ct_country').value
+  };
+  profSet(p);
+  toast('Contact & address saved ✦');
+}
+var acctCardEditing = -1;
+ACCT_TABS.cards = function () {
+  var cards = savedGet('cards');
+  var list = cards.length ? cards.map(function (c, i) {
+    return `
+      <div class="acct-card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="font-size:28px;">💳</div>
+        <div style="flex:1;min-width:150px;">
+          <div style="font-weight:600;">${acctEsc(c.brand)} •••• ${acctEsc(c.last4)} ${c.isDefault ? '<span class="acct-badge approved" style="margin-left:6px;">Default</span>' : ''}</div>
+          <div style="font-size:12px;color:#6B6499;">${acctEsc(c.name)} · Expires ${acctEsc(c.exp)}${c.nick ? ' · ' + acctEsc(c.nick) : ''}</div>
+        </div>
+        <button class="acct-btn ghost" style="margin-top:0;" onclick="acctEditCard(${i})">Edit</button>
+        ${c.isDefault ? '' : `<button class="acct-btn ghost" style="margin-top:0;" onclick="acctDefaultCard(${i})">Make default</button>`}
+        <button class="acct-btn danger" style="margin-top:0;" onclick="acctDeleteCard(${i})">Delete</button>
+      </div>`;
+  }).join('') : '<div class="acct-empty">No saved cards yet.</div>';
+  var e = acctCardEditing >= 0 ? (cards[acctCardEditing] || {}) : {};
+  var brands = ['Visa', 'Mastercard', 'American Express', 'Discover', 'Other'];
+  var brandOpts = brands.map(function (b) {
+    return '<option value="' + b + '"' + (e.brand === b ? ' selected' : '') + '>' + b + '</option>';
+  }).join('');
+  return `
+    <div class="acct-h">Payment Cards</div>
+    <div class="acct-sub">Quick-reference cards for your account. For your safety we never store full card numbers or security codes. Payment is entered securely at Stripe checkout.</div>
+    ${list}
+    <div class="acct-card">
+      <div style="font-size:14px;font-weight:600;">${acctCardEditing >= 0 ? 'Edit card' : 'Add a new card'}</div>
+      <div class="acct-row">
+        <div>
+          <label class="acct-label">Card brand</label>
+          <select class="acct-input" id="cd_brand">${brandOpts}</select>
+        </div>
+        <div>
+          <label class="acct-label">Last 4 digits</label>
+          <input class="acct-input" id="cd_last4" maxlength="4" inputmode="numeric" placeholder="1234" value="${acctEsc(e.last4)}">
+        </div>
+      </div>
+      <label class="acct-label">Name on card</label>
+      <input class="acct-input" id="cd_name" value="${acctEsc(e.name)}">
+      <div class="acct-row">
+        <div>
+          <label class="acct-label">Expiry (MM/YY)</label>
+          <input class="acct-input" id="cd_exp" maxlength="5" placeholder="08/28" value="${acctEsc(e.exp)}">
+        </div>
+        <div>
+          <label class="acct-label">Nickname (optional)</label>
+          <input class="acct-input" id="cd_nick" placeholder="Business card" value="${acctEsc(e.nick)}">
+        </div>
+      </div>
+      <button class="acct-btn" onclick="acctSaveCard()">${acctCardEditing >= 0 ? 'Update card' : 'Save card'}</button>
+      ${acctCardEditing >= 0 ? '<button class="acct-btn ghost" style="margin-left:8px;" onclick="acctCardEditing=-1;acctShow(\'cards\')">Cancel</button>' : ''}
+    </div>
+  `;
+};
+function acctEditCard(i) { acctCardEditing = i; acctShow('cards'); }
+function acctSaveCard() {
+  var last4 = document.getElementById('cd_last4').value.trim();
+  var exp = document.getElementById('cd_exp').value.trim();
+  var name = document.getElementById('cd_name').value.trim();
+  if (!/^\d{4}$/.test(last4)) { toast('Enter exactly 4 digits'); return; }
+  if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(exp)) { toast('Expiry must look like 08/28'); return; }
+  if (!name) { toast('Enter the name on the card'); return; }
+  var cards = savedGet('cards');
+  var card = {
+    brand: document.getElementById('cd_brand').value,
+    last4: last4,
+    exp: exp,
+    name: name,
+    nick: document.getElementById('cd_nick').value.trim(),
+    isDefault: false
+  };
+  if (acctCardEditing >= 0 && cards[acctCardEditing]) {
+    card.isDefault = !!cards[acctCardEditing].isDefault;
+    cards[acctCardEditing] = card;
+  } else {
+    card.isDefault = cards.length === 0;
+    cards.push(card);
+  }
+  savedSet('cards', cards);
+  acctCardEditing = -1;
+  toast('Card saved ✦');
+  acctShow('cards');
+}
+function acctDefaultCard(i) {
+  var cards = savedGet('cards');
+  cards.forEach(function (c, idx) { c.isDefault = idx === i; });
+  savedSet('cards', cards);
+  toast('Default card updated');
+  acctShow('cards');
+}
+function acctDeleteCard(i) {
+  if (!confirm('Delete this card?')) return;
+  var cards = savedGet('cards');
+  var wasDefault = cards[i] && cards[i].isDefault;
+  cards.splice(i, 1);
+  if (wasDefault && cards.length) cards[0].isDefault = true;
+  savedSet('cards', cards);
+  acctCardEditing = -1;
+  toast('Card deleted');
+  acctShow('cards');
+}
 function acctSaveProfile() {
   var typeEl = document.querySelector('input[name="acctType"]:checked');
   if (!typeEl) { toast('Please choose Personal or Business'); return; }
