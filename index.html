@@ -2287,7 +2287,8 @@
       <button class="admin-sidebar-btn" onclick="adminShowDept('merch',this)">👕 Merch</button>
       <button class="admin-sidebar-btn" onclick="adminShowDept('jewelry',this)">💍 Jewellery</button>
       <div class="admin-sidebar-label" style="margin-top:1rem;">Moderation</div>
-      <button class="admin-sidebar-btn" onclick="adminShowReviews(this)">✍️ Reviews</button>
+            <button class="admin-sidebar-btn" onclick="adminShowReviews(this)">✍️ Reviews</button>
+      <button class="admin-sidebar-btn" onclick="adminShowWarranties(this)">🛡️ Customer Warranties</button>
       <div class="admin-sidebar-label" style="margin-top:1rem;">Tools</div>
       <button class="admin-sidebar-btn" onclick="adminShowDept('pricecalc',this)">💰 Price Calculator</button>
     </div>
@@ -4435,6 +4436,142 @@ function adminRvAct(id, action) {
       }
     })
     .catch(function () { toast('⚠️ Could not update review'); });
+}
+/* ══ ADMIN: CUSTOMER WARRANTIES ══ */
+var adminWSort = 'newest';
+var adminWFilter = 'all';
+var adminWQuery = '';
+function adminWEnd(w) {
+  var p = String(w.endDate || '').split('-');
+  return new Date(+p[0], (+p[1] || 1) - 1, +p[2] || 1).getTime();
+}
+function adminWDays(w) {
+  var t = new Date();
+  t.setHours(0, 0, 0, 0);
+  return Math.ceil((adminWEnd(w) - t.getTime()) / 86400000);
+}
+function adminShowWarranties(btn) {
+  document.querySelectorAll('.admin-sidebar-btn').forEach(function (b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var main = document.getElementById('adminMain');
+  var token = adminRvToken(false);
+  if (!token) {
+    main.innerHTML = '<div class="admin-section-title">🛡️ Customer Warranties</div><p style="color:var(--text-muted);font-size:13px;margin:12px 0;">A token is needed to view warranties.</p><button class="admin-add-btn" onclick="adminShowWarranties(null)">Enter token</button>';
+    return;
+  }
+  main.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Loading warranties from Stripe…</p>';
+  fetch('/.netlify/functions/list-warranties', { headers: { 'x-admin-token': token } })
+    .then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); })
+    .then(function (res) {
+      if (res.status === 401) {
+        sessionStorage.removeItem('ccc_rv_token');
+        main.innerHTML = '<div class="admin-section-title">🛡️ Customer Warranties</div><p style="color:#F09595;font-size:13px;margin:12px 0;">That token was not accepted.</p><button class="admin-add-btn" onclick="adminRvToken(true);adminShowWarranties(null)">Try again</button>';
+        return;
+      }
+      if (!res.d || !res.d.warranties) {
+        main.innerHTML = '<div class="admin-section-title">🛡️ Customer Warranties</div><p style="color:#F09595;font-size:13px;margin:12px 0;">' + acctEsc((res.d && res.d.error) || 'Could not load warranties') + '</p>';
+        return;
+      }
+      window._adminWarranties = res.d.warranties;
+      adminWRender();
+    })
+    .catch(function () {
+      main.innerHTML = '<p style="color:#F09595;font-size:13px;">Could not load warranties.</p>';
+    });
+}
+function adminWSetFilter(f) { adminWFilter = f; adminWRender(); }
+function adminWSetSort(s) { adminWSort = s; adminWRender(); }
+function adminWSetQuery(q) { adminWQuery = q; adminWRenderList(); }
+function adminWRender() {
+  var main = document.getElementById('adminMain');
+  var all = window._adminWarranties || [];
+  var counts = { all: all.length, active: 0, expired: 0, used: 0, fresh: 0 };
+  all.forEach(function (w) {
+    var d = adminWDays(w);
+    if (w.used) counts.used++;
+    if (d < 0) counts.expired++;
+    if (d >= 0 && !w.used) counts.active++;
+    if (Date.now() - w.purchasedAt < 30 * 86400000) counts.fresh++;
+  });
+  function pill(label, on, js) {
+    return '<button onclick="' + js + '" style="padding:6px 14px;border-radius:99px;border:0.5px solid ' + (on ? 'var(--tz-bright)' : 'var(--border)') + ';background:' + (on ? 'rgba(83,74,183,0.25)' : 'transparent') + ';color:var(--text);font-size:12px;cursor:pointer;">' + label + '</button>';
+  }
+  var filters = [['all', 'All', counts.all], ['active', 'Active', counts.active], ['fresh', 'New (30 days)', counts.fresh], ['expired', 'Expired', counts.expired], ['used', 'Used', counts.used]].map(function (f) {
+    return pill(f[1] + ' (' + f[2] + ')', adminWFilter === f[0], "adminWSetFilter('" + f[0] + "')");
+  }).join('');
+  var sorts = [['newest', 'Newest'], ['oldest', 'Oldest'], ['az', 'A to Z'], ['expiring', 'Expiring soon']].map(function (s) {
+    return pill(s[1], adminWSort === s[0], "adminWSetSort('" + s[0] + "')");
+  }).join('');
+  main.innerHTML = '<div class="admin-section-header"><div class="admin-section-title">🛡️ Customer Warranties</div></div>' +
+    '<p style="color:var(--text-muted);font-size:12px;margin:0 0 12px;">Every Extended Care plan paid for through Stripe. This list updates by itself.</p>' +
+    '<input id="wSearch" value="' + acctEsc(adminWQuery) + '" oninput="adminWSetQuery(this.value)" placeholder="Search by customer, email or stone…" style="width:100%;padding:10px 12px;margin-bottom:12px;border-radius:8px;border:0.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">' + filters + '</div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"><span style="font-size:12px;color:var(--text-muted);align-self:center;">Sort:</span>' + sorts + '</div>' +
+    '<div id="wList"></div>';
+  adminWRenderList();
+}
+function adminWRenderList() {
+  var el = document.getElementById('wList');
+  if (!el) return;
+  var q = adminWQuery.trim().toLowerCase();
+  var items = (window._adminWarranties || []).map(function (w, idx) { return { w: w, idx: idx }; }).filter(function (x) {
+    var w = x.w, d = adminWDays(w);
+    if (adminWFilter === 'active' && !(d >= 0 && !w.used)) return false;
+    if (adminWFilter === 'expired' && !(d < 0)) return false;
+    if (adminWFilter === 'used' && !w.used) return false;
+    if (adminWFilter === 'fresh' && !(Date.now() - w.purchasedAt < 30 * 86400000)) return false;
+    if (q && (w.customerName + ' ' + w.email + ' ' + w.stone).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  items.sort(function (a, b) {
+    if (adminWSort === 'az') return (a.w.customerName || a.w.email).toLowerCase().localeCompare((b.w.customerName || b.w.email).toLowerCase());
+    if (adminWSort === 'oldest') return a.w.purchasedAt - b.w.purchasedAt;
+    if (adminWSort === 'expiring') return adminWEnd(a.w) - adminWEnd(b.w);
+    return b.w.purchasedAt - a.w.purchasedAt;
+  });
+  el.innerHTML = items.length ? items.map(function (x) {
+    var w = x.w, idx = x.idx, d = adminWDays(w);
+    var state = w.used ? 'Used' : (d < 0 ? 'Expired' : 'Active');
+    var badge = w.used ? 'sale' : (d < 0 ? 'soldout' : 'instock');
+    var ad = Math.abs(d);
+    var left = d < 0
+      ? 'Expired ' + ad + ' day' + (ad === 1 ? '' : 's') + ' ago'
+      : (d === 0 ? 'Expires today' : d + ' day' + (d === 1 ? '' : 's') + ' left' + (d >= 60 ? ' (about ' + Math.round(d / 30) + ' months)' : ''));
+    var leftColor = d < 0 ? '#F09595' : (d <= 30 ? 'var(--gold)' : '#5DCAA5');
+    return '<div class="admin-listing" style="flex-direction:column;align-items:stretch;gap:8px;">' +
+      '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;"><div class="admin-listing-name">🛡️ ' + acctEsc(w.stone || '(stone not recorded)') + (w.qty > 1 ? ' ×' + w.qty : '') + ' <span class="status-badge ' + badge + '">' + state + '</span></div><div style="font-weight:600;color:var(--tz-bright);">' + acctEsc(w.plan) + '</div></div>' +
+      '<div style="font-size:13px;color:var(--text);">' + acctEsc(w.customerName || 'No name') + ' · ' + acctEsc(w.email) + (w.phone ? ' · ' + acctEsc(w.phone) : '') + '</div>' +
+      '<div class="admin-listing-sub">Purchased ' + new Date(w.purchasedAt).toLocaleDateString() + ' · Coverage ' + acctEsc(w.startDate) + ' to ' + acctEsc(w.endDate) + ' · Paid $' + w.paid.toFixed(2) + ' · Order …' + acctEsc(String(w.sessionId).slice(-8)) + '</div>' +
+      '<div style="font-size:13px;font-weight:600;color:' + leftColor + ';">⏳ ' + left + '</div>' +
+      '<label style="font-size:13px;color:var(--text);display:flex;gap:8px;align-items:center;"><input type="checkbox" id="wu_' + idx + '"' + (w.used ? ' checked' : '') + '> Warranty has been used</label>' +
+      '<textarea id="wn_' + idx + '" rows="3" placeholder="Notes: what was damaged, what the warranty was used for…" style="width:100%;padding:10px 12px;border-radius:8px;border:0.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;box-sizing:border-box;">' + acctEsc(w.notes) + '</textarea>' +
+      '<div class="admin-listing-actions"><button class="admin-action-btn sale" onclick="adminWSave(' + idx + ')">💾 Save notes</button></div></div>';
+  }).join('') : '<p style="color:var(--text-muted);font-size:13px;margin-top:12px;">No warranties match.</p>';
+}
+function adminWSave(idx) {
+  var w = (window._adminWarranties || [])[idx];
+  if (!w) return;
+  var token = adminRvToken(false);
+  if (!token) return;
+  var used = document.getElementById('wu_' + idx).checked;
+  var notes = document.getElementById('wn_' + idx).value;
+  fetch('/.netlify/functions/save-warranty-note', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+    body: JSON.stringify({ key: w.key, used: used, notes: notes })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.ok) {
+        w.used = used;
+        w.notes = notes;
+        toast('✅ Warranty notes saved');
+        adminWRender();
+      } else {
+        toast('⚠️ ' + (d.error || 'Could not save'));
+      }
+    })
+    .catch(function () { toast('⚠️ Could not save'); });
 }
 function adminNewGem(dept){
   adminEditingId = null;
