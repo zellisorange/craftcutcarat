@@ -1503,6 +1503,36 @@
     @media (max-width: 768px) {
       #guestNav .nav-btn { padding: 8px 14px; font-size: 13px; }
     }
+    /* Admin panel: mobile layout */
+    @media (max-width: 768px) {
+      .admin-panel { width: 100vw; }
+      .admin-body { flex-direction: column; }
+      .admin-sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.5rem;
+        gap: 4px;
+        border-right: none;
+        border-bottom: 0.5px solid var(--border);
+        flex-shrink: 0;
+      }
+      .admin-sidebar-label { display: none; }
+      .admin-sidebar-btn {
+        width: auto;
+        white-space: nowrap;
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        flex-shrink: 0;
+      }
+      .admin-sidebar-btn.active { border-right: none; border-bottom: 2px solid var(--tz-bright); }
+      .admin-main { padding: 1rem; min-height: 0; }
+      .admin-section-header { flex-wrap: wrap; gap: 10px; }
+      .admin-listing { flex-wrap: wrap; gap: 0.75rem; }
+      .admin-listing-actions { width: 100%; justify-content: flex-end; }
+      .admin-modal-box { padding: 1.25rem; }
+    }
   </style>
 </head>
 <body>
