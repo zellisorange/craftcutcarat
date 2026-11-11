@@ -8,6 +8,8 @@ exports.handler = async (event) => {
   try {
     const { items } = JSON.parse(event.body);
     const canadaOnly = items.some(item => /^CAONL/i.test(String(item.id || '')));
+    const goodsTotal = items.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+    const insuredShipCents = goodsTotal > 100 ? 2400 + Math.round(goodsTotal * 2.25) : null;
 
     const line_items = items.map(item => ({
       price_data: {
@@ -45,7 +47,7 @@ exports.handler = async (event) => {
       line_items,
         mode: 'payment',
       shipping_options: [
-        { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: 1500, currency: 'cad' }, display_name: 'Canada Post Xpresspost - Canada (tracked, $100 coverage included)' } },
+        { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: insuredShipCents || 1500, currency: 'cad' }, display_name: insuredShipCents ? 'Insured Courier - Canada (tracked, signature required, insured for full order value)' : 'Canada Post Xpresspost - Canada (tracked, $100 coverage included)' } },
         { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: 2500, currency: 'cad' }, display_name: 'Canada Post Xpresspost USA (tracked, $100 coverage included)' } },
         { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: 4000, currency: 'cad' }, display_name: 'Canada Post International - UK and Australia (tracked, $100 coverage included)' } },
       ].slice(0, canadaOnly ? 1 : 3),
