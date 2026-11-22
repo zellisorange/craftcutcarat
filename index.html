@@ -2533,14 +2533,17 @@ const PREVIEW_GEMS = [
 ];
 
 // ── FEATURED STRIP ──
-(function buildFeatured(){
+function buildFeatured(){
   const all = [];
   Object.entries(STORE_DATA).forEach(([dept, data]) => {
+    if(dept === 'merch') return;
     (data.items||[]).forEach(item => all.push({...item, dept}));
   });
   if(!all.length) return;
   const shuffled = all.sort(()=>Math.random()-0.5).slice(0,6);
-  document.getElementById('featuredScroll').innerHTML = shuffled.map(item => `
+  const el = document.getElementById('featuredScroll');
+  if(!el) return;
+  el.innerHTML = shuffled.map(item => `
     <div class="featured-card" onclick="openStorePage('${item.dept}')">
       ${item.img
         ? `<img src="${item.img}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;">`
@@ -2548,7 +2551,8 @@ const PREVIEW_GEMS = [
       <div class="featured-card-name">${item.name}</div>
       <div class="featured-card-price">${item.price}</div>
     </div>`).join('');
-})();
+}
+document.addEventListener('DOMContentLoaded', buildFeatured);
 
 document.getElementById('previewGrid').innerHTML = PREVIEW_GEMS.map(g => `
   <div class="prev-card" onclick="openStorePage('finished')">
