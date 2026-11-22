@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Craft Cut Carat — Precision Gem Faceting Studio</title>
-    <meta name="description" content="Precision faceted gemstones hand-cut in Canada. Shop loose sapphire, ruby, topaz and more — every stone cut by Zellis Orange at Craft Cut Carat.">
+    <meta name="description" content="Precision faceted gemstones hand-cut in Canada. Shop loose sapphire, ruby, topaz and more — every stone cut by Ellis St.Croix at Craft Cut Carat.">
   <meta name="theme-color" content="#3C3489">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -2040,7 +2040,7 @@
 
     <div class="hero-stats">
       <div>
-        <div class="hero-stat-num">5</div>
+        <div class="hero-stat-num">30+</div>
         <div class="hero-stat-label">Stones cut so far</div>
       </div>
       <div>
@@ -2157,7 +2157,7 @@
 <!-- ══ FOOTER ══ -->
 <footer>
   <div class="footer-logo">Craft Cut Carat</div>
-  <div class="footer-sub">Precision faceted gemstones &nbsp;·&nbsp; Hand cut in Cambridge, Ontario, Canada &nbsp;·&nbsp; ♦ by Zellis Orange</div>
+  <div class="footer-sub">Precision faceted gemstones &nbsp;·&nbsp; Hand cut in Cambridge, Ontario, Canada &nbsp;·&nbsp; ♦ by Ellis St.Croix</div>
   <div class="footer-links">
     <button class="footer-link" onclick="openStorePage('finished')">Finished Gems</button>
     <button class="footer-link" onclick="openStorePage('rough')">Rough Stones</button>
@@ -2220,11 +2220,10 @@
       <label class="field-label">Password</label>
       <input class="field-input" type="password" id="loginPass" placeholder="••••••••">
       <button class="auth-submit" onclick="doLogin()">Sign in</button>
-      <p class="auth-hint">Demo: any email · password is <strong style="color:var(--tz-bright);">gems</strong></p>
     </div>
     <div id="signupForm" class="hidden">
       <label class="field-label">Your name</label>
-      <input class="field-input" type="text" id="signupName" placeholder="Zellis">
+      <input class="field-input" type="text" id="signupName" placeholder="Your name">
       <label class="field-label">Email</label>
       <input class="field-input" type="email" id="signupEmail" placeholder="you@example.com">
       <label class="field-label">Password</label>
@@ -3551,16 +3550,7 @@ const STORE_DATA = {
   merch: {
     icon: '👕', title: 'Merch',
     subtitle: 'Wear your obsession proudly',
-    items: [
-      { icon:'👕', name:'Galaxy Gems Tee',       sub:'Black · Unisex',           price:'$28.00' },
-      { icon:'🧢', name:'Faceter Cap',           sub:'Embroidered logo',         price:'$24.00' },
-      { icon:'☕', name:'Gem Studio Mug',        sub:'15oz · Dishwasher safe',   price:'$18.00' },
-      { icon:'🎽', name:'Bench Hoodie',          sub:'Galaxy purple · Fleece',   price:'$54.00' },
-      { icon:'🛍️', name:'Tote Bag',             sub:'Canvas · Gem print',       price:'$16.00' },
-      { icon:'🔖', name:'Sticker Pack',          sub:'12 gem species stickers',  price:'$9.00'  },
-      { icon:'📓', name:'Cutting Journal Book',  sub:'Hardcover · 200 pages',    price:'$22.00' },
-      { icon:'🖼️', name:'Gem Anatomy Print',    sub:'A3 · Framed optional',     price:'$35.00' },
-    ]
+    items: []
   },
   jewelry: {
     icon: '💍', title: 'Jewellery',
@@ -3631,6 +3621,25 @@ function openStorePage(dept) {
       }
     }
   }).catch(()=>{});
+
+  // Load Printful merch products live
+  if(dept === 'merch') {
+    fetch('/.netlify/functions/printful-products').then(r=>r.json()).then(pfProds=>{
+      if(!Array.isArray(pfProds)||!pfProds.length) return;
+      const pfItems = pfProds.map(p=>({
+        icon: '👕',
+        name: p.name,
+        sub: p.description || 'Craft Cut Carat merch',
+        price: p.retail_costs ? '$'+parseFloat(p.retail_costs.total).toFixed(2) : 'See store',
+        img: p.thumbnail_url || '',
+        printful_id: p.id
+      }));
+      STORE_DATA.merch.items = pfItems;
+      if(document.getElementById('gsFullpage').classList.contains('open')){
+        openStorePage('merch');
+      }
+    }).catch(()=>{});
+  }
   document.getElementById('gsFpTitle').textContent = data.icon + ' ' + data.title;
   document.getElementById('gsFpContent').innerHTML = `
     <div class="gs-fp-hero">
