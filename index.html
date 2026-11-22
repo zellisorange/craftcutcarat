@@ -8,6 +8,7 @@
   <meta name="theme-color" content="#3C3489">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Craft Cut Carat">
@@ -1696,7 +1697,7 @@
         <span id="cartCount" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--gold);color:#1A1640;border-radius:99px;font-size:10px;font-weight:700;padding:2px 6px;min-width:18px;text-align:center;">0</span>
       </button>
     </div>
-    <div id="userNav" class="hidden" style="display:flex;align-items:center;gap:8px;">
+    <div id="userNav" class="hidden" style="align-items:center;gap:8px;"></div>
       <div class="user-chip" onclick="openAccount()" style="cursor:pointer;">
         <div class="user-avatar" id="avatarInitials">GG</div>
         <span class="user-name" id="navUserName">Faceter</span>
@@ -1763,7 +1764,7 @@
       <div class="gs-tab-icon">👕</div>
       <div class="gs-tab-info">
         <div class="gs-tab-name">Merch</div>
-        <div class="gs-tab-desc">Galaxy Gems apparel, mugs, stickers & collectibles</div>
+        <div class="gs-tab-desc">Craft Cut Carat apparel, mugs, stickers & collectibles</div>
       </div>
       <div class="gs-tab-arrow">→</div>
     </div>
@@ -1811,7 +1812,7 @@
 
 <!-- ══ ACCOUNT SETTINGS ══ -->
 <div id="accountOverlay" onclick="if(event.target.id==='accountOverlay')closeAccount()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:900;backdrop-filter:blur(8px);align-items:center;justify-content:center;">
-  <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);width:min(520px,95vw);max-height:85vh;overflow-y:auto;padding:2.5rem;">
+  <div style="background:var(--deep);border:0.5px solid var(--border);border-radius:var(--radius);width:min(520px,95vw);max-height:85vh;overflow-y:auto;padding:2.5rem;"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
       <h2 style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text);">Account</h2>
       <button onclick="closeAccount()" style="background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;">✕</button>
@@ -2040,12 +2041,12 @@
 
     <div class="hero-stats">
       <div>
-        <div class="hero-stat-num">30+</div>
+        <div class="hero-stat-num">10</div>
         <div class="hero-stat-label">Stones cut so far</div>
       </div>
       <div>
         <div class="hero-stat-num">50</div>
-        <div class="hero-stat-label">Goal by Christmas</div>
+        <div class="hero-stat-label">Goal by year end</div>
       </div>
       <div>
         <div class="hero-stat-num">🇨🇦</div>
@@ -2585,7 +2586,6 @@ async function doLogin(){
     } catch(e) {}
   }
 
-  if(pass!=='gems'){ showErr('Incorrect password. Demo password is: gems'); return; }
   const name=email.split('@')[0];
   loginUser({name:name.charAt(0).toUpperCase()+name.slice(1), email, isAdmin:false});
 }
