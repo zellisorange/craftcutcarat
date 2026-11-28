@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   const params = {
     app_key: appKey, method, timestamp,
     sign_method: 'sha256', v: '2.0',
-    keywords: query, product_title: query,
+     keyWord: query,
     local: 'en_US', currency: 'CAD', countryCode: 'CA',
     page_index: '1', page_size: '20',
     target_currency: 'CAD', target_language: 'EN',
