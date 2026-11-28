@@ -27,9 +27,7 @@ exports.handler = async (event) => {
   };
   if (accessToken) params.session = accessToken;
   const sortedKeys = Object.keys(params).sort();
-  let signStr = appSecret;
-  for (const k of sortedKeys) signStr += k + params[k];
-  signStr += appSecret;
+  const signStr = sortedKeys.map(k => `${k}${params[k]}`).join('');
   const sign = crypto.createHmac('sha256', appSecret).update(signStr, 'utf8').digest('hex').toUpperCase();
   params.sign = sign;
   const body = new URLSearchParams(params).toString();
