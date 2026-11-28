@@ -34,16 +34,18 @@ exports.handler = async (event) => {
       body
     });
     const data = await res.json();
-    const response = data?.aliexpress_ds_text_search_response;
-    const result = response?.result;
-    const raw = result?.products?.selection_search_product || result?.products?.productList || result?.products || result?.mods?.itemList?.content || result?.searchProductList || [];
+    const raw = data?.aliexpress_ds_text_search_response?.data?.products?.selection_search_product || [];
     const products = Array.isArray(raw) ? raw.map(p => ({
-      id: p.product_id, title: p.product_title,
-      price: p.target_sale_price || p.sale_price,
-      image: p.product_main_image_url, url: p.product_detail_url,
-      orders: p.lastest_volume || 0
+      id: p.itemId,
+      title: p.title,
+      price: p.targetSalePrice,
+      image: p.itemMainPic,
+      url: 'https:' + p.itemUrl,
+      orders: p.orders || 0,
+      rating: p.evaluateRate || '',
+      discount: p.discount || ''
     })) : [];
-    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ products, _debug: data }) };
+    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ products }) };
   } catch (e) {
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
