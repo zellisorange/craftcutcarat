@@ -21,17 +21,23 @@ exports.handler = async (event) => {
       if (data) products = JSON.parse(data);
     } catch(e) {}
 
+    let deleted = [];
+    try {
+      const deletedData = await store.get('deleted.json', { type: 'text' });
+      if (deletedData) deleted = JSON.parse(deletedData);
+    } catch(e) {}
+
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(products)
+      body: JSON.stringify({ products, deleted })
     };
   } catch (err) {
     console.error('get-products error:', err);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify([])
+      body: JSON.stringify({ products: [], deleted: [] })
     };
   }
 };
