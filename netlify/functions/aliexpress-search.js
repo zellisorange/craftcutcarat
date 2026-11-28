@@ -25,7 +25,7 @@ exports.handler = async (event) => {
   const sign = crypto.createHmac('sha256', appSecret).update(signStr).digest('hex').toUpperCase();
   params.sign = sign;
   const qs = new URLSearchParams(params).toString();
-  const url = `https://api-sg.aliexpress.com/rest/sync?${qs}`;
+const url = `https://api-sg.aliexpress.com/sync?${qs}`;
   try {
     const res = await fetch(url);
     const data = await res.json();
