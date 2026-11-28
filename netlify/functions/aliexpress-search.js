@@ -1,48 +1,48 @@
 const crypto = require('crypto');
-
 exports.handler = async (event) => {
   const query = event.queryStringParameters?.q;
   if (!query) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing query' }) };
   }
-
   const appKey = process.env.ALIEXPRESS_APP_KEY;
   const appSecret = process.env.ALIEXPRESS_APP_SECRET;
   const accessToken = process.env.ALIEXPRESS_ACCESS_TOKEN;
-
   if (!appKey || !appSecret) {
     return { statusCode: 500, body: JSON.stringify({ error: 'API keys not configured' }) };
   }
-
-  const method = 'aliexpress.affiliate.product.query';
+  const method = 'aliexpress.ds.product.search';
   const timestamp = String(Date.now());
-
   const params = {
-    app_key: appKey, method, timestamp, sign_method: 'sha256', simplify: 'true', v: '2.0',
-    keywords: query, page_no: '1', page_size: '20',
-    target_currency: 'CAD', target_language: 'EN', tracking_id: 'craftcutcarat'
+    app_key: appKey, method, timestamp, sign_method: 'sha256', v: '2.0',
+    product_title: query,
+    page_index: '1', page_size: '20',
+    target_currency: 'CAD', target_language: 'EN',
+    sort: 'SALE_PRICE_ASC'
   };
-
   if (accessToken) params.session = accessToken;
-
   const sorted = Object.keys(params).sort().map(k => `${k}${params[k]}`).join('');
   const signStr = '/sync' + sorted;
   const sign = crypto.createHmac('sha256', appSecret).update(signStr).digest('hex').toUpperCase();
   params.sign = sign;
-
   const qs = new URLSearchParams(params).toString();
   const url = `https://api-sg.aliexpress.com/rest/sync?${qs}`;
-
   try {
     const res = await fetch(url);
     const data = await res.json();
-    const raw = data?.aliexpress_affiliate_product_query_response?.resp_result?.result?.products?.product || [];
+    const raw = data?.aliexpress_ds_product_search_response?.data?.products || [];
     const products = raw.map(p => ({
-      id: p.product_id, title: p.product_title,
-      price: p.target_sale_price || p.target_original_price,
-      image: p.product_main_image_url, url: p.product_detail_url
+      id: p.product_id,
+      title: p.product_title,
+      price: p.target_sale_price || p.sale_price,
+      image: p.product_main_image_url,
+      url: p.product_detail_url,
+      orders: p.lastest_volume || 0
     }));
-    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ products }) };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ products, _debug: data })
+    };
   } catch (e) {
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
