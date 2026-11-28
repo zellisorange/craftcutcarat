@@ -4150,7 +4150,9 @@ function addToCart(name, price, description, id) {
   if (existing) {
     existing.quantity++;
   } else {
-    cart.push({ name, price, description, id: id || '', quantity: 1 });
+    var products = JSON.parse(localStorage.getItem('ccc_products') || '[]');
+    var matched = products.find(function(p){ return p.name === name || p.id === id; });
+    cart.push({ name, price, description, id: id || '', aliId: (matched && matched.aliId) || id || '', quantity: 1 });
   }
   updateCartCount();
   toast(`✅ ${name} added to cart`);
