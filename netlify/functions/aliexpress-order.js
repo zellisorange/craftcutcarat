@@ -61,10 +61,13 @@ exports.handler = async (event) => {
     const res = await fetch(`https://api-sg.aliexpress.com/sync?${qs}`);
     const data = await res.json();
 
+    console.log('AliExpress response:', JSON.stringify(data));
     const result = data?.aliexpress_ds_order_create_response?.result;
     if (result?.is_success) {
+      console.log('Order success:', result.order_id);
       return { statusCode: 200, headers, body: JSON.stringify({ ok: true, orderId: result.order_id }) };
     } else {
+      console.log('Order failed:', result?.error_msg, result?.error_code);
       return { statusCode: 200, headers, body: JSON.stringify({ ok: false, error: result?.error_msg || 'Order failed', data }) };
     }
 
