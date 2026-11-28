@@ -23,8 +23,8 @@ exports.handler = async (event) => {
     page_size: '20',
     target_currency: 'CAD',
     target_language: 'EN',
-    sort: 'SALE_PRICE_ASC', country_code: 'CA',
-    country_code: 'CA'
+    sort: 'SALE_PRICE_ASC', countryCode: 'CA',
+    countryCode: 'CA'
   };
   if (accessToken) params.session = accessToken;
   const sortedKeys = Object.keys(params).sort();
