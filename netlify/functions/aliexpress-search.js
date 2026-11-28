@@ -23,7 +23,7 @@ exports.handler = async (event) => {
     page_size: '20',
     target_currency: 'CAD',
     target_language: 'EN',
-    sort: 'SALE_PRICE_ASC',
+    sort: 'SALE_PRICE_ASC', country_code: 'CA',
     country_code: 'CA'
   };
   if (accessToken) params.session = accessToken;
