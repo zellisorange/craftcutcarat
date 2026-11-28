@@ -10,7 +10,7 @@ exports.handler = async (event) => {
   if (!appKey || !appSecret) {
     return { statusCode: 500, body: JSON.stringify({ error: 'API keys not configured' }) };
   }
-  const method = 'aliexpress.ds.product.search';
+const method = 'aliexpress.ds.text.search';
   const timestamp = String(Date.now());
   const params = {
     app_key: appKey, method, timestamp, sign_method: 'sha256', v: '2.0',
