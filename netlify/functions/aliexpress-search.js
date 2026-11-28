@@ -36,7 +36,7 @@ exports.handler = async (event) => {
     const data = await res.json();
     const response = data?.aliexpress_ds_text_search_response;
     const result = response?.result;
-    const raw = result?.products?.productList || result?.products || result?.mods?.itemList?.content || result?.searchProductList || [];
+    const raw = result?.products?.selection_search_product || result?.products?.productList || result?.products || result?.mods?.itemList?.content || result?.searchProductList || [];
     const products = Array.isArray(raw) ? raw.map(p => ({
       id: p.product_id, title: p.product_title,
       price: p.target_sale_price || p.sale_price,
