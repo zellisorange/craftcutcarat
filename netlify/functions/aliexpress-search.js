@@ -26,8 +26,8 @@ exports.handler = async (event) => {
     sort: 'SALE_PRICE_ASC'
   };
   if (accessToken) params.session = accessToken;
-  const sorted = Object.keys(params).sort().map(k => `${k}${params[k]}`).join('');
-  const signStr = '/sync' + sorted;
+  const sortedKeys = Object.keys(params).sort();
+  const signStr = appSecret + sortedKeys.map(k => `${k}${params[k]}`).join('') + appSecret;
   const sign = crypto.createHmac('sha256', appSecret).update(signStr).digest('hex').toUpperCase();
   params.sign = sign;
   const body = new URLSearchParams(params).toString();
