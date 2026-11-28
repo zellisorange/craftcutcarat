@@ -43,8 +43,10 @@ exports.handler = async (event) => {
       });
     });
 
+    const aliItems = items.filter(i => i.aliId).map(i => ({ aliId: i.aliId, quantity: i.quantity || 1 }));
     const session = await stripe.checkout.sessions.create({
       line_items,
+      metadata: { ali_items: JSON.stringify(aliItems) },
         mode: 'payment',
       shipping_options: [
         { shipping_rate_data: { type: 'fixed_amount', fixed_amount: { amount: insuredShipCents || 1500, currency: 'cad' }, display_name: insuredShipCents ? 'Insured Courier - Canada (tracked, signature required, insured for full order value)' : 'Canada Post Xpresspost - Canada (tracked, $100 coverage included)' } },
