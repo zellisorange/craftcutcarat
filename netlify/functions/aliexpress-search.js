@@ -15,7 +15,7 @@ exports.handler = async (event) => {
   const params = {
     app_key: appKey, method, timestamp,
     sign_method: 'sha256', v: '2.0',
-     keyWord: query,
+    keyWord: query,
     local: 'en_US', currency: 'CAD', countryCode: 'CA',
     page_index: '1', page_size: '20',
     target_currency: 'CAD', target_language: 'EN',
@@ -34,15 +34,15 @@ exports.handler = async (event) => {
       body
     });
     const data = await res.json();
-    const raw = data?.aliexpress_ds_text_search_response?.result?.products ||
-                data?.aliexpress_ds_text_search_response?.data?.products ||
-                data?.aliexpress_ds_product_search_response?.data?.products || [];
-    const products = raw.map(p => ({
+    const response = data?.aliexpress_ds_text_search_response;
+    const result = response?.result;
+    const raw = result?.products?.productList || result?.products || result?.mods?.itemList?.content || result?.searchProductList || [];
+    const products = Array.isArray(raw) ? raw.map(p => ({
       id: p.product_id, title: p.product_title,
       price: p.target_sale_price || p.sale_price,
       image: p.product_main_image_url, url: p.product_detail_url,
       orders: p.lastest_volume || 0
-    }));
+    })) : [];
     return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ products, _debug: data }) };
   } catch (e) {
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
