@@ -10,13 +10,19 @@ exports.handler = async (event) => {
   if (!appKey || !appSecret) {
     return { statusCode: 500, body: JSON.stringify({ error: 'API keys not configured' }) };
   }
-const method = 'aliexpress.ds.text.search';
+  const method = 'aliexpress.ds.text.search';
   const timestamp = String(Date.now());
   const params = {
-    app_key: appKey, method, timestamp, sign_method: 'sha256', v: '2.0',
+    app_key: appKey,
+    method,
+    timestamp,
+    sign_method: 'sha256',
+    v: '2.0',
     product_title: query,
-    page_index: '1', page_size: '20',
-    target_currency: 'CAD', target_language: 'EN',
+    page_index: '1',
+    page_size: '20',
+    target_currency: 'CAD',
+    target_language: 'EN',
     sort: 'SALE_PRICE_ASC'
   };
   if (accessToken) params.session = accessToken;
@@ -24,12 +30,17 @@ const method = 'aliexpress.ds.text.search';
   const signStr = '/sync' + sorted;
   const sign = crypto.createHmac('sha256', appSecret).update(signStr).digest('hex').toUpperCase();
   params.sign = sign;
-  const qs = new URLSearchParams(params).toString();
-const url = `https://api-sg.aliexpress.com/sync?${qs}`;
+  const body = new URLSearchParams(params).toString();
+  const url = 'https://api-sg.aliexpress.com/sync';
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
     const data = await res.json();
-    const raw = data?.aliexpress_ds_product_search_response?.data?.products || [];
+    const raw = data?.aliexpress_ds_text_search_response?.result?.products ||
+                data?.aliexpress_ds_product_search_response?.data?.products || [];
     const products = raw.map(p => ({
       id: p.product_id,
       title: p.product_title,
