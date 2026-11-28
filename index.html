@@ -3669,7 +3669,8 @@ function getHidden(){
 }
 
 function isHidden(dept, name){
-  return getHidden().includes(dept+'::'+name);
+  const deleted = JSON.parse(localStorage.getItem('ccc_deleted')||'[]');
+  return getHidden().includes(dept+'::'+name) || deleted.includes(dept+'::'+name);
 }
 
 function openStorePage(dept) {
@@ -4589,8 +4590,10 @@ function adminShowDept(dept, btn){
           ` : `
             <button class="admin-action-btn" onclick="adminPromoteBuiltin('${dept}','${item.name}')">✏️ Edit</button>
             ${item.hidden
-              ? `<button class="admin-action-btn sale" onclick="adminRestoreBuiltin('${dept}','${item.name}')">↩ Restore</button>`
-              : `<button class="admin-action-btn danger" onclick="adminHideBuiltin('${dept}','${item.name}')">🗑 Hide</button>`
+              ? `<button class="admin-action-btn sale" onclick="adminRestoreBuiltin('${dept}','${item.name}')">↩ Restore</button>
+                 <button class="admin-action-btn danger" onclick="adminDeleteBuiltin('${dept}','${item.name}')">❌ Delete</button>`
+              : `<button class="admin-action-btn danger" onclick="adminHideBuiltin('${dept}','${item.name}')">🗑 Hide</button>
+                 <button class="admin-action-btn danger" onclick="adminDeleteBuiltin('${dept}','${item.name}')">❌ Delete</button>`
             }
           `}
         </div>
@@ -5267,6 +5270,18 @@ function adminRestoreBuiltin(dept, name){
   localStorage.setItem('ccc_hidden', JSON.stringify(hidden.filter(h=>h!==dept+'::'+name)));
   adminShowDept(dept, null);
   toast('Listing restored to store.');
+}
+
+function adminDeleteBuiltin(dept, name){
+  if(!confirm(`⚠️ Permanently delete "${name}"? This cannot be undone.`)) return;
+  const hidden = JSON.parse(localStorage.getItem('ccc_hidden')||'[]');
+  if(!hidden.includes(dept+'::'+name)) hidden.push(dept+'::'+name);
+  localStorage.setItem('ccc_hidden', JSON.stringify(hidden));
+  const deleted = JSON.parse(localStorage.getItem('ccc_deleted')||'[]');
+  if(!deleted.includes(dept+'::'+name)) deleted.push(dept+'::'+name);
+  localStorage.setItem('ccc_deleted', JSON.stringify(deleted));
+  toast('❌ "'+name+'" permanently deleted.');
+  adminShowDept(adminCurrentDept, document.querySelector('.admin-sidebar-btn.active'));
 }
 
 function adminHideBuiltin(dept, name){
