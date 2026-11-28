@@ -27,15 +27,17 @@ exports.handler = async (event) => {
   };
   if (accessToken) params.session = accessToken;
   const sortedKeys = Object.keys(params).sort();
-  const signStr = appSecret + sortedKeys.map(k => `${k}${params[k]}`).join('') + appSecret;
-  const sign = crypto.createHmac('sha256', appSecret).update(signStr).digest('hex').toUpperCase();
+  let signStr = appSecret;
+  for (const k of sortedKeys) signStr += k + params[k];
+  signStr += appSecret;
+  const sign = crypto.createHmac('sha256', appSecret).update(signStr, 'utf8').digest('hex').toUpperCase();
   params.sign = sign;
   const body = new URLSearchParams(params).toString();
   const url = 'https://api-sg.aliexpress.com/sync';
   try {
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
       body
     });
     const data = await res.json();
