@@ -4245,7 +4245,7 @@ async function stripeCheckout() {
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: cart.map(i => ({ id: i.id || '', name: i.name, price: i.price, description: i.description || '', quantity: i.quantity, care: careEligible(i.name) ? (i.care || '') : '' })) })
+      body: JSON.stringify({ items: cart.map(i => ({ id: i.id || '', name: i.name, price: i.price, description: i.description || '', quantity: i.quantity, care: careEligible(i.name) ? (i.care || '') : '', aliId: i.aliId || '' })) })
     });
     const data = await res.json();
     if (data.url) {
