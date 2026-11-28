@@ -4375,18 +4375,31 @@ async function scoutSearch(){
       results.innerHTML = '<p style="color:#aaa;">No results found.</p>';
       return;
     }
-    results.innerHTML = data.products.map(p => `
+    results.innerHTML = data.products.map((p,i) => {
+      const cost = parseFloat(p.price)||0;
+      const ship = parseFloat(p.shipping)||0;
+      const suggested = ((cost + ship) * 2.5).toFixed(2);
+      const pJson = JSON.stringify(p).replace(/"/g,'&quot;');
+      return `
       <div style="background:#1a1a2e;border:1px solid #333;border-radius:10px;overflow:hidden;">
         <img src="${p.image}" style="width:100%;height:150px;object-fit:cover;" onerror="this.src=''">
         <div style="padding:.75rem;">
           <div style="font-size:.85rem;color:#fff;margin-bottom:.4rem;line-height:1.3;">${p.title.slice(0,60)}...</div>
-          <div style="color:#EF9F27;font-weight:700;margin-bottom:.5rem;">$${p.price} CAD</div>
-          <button onclick="scoutAddToStore(${JSON.stringify(p).replace(/"/g,'&quot;')})"
+          <div style="color:#aaa;font-size:.75rem;margin-bottom:.25rem;">AliExpress: $${p.price} + $${ship} shipping</div>
+          <label style="font-size:.75rem;color:#aaa;display:block;margin-bottom:2px;">Description (editable)</label>
+          <textarea id="scout_desc_${i}" style="width:100%;box-sizing:border-box;padding:.4rem;background:#0d0b1a;color:#fff;border:1px solid #555;border-radius:6px;font-size:.75rem;margin-bottom:.4rem;resize:vertical;height:50px;">${p.title}</textarea>
+          <label style="font-size:.75rem;color:#aaa;display:block;margin-bottom:2px;">Your Selling Price (CAD)</label>
+          <input id="scout_price_${i}" type="number" step="0.01" value="${suggested}"
+            oninput="(function(el,c,s){var profit=(parseFloat(el.value)||0)-c-s;document.getElementById('scout_profit_${i}').textContent='Profit: $'+profit.toFixed(2)+' CAD';document.getElementById('scout_profit_${i}').style.color=profit>0?'#6fcf97':'#f09595';})(this,${cost},${ship})"
+            style="width:100%;box-sizing:border-box;padding:.4rem;background:#0d0b1a;color:#EF9F27;border:1px solid #555;border-radius:6px;font-size:.9rem;font-weight:700;margin-bottom:.3rem;">
+          <div id="scout_profit_${i}" style="font-size:.8rem;font-weight:700;color:#6fcf97;margin-bottom:.5rem;">Profit: $${((parseFloat(suggested)||0)-cost-ship).toFixed(2)} CAD</div>
+          <button onclick="(function(){var desc=document.getElementById('scout_desc_${i}').value;var sellPrice=parseFloat(document.getElementById('scout_price_${i}').value)||0;var pCopy=JSON.parse('${JSON.stringify(p).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}');pCopy._desc=desc;pCopy._sellPrice=sellPrice;scoutAddToStore(pCopy);})()"
             style="width:100%;padding:.5rem;background:#3C3489;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">
             + Add to Store
           </button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } catch(e){
     results.innerHTML = '<p style="color:#f66;">Error connecting to AliExpress. Check your API keys in Netlify.</p>';
   }
@@ -4395,17 +4408,32 @@ async function scoutSearch(){
 async function scoutAddToStore(product){
   const dept = prompt('Which department? (rough / crystals / supplies / finished / jewelry)');
   if(!dept || !STORE_DATA[dept]) return alert('Invalid department.');
+  const sellPrice = product._sellPrice || parseFloat(product.price) || 0;
+  const desc = product._desc || product.title;
+  const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
   const newItem = {
+    id: 'ccc_' + Date.now(),
+    dept,
     icon: '📦',
     name: product.title.slice(0,40),
     sub: 'AliExpress Dropship',
-    price: `$${product.price}`,
+    desc: desc,
+    price: `$${sellPrice.toFixed(2)}`,
     img: product.image,
     aliId: product.id,
-    aliUrl: product.url
+    aliUrl: product.url,
+    custom: true
   };
-  STORE_DATA[dept].items.push(newItem);
-  alert(`✅ Added to ${dept}! Push your site to make it live.`);
+  products.push(newItem);
+  localStorage.setItem('ccc_products', JSON.stringify(products));
+  toast(`✅ Added "${newItem.name}" to ${dept} at $${sellPrice.toFixed(2)}!`);
+  try {
+    await fetch('/.netlify/functions/save-product', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-token':adminRvToken(false)},
+      body: JSON.stringify({ product: newItem })
+    });
+  } catch(e) {}
 }
 
 function openAdmin(){
@@ -4986,6 +5014,8 @@ function adminEditGem(id){
   document.getElementById('am_status').value = item.status||'instock';
   document.getElementById('am_img').value = item.img||'';
   document.getElementById('am_video').value = item.video||'';
+  if(document.getElementById('am_desc')) document.getElementById('am_desc').value = item.desc||'';
+  if(document.getElementById('am_canada')) document.getElementById('am_canada').checked = !!(item.id && item.id.startsWith('CAONL_'));
   window._extraImgs = Array.isArray(item.imgs) ? item.imgs.slice() : [];
   adminRenderExtraThumbs();
   if(item.img){
