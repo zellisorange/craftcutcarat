@@ -2355,6 +2355,8 @@
       <button class="admin-sidebar-btn" onclick="adminShowReceipts(this)">🧾 Sales Receipts</button>
       <div class="admin-sidebar-label" style="margin-top:1rem;">Tools</div>
       <button class="admin-sidebar-btn" onclick="adminShowDept('pricecalc',this)">💰 Price Calculator</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('scout',this)">🔍 AliExpress Scout</button>
+      <button class="admin-sidebar-btn" onclick="adminShowDept('invoices',this)">🧾 Invoices</button>
     </div>
 
     <!-- MAIN CONTENT -->
@@ -4361,6 +4363,51 @@ applyAuth();
 let adminCurrentDept = 'finished';
 let adminEditingId = null;
 
+async function scoutSearch(){
+  const query = document.getElementById('scoutQuery').value.trim();
+  if(!query) return;
+  const results = document.getElementById('scoutResults');
+  results.innerHTML = '<p style="color:#aaa;">Searching...</p>';
+  try {
+    const res = await fetch(`/.netlify/functions/aliexpress-search?q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    if(!data.products || !data.products.length){
+      results.innerHTML = '<p style="color:#aaa;">No results found.</p>';
+      return;
+    }
+    results.innerHTML = data.products.map(p => `
+      <div style="background:#1a1a2e;border:1px solid #333;border-radius:10px;overflow:hidden;">
+        <img src="${p.image}" style="width:100%;height:150px;object-fit:cover;" onerror="this.src=''">
+        <div style="padding:.75rem;">
+          <div style="font-size:.85rem;color:#fff;margin-bottom:.4rem;line-height:1.3;">${p.title.slice(0,60)}...</div>
+          <div style="color:#EF9F27;font-weight:700;margin-bottom:.5rem;">$${p.price} CAD</div>
+          <button onclick="scoutAddToStore(${JSON.stringify(p).replace(/"/g,'&quot;')})"
+            style="width:100%;padding:.5rem;background:#3C3489;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">
+            + Add to Store
+          </button>
+        </div>
+      </div>`).join('');
+  } catch(e){
+    results.innerHTML = '<p style="color:#f66;">Error connecting to AliExpress. Check your API keys in Netlify.</p>';
+  }
+}
+
+async function scoutAddToStore(product){
+  const dept = prompt('Which department? (rough / crystals / supplies / finished / jewelry)');
+  if(!dept || !STORE_DATA[dept]) return alert('Invalid department.');
+  const newItem = {
+    icon: '📦',
+    name: product.title.slice(0,40),
+    sub: 'AliExpress Dropship',
+    price: `$${product.price}`,
+    img: product.image,
+    aliId: product.id,
+    aliUrl: product.url
+  };
+  STORE_DATA[dept].items.push(newItem);
+  alert(`✅ Added to ${dept}! Push your site to make it live.`);
+}
+
 function openAdmin(){
   document.getElementById('adminOverlay').classList.add('open');
   document.getElementById('adminPanel').classList.add('open');
@@ -4380,6 +4427,35 @@ function adminShowDept(dept, btn){
   document.querySelectorAll('.admin-sidebar-btn').forEach(b => b.classList.remove('active'));
   if(btn) btn.classList.add('active');
 
+  if(dept==='scout'){
+      document.getElementById('adminMain').innerHTML = `
+        <div class="admin-section-header">
+          <div class="admin-section-title">🔍 AliExpress Scout</div>
+        </div>
+        <div style="display:flex;gap:.75rem;margin-bottom:1.5rem;">
+          <input id="scoutQuery" type="text" placeholder="Search AliExpress products (crystals, gems, supplies...)" 
+            style="flex:1;padding:.75rem 1rem;border-radius:var(--radius-sm);border:0.5px solid var(--border-light);background:var(--card);color:var(--text);font-size:14px;font-family:var(--font-body);"
+            onkeydown="if(event.key==='Enter')scoutSearch()">
+          <button onclick="scoutSearch()" 
+            style="padding:.75rem 1.5rem;background:var(--gold);color:#1A1640;border:none;border-radius:var(--radius-sm);font-weight:700;cursor:pointer;font-size:14px;">
+            🔍 Search
+          </button>
+        </div>
+        <div id="scoutResults" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;"></div>`;
+      return;
+    }
+    if(dept==='invoices'){
+      document.getElementById('adminMain').innerHTML = `
+        <div class="admin-section-header">
+          <div class="admin-section-title">🧾 Invoice Tracker</div>
+        </div>
+        <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:2rem;text-align:center;">
+          <div style="font-size:40px;margin-bottom:1rem;">🧾</div>
+          <div style="font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:0.5rem;">No invoices yet</div>
+          <div style="font-size:13px;color:var(--text-muted);">Invoices will appear here automatically when orders are completed through Stripe.</div>
+        </div>`;
+      return;
+    }
   if(dept === 'pricecalc'){
     document.getElementById('adminMain').innerHTML = `
       <div class="admin-section-header">
