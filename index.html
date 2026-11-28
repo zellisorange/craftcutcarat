@@ -4375,6 +4375,7 @@ async function scoutSearch(){
       results.innerHTML = '<p style="color:#aaa;">No results found.</p>';
       return;
     }
+    window._scoutResults = data.products;
     results.innerHTML = data.products.map((p,i) => {
       const cost = parseFloat(p.price)||0;
       const ship = parseFloat(p.shipping)||0;
@@ -4393,7 +4394,7 @@ async function scoutSearch(){
             oninput="(function(el,c,s){var profit=(parseFloat(el.value)||0)-c-s;document.getElementById('scout_profit_${i}').textContent='Profit: $'+profit.toFixed(2)+' CAD';document.getElementById('scout_profit_${i}').style.color=profit>0?'#6fcf97':'#f09595';})(this,${cost},${ship})"
             style="width:100%;box-sizing:border-box;padding:.4rem;background:#0d0b1a;color:#EF9F27;border:1px solid #555;border-radius:6px;font-size:.9rem;font-weight:700;margin-bottom:.3rem;">
           <div id="scout_profit_${i}" style="font-size:.8rem;font-weight:700;color:#6fcf97;margin-bottom:.5rem;">Profit: $${((parseFloat(suggested)||0)-cost-ship).toFixed(2)} CAD</div>
-          <button onclick="(function(){var desc=document.getElementById('scout_desc_${i}').value;var sellPrice=parseFloat(document.getElementById('scout_price_${i}').value)||0;var pCopy=JSON.parse('${JSON.stringify(p).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}');pCopy._desc=desc;pCopy._sellPrice=sellPrice;scoutAddToStore(pCopy);})()"
+          <button onclick="scoutAddToStore(${i})"
             style="width:100%;padding:.5rem;background:#3C3489;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">
             + Add to Store
           </button>
@@ -4405,11 +4406,13 @@ async function scoutSearch(){
   }
 }
 
-async function scoutAddToStore(product){
+async function scoutAddToStore(i){
+  const product = window._scoutResults && window._scoutResults[i];
+  if(!product){ toast('⚠️ Product not found — search again.'); return; }
   const dept = prompt('Which department? (rough / crystals / supplies / finished / jewelry)');
-  if(!dept || !STORE_DATA[dept]) return alert('Invalid department.');
-  const sellPrice = product._sellPrice || parseFloat(product.price) || 0;
-  const desc = product._desc || product.title;
+  if(!dept || !STORE_DATA[dept]) { toast('⚠️ Invalid department.'); return; }
+  const sellPrice = parseFloat(document.getElementById('scout_price_'+i).value) || (parseFloat(product.price)||0) * 2.5;
+  const desc = document.getElementById('scout_desc_'+i).value || product.title;
   const products = JSON.parse(localStorage.getItem('ccc_products')||'[]');
   const newItem = {
     id: 'ccc_' + Date.now(),
