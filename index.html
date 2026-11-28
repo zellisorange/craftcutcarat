@@ -3281,6 +3281,18 @@ function pwSave() {
     return;
   }
   if (status !== 'success') return;
+  setTimeout(function(){
+    var modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = '<div style="background:#1a1a2e;border:2px solid #c9a84c;border-radius:16px;padding:40px;max-width:480px;width:90%;text-align:center;color:#fff;">'
+      +'<div style="font-size:3rem;margin-bottom:16px;">💎</div>'
+      +'<h2 style="color:#c9a84c;font-size:1.6rem;margin-bottom:12px;">Thank You for Your Order!</h2>'
+      +'<p style="color:#ccc;margin-bottom:8px;">Your payment was successful.</p>'
+      +'<p style="color:#ccc;margin-bottom:24px;">You\'ll receive a confirmation email at <strong>'+( (typeof currentUser!=="undefined"&&currentUser&&currentUser.email)||'your email')+'</strong>.</p>'
+      +'<button onclick="this.closest(\'div[style*=fixed]\').remove();history.replaceState(null,\'\',window.location.pathname);" style="background:#c9a84c;color:#000;border:none;padding:12px 32px;border-radius:8px;font-size:1rem;cursor:pointer;font-weight:bold;">Continue Shopping ✦</button>'
+      +'</div>';
+    document.body.appendChild(modal);
+  }, 500);
   var tries = 0;
   var timer = setInterval(function () {
     tries++;
