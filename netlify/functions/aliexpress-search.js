@@ -15,10 +15,10 @@ exports.handler = async (event) => {
   }
 
   const method = 'aliexpress.affiliate.product.query';
-  const timestamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
+  const timestamp = String(Date.now());
 
   const params = {
-    app_key: appKey, method, timestamp, sign_method: 'md5', v: '2.0',
+    app_key: appKey, method, timestamp, sign_method: 'sha256', simplify: 'true', v: '2.0',
     keywords: query, page_no: '1', page_size: '20',
     target_currency: 'CAD', target_language: 'EN', tracking_id: 'craftcutcarat'
   };
@@ -26,11 +26,12 @@ exports.handler = async (event) => {
   if (accessToken) params.session = accessToken;
 
   const sorted = Object.keys(params).sort().map(k => `${k}${params[k]}`).join('');
-  const sign = crypto.createHash('md5').update(appSecret + sorted + appSecret).digest('hex').toUpperCase();
+  const signStr = '/sync' + sorted;
+  const sign = crypto.createHmac('sha256', appSecret).update(signStr).digest('hex').toUpperCase();
   params.sign = sign;
 
   const qs = new URLSearchParams(params).toString();
-  const url = `https://api-sg.aliexpress.com/sync?${qs}`;
+  const url = `https://api-sg.aliexpress.com/rest/sync?${qs}`;
 
   try {
     const res = await fetch(url);
